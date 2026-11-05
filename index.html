@@ -46,7 +46,7 @@
       user-select: none;
       -webkit-user-select: none;
       -webkit-touch-callout: none;
-      touch-action: none; /* Prevents unwanted pull-to-refresh & zoom on mobile browsers */
+      touch-action: none;
     }
     body, html {
       margin: 0; padding: 0; width: 100%; height: 100%;
@@ -56,7 +56,7 @@
     .crt-overlay {
       pointer-events: none; position: absolute; inset: 0; z-index: 40;
       background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.45) 50%), 
-                  linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+                  linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 255, 0, 0.03));
       background-size: 100% 3px, 6px 100%;
     }
     .crt-vignette {
@@ -97,7 +97,7 @@
 
   <!-- PERSISTENT TOP HUD & MUSIC PLAYER BAR -->
   <header class="absolute top-0 left-0 right-0 z-30 px-2 py-1.5 sm:px-5 sm:py-2 flex flex-wrap items-center justify-between bg-black/90 border-b border-lowlife-border/60 backdrop-blur-md gap-1.5 sm:gap-2">
-    <!-- Brand & Current Dimension -->
+    <!-- Brand & Dimension Status -->
     <div class="flex items-center gap-2">
       <div id="dimensionStatusDot" class="w-2.5 h-2.5 rounded-full bg-lowlife-cyan animate-ping"></div>
       <div>
@@ -124,33 +124,29 @@
         <option value="spedup">SPED (+15%)</option>
         <option value="slowed">SLOW (-15%)</option>
       </select>
-      <!-- Volume Slider (Desktop) -->
+      <!-- Volume Slider -->
       <div class="hidden md:flex items-center gap-1.5 pl-2 border-l border-neutral-800">
         <span class="text-[10px] text-neutral-400">VOL</span>
         <input id="bgmVolumeSlider" type="range" min="0" max="1" step="0.05" value="0.5" class="w-16 accent-lowlife-cyan cursor-pointer">
       </div>
     </div>
 
-    <!-- Top Right Nav Buttons -->
+    <!-- Top Right Nav Buttons: Quick Warp, Token Tracker, Links, Vault -->
     <div class="flex items-center gap-1 sm:gap-2">
-      <!-- Quick Dimension Warp Button -->
       <button id="quickWarpBtn" class="px-2 py-1 bg-gradient-to-r from-pink-600 to-cyan-500 hover:from-pink-500 hover:to-cyan-400 text-black font-cyber font-bold text-[10px] sm:text-xs rounded transition flex items-center gap-1 shadow-[0_0_12px_rgba(236,72,153,0.4)]">
         <span>🌀</span>
         <span id="quickWarpText" class="hidden sm:inline">WARP</span>
       </button>
 
-      <!-- Token / Credits Badge -->
       <div class="px-1.5 py-1 bg-black/70 border border-yellow-500/50 rounded text-[10px] sm:text-xs text-yellow-400 font-mono flex items-center gap-1">
         <span>🪙</span>
         <b id="casinoTokensCount">100</b>
       </div>
 
-      <!-- Quick All-Links Button -->
       <button id="openLinksModalBtn" class="px-2 py-1 bg-lowlife-cyan hover:bg-white text-black font-cyber font-bold text-[10px] sm:text-xs rounded transition shadow-[0_0_10px_rgba(0,240,255,0.3)]">
         LINKS
       </button>
 
-      <!-- Extra Dropdown / Secondary Nav -->
       <button id="openTapesBtn" class="px-1.5 py-1 bg-black/60 border border-neutral-700 hover:border-lowlife-gold rounded text-[10px] sm:text-xs transition" title="Cassettes Vault">
         📼 <b id="loreCount">0/6</b>
       </button>
@@ -177,23 +173,40 @@
     </div>
   </main>
 
-  <!-- MOBILE ON-SCREEN TOUCH CONTROLS (VIRTUAL ANALOG STICK & ADAPTIVE INTERACT) -->
-  <div id="touchControls" class="sm:hidden pointer-events-none absolute inset-x-0 bottom-6 z-30 px-6 flex items-end justify-between">
+  <!-- MOBILE ON-SCREEN TOUCH CONTROLS (VIRTUAL JOYSTICK & COMBAT ACTION CLUSTER) -->
+  <div id="touchControls" class="sm:hidden pointer-events-none absolute inset-x-0 bottom-6 z-30 px-5 flex items-end justify-between">
     <!-- Virtual Joystick Base -->
     <div id="joystickZone" class="pointer-events-auto relative w-28 h-28 rounded-full bg-black/50 border border-lowlife-border/80 backdrop-blur-md flex items-center justify-center shadow-inner">
       <div class="absolute inset-0 rounded-full border border-lowlife-cyan/20"></div>
-      <!-- Joystick Knob/Nipple -->
       <div id="joystickKnob" class="w-12 h-12 rounded-full bg-gradient-to-br from-lowlife-cyan to-blue-700 opacity-80 border-2 border-white shadow-[0_0_15px_rgba(0,240,255,0.6)] transform translate-x-0 translate-y-0 transition-transform duration-75"></div>
     </div>
 
-    <!-- Dynamic Action / Interact Button -->
-    <button id="btnAction" class="pointer-events-auto btn-action-idle w-20 h-20 rounded-full border-2 font-cyber font-bold text-xs flex flex-col items-center justify-center backdrop-blur transition-all duration-200 active:scale-95">
-      <span id="btnActionLabel" class="tracking-widest">INTERACT</span>
-      <span id="btnActionSub" class="text-[9px] font-mono text-neutral-300">[E]</span>
-    </button>
+    <!-- Combat & Dynamic Action Cluster -->
+    <div class="pointer-events-auto flex items-end gap-2">
+      <!-- Projectile Plasma Attack Button -->
+      <button id="btnShoot" class="w-13 h-13 sm:w-14 sm:h-14 p-3 rounded-full bg-black/70 border-2 border-lowlife-cyan text-lowlife-cyan active:bg-lowlife-cyan active:text-black font-cyber font-bold text-[10px] flex flex-col items-center justify-center shadow-[0_0_12px_rgba(0,240,255,0.4)] backdrop-blur transition active:scale-95">
+        <span>FIRE</span>
+        <span class="text-[8px] font-mono text-neutral-400">[J]</span>
+      </button>
+
+      <!-- Melee Tactical Slash Button -->
+      <button id="btnSlash" class="w-15 h-15 sm:w-16 sm:h-16 p-3.5 rounded-full bg-black/70 border-2 border-lowlife-red text-lowlife-red active:bg-lowlife-red active:text-white font-cyber font-bold text-xs flex flex-col items-center justify-center shadow-[0_0_15px_rgba(255,0,60,0.5)] backdrop-blur transition active:scale-95">
+        <span>SLASH</span>
+        <span class="text-[8px] font-mono text-neutral-400">[K]</span>
+      </button>
+
+      <!-- Adaptive Contextual Interact Button (Morphs to Purple Near Objects) -->
+      <button id="btnAction" class="btn-action-idle w-13 h-13 sm:w-14 sm:h-14 p-3 rounded-full border-2 font-cyber font-bold text-[10px] flex flex-col items-center justify-center backdrop-blur transition-all duration-200 active:scale-95">
+        <span id="btnActionLabel">DOOR</span>
+        <span id="btnActionSub" class="text-[8px] font-mono text-neutral-300">[E]</span>
+      </button>
+    </div>
   </div>
 
-  <!-- MODALS -->
+  <!-- ============================================================== -->
+  <!-- MODALS: DISCOGRAPHY, LINKS DIRECTORY, MERCH, CASINO, LORE, ETC. -->
+  <!-- ============================================================== -->
+
   <!-- 1. DISCOGRAPHY STUDIO ROOM MODAL -->
   <div id="discoModal" class="hidden fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-3 sm:p-5">
     <div class="relative w-full max-w-2xl bg-lowlife-charcoal border border-lowlife-border rounded-xl p-4 sm:p-5 max-h-[88vh] flex flex-col">
@@ -334,7 +347,7 @@
     </div>
   </div>
 
-  <!-- OTHER MODALS (Arcade, DAW, Tapes, Skins, Profile, Holding, Casino) -->
+  <!-- 4. RETRO ARCADE CAB MODAL -->
   <div id="arcadeModal" class="hidden fixed inset-0 z-50 bg-black/95 backdrop-blur-md flex items-center justify-center p-3">
     <div class="relative w-full max-w-xl bg-lowlife-charcoal border-2 border-lowlife-cyan rounded-2xl p-4 shadow-2xl flex flex-col">
       <div class="flex items-center justify-between border-b border-lowlife-cyan/30 pb-2 mb-2">
@@ -352,6 +365,7 @@
     </div>
   </div>
 
+  <!-- 5. FL STUDIO SOUND LAB MODAL -->
   <div id="dawModal" class="hidden fixed inset-0 z-50 bg-black/95 backdrop-blur-md flex items-center justify-center p-3">
     <div class="relative w-full max-w-2xl bg-[#12141c] border-2 border-[#ffaa00] rounded-xl p-4 flex flex-col">
       <div class="flex items-center justify-between border-b border-neutral-800 pb-2 mb-3">
@@ -372,6 +386,7 @@
     </div>
   </div>
 
+  <!-- 6. CASSETTES VAULT MODAL -->
   <div id="tapesModal" class="hidden fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-3">
     <div class="relative w-full max-w-md bg-lowlife-charcoal border border-neutral-700 rounded-xl p-4 max-h-[85vh] flex flex-col">
       <div class="flex items-center justify-between border-b border-neutral-800 pb-2 mb-3">
@@ -385,6 +400,7 @@
     </div>
   </div>
 
+  <!-- 7. SKINS LOCKER MODAL -->
   <div id="skinsModal" class="hidden fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-3">
     <div class="relative w-full max-w-sm bg-lowlife-charcoal border border-lowlife-border rounded-xl p-4 max-h-[85vh] flex flex-col">
       <div class="flex items-center justify-between border-b border-neutral-800 pb-2 mb-3">
@@ -395,6 +411,7 @@
     </div>
   </div>
 
+  <!-- 8. LUCKY 777 CASINO SLOTS MODAL -->
   <div id="casinoModal" class="hidden fixed inset-0 z-50 bg-black/95 backdrop-blur-md flex items-center justify-center p-3">
     <div class="relative w-full max-w-sm bg-[#140b22] border-2 border-pink-500 rounded-2xl p-4 text-center">
       <div class="flex justify-between items-center pb-2 mb-2">
@@ -411,6 +428,7 @@
     </div>
   </div>
 
+  <!-- 9. HOLDING CELL LORE MODAL -->
   <div id="holdingModal" class="hidden fixed inset-0 z-50 bg-black/95 backdrop-blur-md flex items-center justify-center p-3">
     <div class="relative w-full max-w-sm bg-lowlife-charcoal border-2 border-lowlife-red rounded-xl p-4 font-mono text-xs">
       <div class="flex justify-between items-center pb-2 mb-2 border-b border-neutral-800">
@@ -421,6 +439,7 @@
     </div>
   </div>
 
+  <!-- 10. RESTROOM MIRROR KEYPAD MODAL -->
   <div id="mirrorPuzzleModal" class="hidden fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-3">
     <div class="relative w-full max-w-xs bg-[#0a0f12] border-2 border-lowlife-cyan rounded-2xl p-4 text-center font-mono text-xs">
       <h3 class="font-cyber font-bold text-lowlife-cyan mb-2">RESTROOM KEYPAD</h3>
@@ -443,9 +462,10 @@
     </div>
   </div>
 
+  <!-- JAVASCRIPT MASTER BUNDLE: SOUND ENGINE, WORLD, JOYSTICK & PHASE 1 COMBAT -->
   <script>
     // ==============================================================
-    // CONFIG & STATE
+    // CONFIG.JSON LOADER & DYNAMIC SYNC
     // ==============================================================
     let ACTIVE_CONFIG = {
       music: {
@@ -526,11 +546,10 @@
     }
 
     // ==============================================================
-    // AUDIO ENGINE
+    // AUDIO ENGINE & SYNTHESIZERS
     // ==============================================================
     let audioCtx = null, isBgmPlaying = false, bgmMasterGain = null, bgmStepIndex = 0, bgmTimer = null, bgmTempo = 130, bgmVersion = 'original';
     const noirBassNotes = [110, 110, 130.81, 146.83, 164.81, 146.83, 130.81, 110, 98, 98, 110, 130.81, 146.83, 130.81, 123.47, 98];
-    const noirLeadNotes = [440, 0, 523.25, 587.33, 659.25, 587.33, 523.25, 440, 392, 440, 523.25, 659.25, 587.33, 523.25, 493.88, 392];
 
     function initAudio() {
       if (!audioCtx) {
@@ -608,8 +627,33 @@
       } catch (err) {}
     }
 
+    function playCombatSfx(type) {
+      if (!audioCtx) return;
+      try {
+        const now = audioCtx.currentTime;
+        const osc = audioCtx.createOscillator();
+        const g = audioCtx.createGain();
+        osc.connect(g); g.connect(audioCtx.destination);
+        if (type === 'laser') {
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(880, now);
+          osc.frequency.exponentialRampToValueAtTime(110, now + 0.12);
+          g.gain.setValueAtTime(0.25, now);
+          g.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+          osc.start(now); osc.stop(now + 0.12);
+        } else if (type === 'slash') {
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(320, now);
+          osc.frequency.linearRampToValueAtTime(80, now + 0.08);
+          g.gain.setValueAtTime(0.4, now);
+          g.gain.linearRampToValueAtTime(0.001, now + 0.08);
+          osc.start(now); osc.stop(now + 0.08);
+        }
+      } catch (e) {}
+    }
+
     // ==============================================================
-    // CANVAS & PLAYER ENGINE
+    // CANVAS, PLAYER & WORLD OBSTACLES
     // ==============================================================
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
@@ -621,8 +665,6 @@
     };
     const camera = { x: 0, y: 0, width: 0, height: 0 };
     const keys = { up: false, down: false, left: false, right: false };
-
-    // Mobile Vector Input for Analog Stick
     const analogVector = { x: 0, y: 0, active: false };
 
     const undergroundObstacles = [
@@ -671,6 +713,133 @@
 
     function checkCollision(r1, r2) {
       return (r1.x < r2.x + r2.width && r1.x + r1.width > r2.x && r1.y < r2.y + r2.height && r1.y + r1.height > r2.y);
+    }
+
+    // ==============================================================
+    // PHASE 1: COMBAT SYSTEM (PROJECTILES & MELEE ATTACKS)
+    // ==============================================================
+    const projectiles = [];
+    const meleeSlashes = [];
+    let lastShootTime = 0;
+    let lastMeleeTime = 0;
+    const SHOOT_COOLDOWN_MS = 250;
+    const MELEE_COOLDOWN_MS = 320;
+
+    function triggerProjectileAttack() {
+      initAudio();
+      const now = Date.now();
+      if (now - lastShootTime < SHOOT_COOLDOWN_MS) return;
+      lastShootTime = now;
+      playCombatSfx('laser');
+
+      let vx = 0, vy = 0;
+      if (player.direction === 'up') vy = -9;
+      else if (player.direction === 'down') vy = 9;
+      else if (player.direction === 'left') vx = -9;
+      else if (player.direction === 'right') vx = 9;
+
+      projectiles.push({
+        x: player.x + player.width / 2,
+        y: player.y + player.height / 2,
+        vx,
+        vy,
+        radius: 4,
+        life: 55
+      });
+    }
+
+    function triggerMeleeAttack() {
+      initAudio();
+      const now = Date.now();
+      if (now - lastMeleeTime < MELEE_COOLDOWN_MS) return;
+      lastMeleeTime = now;
+      playCombatSfx('slash');
+
+      let slashX = player.x + player.width / 2;
+      let slashY = player.y + player.height / 2;
+      const offset = 26;
+
+      if (player.direction === 'up') slashY -= offset;
+      else if (player.direction === 'down') slashY += offset;
+      else if (player.direction === 'left') slashX -= offset;
+      else if (player.direction === 'right') slashX += offset;
+
+      meleeSlashes.push({
+        x: slashX,
+        y: slashY,
+        dir: player.direction,
+        radius: 30,
+        life: 8
+      });
+    }
+
+    function updateCombatEntities() {
+      // 1. Projectiles Update
+      for (let i = projectiles.length - 1; i >= 0; i--) {
+        const p = projectiles[i];
+        p.x += p.vx;
+        p.y += p.vy;
+        p.life--;
+
+        let hitWall = false;
+        for (let obs of undergroundObstacles) {
+          if (p.x > obs.x && p.x < obs.x + obs.width && p.y > obs.y && p.y < obs.y + obs.height) {
+            hitWall = true;
+            break;
+          }
+        }
+
+        if (p.life <= 0 || hitWall) {
+          projectiles.splice(i, 1);
+        }
+      }
+
+      // 2. Melee Arc Decay
+      for (let i = meleeSlashes.length - 1; i >= 0; i--) {
+        meleeSlashes[i].life--;
+        if (meleeSlashes[i].life <= 0) {
+          meleeSlashes.splice(i, 1);
+        }
+      }
+    }
+
+    function drawCombat() {
+      // Draw Plasma Projectiles (Cyan Core with Outer Glow)
+      projectiles.forEach(p => {
+        ctx.save();
+        ctx.shadowBlur = 10;
+        ctx.shadowColor = '#00f0ff';
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = '#00f0ff';
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.radius + 1.5, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.restore();
+      });
+
+      // Draw Melee Arc (Vicious Crimson Slash)
+      meleeSlashes.forEach(s => {
+        ctx.save();
+        ctx.strokeStyle = '#ff003c';
+        ctx.shadowBlur = 14;
+        ctx.shadowColor = '#ff003c';
+        ctx.lineWidth = 3.5;
+        ctx.beginPath();
+
+        let startAngle = 0, endAngle = Math.PI;
+        if (s.dir === 'up') { startAngle = Math.PI * 1.1; endAngle = Math.PI * 1.9; }
+        else if (s.dir === 'down') { startAngle = Math.PI * 0.1; endAngle = Math.PI * 0.9; }
+        else if (s.dir === 'left') { startAngle = Math.PI * 0.6; endAngle = Math.PI * 1.4; }
+        else if (s.dir === 'right') { startAngle = -Math.PI * 0.4; endAngle = Math.PI * 0.4; }
+
+        ctx.arc(s.x, s.y, s.radius, startAngle, endAngle);
+        ctx.stroke();
+        ctx.restore();
+      });
     }
 
     // ==============================================================
@@ -747,7 +916,18 @@
     window.addEventListener('touchend', handleJoystickEnd, { passive: false });
     window.addEventListener('touchcancel', handleJoystickEnd, { passive: false });
 
-    // Keyboard fallbacks
+    // Touch Combat & Interaction Listeners
+    document.getElementById('btnShoot').addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      triggerProjectileAttack();
+    });
+    document.getElementById('btnSlash').addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      triggerMeleeAttack();
+    });
+    document.getElementById('btnAction').addEventListener('click', triggerActiveInteraction);
+
+    // Keyboard bindings
     window.addEventListener('keydown', (e) => {
       initAudio();
       if (['ArrowUp', 'KeyW'].includes(e.code)) keys.up = true;
@@ -755,6 +935,8 @@
       if (['ArrowLeft', 'KeyA'].includes(e.code)) keys.left = true;
       if (['ArrowRight', 'KeyD'].includes(e.code)) keys.right = true;
       if (e.code === 'KeyE') triggerActiveInteraction();
+      if (e.code === 'KeyJ') triggerProjectileAttack();
+      if (e.code === 'KeyK') triggerMeleeAttack();
       if (e.code === 'Escape') closeModals();
     });
     window.addEventListener('keyup', (e) => {
@@ -765,7 +947,7 @@
     });
 
     // ==============================================================
-    // PLAYER UPDATE & DYNAMIC INTERACT BUTTON COLOR SHIFT
+    // PLAYER UPDATE & DYNAMIC INTERACT BUTTON MORPHING
     // ==============================================================
     let activeZone = null;
 
@@ -808,10 +990,10 @@
         player.isMoving = false;
       }
 
+      updateCombatEntities();
       checkUniverseProximity();
     }
 
-    // Dynamic Reactive Interact Button Highlight
     function checkUniverseProximity() {
       const promptEl = document.getElementById('interactionPrompt');
       const promptText = document.getElementById('promptText');
@@ -829,17 +1011,15 @@
       }
 
       if (activeZone) {
-        // Change button to Neon Purple with active glow
         actionBtn.classList.remove('btn-action-idle');
         actionBtn.classList.add('btn-action-active');
         actionLabel.innerText = "OPEN";
         promptText.innerText = `[E] ${activeZone.label}`;
         promptEl.classList.remove('hidden');
       } else {
-        // Reset to Default Blue/Cyan
         actionBtn.classList.remove('btn-action-active');
         actionBtn.classList.add('btn-action-idle');
-        actionLabel.innerText = "INTERACT";
+        actionLabel.innerText = "DOOR";
         promptEl.classList.add('hidden');
       }
     }
@@ -850,10 +1030,9 @@
         activeZone.action();
       }
     }
-    document.getElementById('btnAction').addEventListener('click', triggerActiveInteraction);
 
     // ==============================================================
-    // RENDER LOOP & AVATAR
+    // CANVAS RENDERING
     // ==============================================================
     function draw() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -873,7 +1052,7 @@
       ctx.fillRect(910, 350, 100, 30);
       ctx.fillRect(1330, 350, 100, 30);
 
-      // Props
+      // In-World Props
       ctx.fillStyle = '#131926'; ctx.fillRect(80, 150, 130, 70);
       ctx.strokeStyle = '#00f0ff'; ctx.strokeRect(80, 150, 130, 70);
 
@@ -889,7 +1068,7 @@
       ctx.fillStyle = '#141822'; ctx.fillRect(300, 550, 150, 70);
       ctx.strokeStyle = '#323c52'; ctx.strokeRect(300, 550, 150, 70);
 
-      // Avatar
+      drawCombat();
       drawAvatar(player.x, player.y, player.direction, player.isMoving, player.animTimer);
 
       ctx.restore();
@@ -902,7 +1081,7 @@
       ctx.ellipse(px + 12, py + 36, 14, 5, 0, 0, Math.PI * 2);
       ctx.fill();
 
-      // Trench coat body
+      // Dystopian Duster / Trench Coat
       ctx.fillStyle = '#0a0b0f';
       ctx.fillRect(px + 2, py + 11, 20, 24);
       ctx.beginPath();
@@ -912,7 +1091,7 @@
       ctx.lineTo(px + 22, py + 20);
       ctx.fill();
 
-      // Helmet & Visor
+      // Reflective Helmet / Visor
       ctx.fillStyle = '#171922';
       ctx.beginPath();
       ctx.arc(px + 12, py + 7, 8, 0, Math.PI * 2);
@@ -925,12 +1104,16 @@
     }
 
     function gameLoop() {
-      updatePlayer();
-      camera.x += (player.x - camera.width / 2 - camera.x) * 0.1;
-      camera.y += (player.y - camera.height / 2 - camera.y) * 0.1;
-      camera.x = Math.max(0, Math.min(WORLD_WIDTH - camera.width, camera.x));
-      camera.y = Math.max(0, Math.min(WORLD_HEIGHT - camera.height, camera.y));
-      draw();
+      try {
+        updatePlayer();
+        camera.x += (player.x - camera.width / 2 - camera.x) * 0.1;
+        camera.y += (player.y - camera.height / 2 - camera.y) * 0.1;
+        camera.x = Math.max(0, Math.min(WORLD_WIDTH - camera.width, camera.x));
+        camera.y = Math.max(0, Math.min(WORLD_HEIGHT - camera.height, camera.y));
+        draw();
+      } catch (err) {
+        console.error("Game loop error:", err);
+      }
       requestAnimationFrame(gameLoop);
     }
 
