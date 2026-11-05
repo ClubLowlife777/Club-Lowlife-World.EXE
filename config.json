@@ -8,20 +8,44 @@
   },
   "giveawayFormUrl": "https://forms.gle/TsE7MAHSD1erDca59",
   "quickLinks": [
-    { "label": "STREAM 'DANCING' (SPOTIFY)", "url": "https://open.spotify.com/track/6jfPp34RiWhv8HUEfSpuhg?si=0d4c1e54e1fd4ee2" },
-    { "label": "STREAM 'DANCING' (APPLE MUSIC)", "url": "https://music.apple.com/us/song/dancing/6824158392" },
-    { "label": "INSTAGRAM SYNDICATE (@CLUBLOWLIFE)", "url": "https://www.instagram.com/omglowlife" },
-    { "label": "CASSETTE TAPE GIVEAWAY CLAIM", "url": "https://forms.gle/TsE7MAHSD1erDca59" },
-    { "label": "RETROCADE ARCHIVE", "url": "https://clublowlife.dimensions.fm/retrocade-evolved" }
+    {
+      "label": "STREAM 'DANCING' (SPOTIFY)",
+      "url": "https://open.spotify.com/track/6jfPp34RiWhv8HUEfSpuhg?si=0d4c1e54e1fd4ee2"
+    },
+    {
+      "label": "STREAM 'DANCING' (APPLE MUSIC)",
+      "url": "https://music.apple.com/us/song/dancing/6824158392"
+    },
+    {
+      "label": "INSTAGRAM SYNDICATE (@CLUBLOWLIFE)",
+      "url": "https://www.instagram.com/omglowlife"
+    },
+    {
+      "label": "CASSETTE TAPE GIVEAWAY CLAIM",
+      "url": "https://forms.gle/TsE7MAHSD1erDca59"
+    },
+    {
+      "label": "RETROCADE ARCHIVE",
+      "url": "https://clublowlife.dimensions.fm/retrocade-evolved"
+    }
   ],
   "merchDrop": {
     "title": "CAR TRUNK // ARCHIVE",
     "discountCode": "LOWLIFE10",
     "storeUrl": "https://clublowlife.com",
     "items": [
-      { "name": "Black Heavyweight Nirvana Tee", "price": "$40" },
-      { "name": "White Heavyweight Nirvana Tee", "price": "$40" },
-      { "name": "Club Lowlife Cassette Tape", "price": "$15" }
+      {
+        "name": "Black Heavyweight Nirvana Tee",
+        "price": "$40"
+      },
+      {
+        "name": "White Heavyweight Nirvana Tee",
+        "price": "$40"
+      },
+      {
+        "name": "Club Lowlife Cassette Tape",
+        "price": "$15"
+      }
     ]
   }
 }
