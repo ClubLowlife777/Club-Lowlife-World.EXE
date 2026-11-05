@@ -1,1 +1,27 @@
-
+{
+  "music": {
+    "featuredTrack": "DANCING",
+    "status": "OUT NOW ON ALL PLATFORMS",
+    "spotifyUrl": "https://open.spotify.com",
+    "appleUrl": "https://music.apple.com",
+    "youtubeUrl": "https://youtube.com"
+  },
+  "giveawayFormUrl": "https://forms.gle/TsE7MAHSD1erDca59",
+  "quickLinks": [
+    { "label": "STREAM 'DANCING' (SPOTIFY)", "url": "https://open.spotify.com" },
+    { "label": "STREAM 'DANCING' (APPLE MUSIC)", "url": "https://music.apple.com" },
+    { "label": "INSTAGRAM SYNDICATE (@CLUBLOWLIFE)", "url": "https://instagram.com" },
+    { "label": "CASSETTE TAPE GIVEAWAY CLAIM", "url": "https://forms.gle/TsE7MAHSD1erDca59" },
+    { "label": "RETROCADE ARCHIVE STORE", "url": "https://clublowlife.world" }
+  ],
+  "merchDrop": {
+    "title": "CAR TRUNK // ARCHIVE CLEARANCE",
+    "discountCode": "LOWLIFE10",
+    "storeUrl": "https://clublowlife.world",
+    "items": [
+      { "name": "Enforcer Tactical Duster", "price": "$120" },
+      { "name": "Heavyweight Syndicate Tee", "price": "$45" },
+      { "name": "Retrocade Archive Cap", "price": "$35" }
+    ]
+  }
+}
