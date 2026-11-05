@@ -197,7 +197,7 @@
   </div>
 
   <!-- ============================================================== -->
-  <!-- MODALS: DISCOGRAPHY, ARCADE, DAW, LOCKER, CASSETTES, PROFILE -->
+  <!-- MODALS: DISCOGRAPHY, ARCADE, DAW, LOCKER, CASSETTES, PROFILE, MERCH -->
   <!-- ============================================================== -->
 
   <!-- 1. DISCOGRAPHY STUDIO ROOM MODAL -->
@@ -222,9 +222,10 @@
             <p class="text-neutral-300 mt-1 leading-relaxed">
               The flagship single introducing the Blade x Casshern Sins dystopian timeline. A sharp fusion of electronic dance bounce and melodic rap flows, moving away from hyper-colored trap into sleek, late-night industrial energy.
             </p>
-            <div class="flex gap-2 mt-3">
-              <a href="https://open.spotify.com" target="_blank" class="px-3 py-1 bg-[#1DB954] text-black font-cyber font-bold text-[11px] rounded">SPOTIFY</a>
-              <a href="https://music.apple.com" target="_blank" class="px-3 py-1 bg-white text-black font-cyber font-bold text-[11px] rounded">APPLE MUSIC</a>
+            <div class="flex flex-wrap gap-2 mt-3">
+              <a id="discoSpotifyBtn" href="https://open.spotify.com/track/6jfPp34RiWhv8HUEfSpuhg?si=0d4c1e54e1fd4ee2" target="_blank" class="px-3 py-1 bg-[#1DB954] text-black font-cyber font-bold text-[11px] rounded">SPOTIFY</a>
+              <a id="discoAppleBtn" href="https://music.apple.com/us/song/dancing/6824158392" target="_blank" class="px-3 py-1 bg-white text-black font-cyber font-bold text-[11px] rounded">APPLE MUSIC</a>
+              <a id="discoYoutubeBtn" href="https://youtu.be/_fj5qm2m0K0?si=YlB1ofWNYIrlpiXH" target="_blank" class="px-3 py-1 bg-[#ff0000] text-white font-cyber font-bold text-[11px] rounded">YOUTUBE</a>
               <button onclick="setTrackBgm('original')" class="px-3 py-1 bg-neutral-800 hover:bg-neutral-700 text-lowlife-cyan font-cyber text-[11px] rounded">▶ PLAY IN WORLD</button>
             </div>
           </div>
@@ -241,8 +242,8 @@
               The extended edition contains bonus records not found on streaming portals. Bridges the gap between early experimental sound design and high-octane electronic bangers.
             </p>
             <div class="flex gap-2 mt-3">
-              <a href="https://open.spotify.com" target="_blank" class="px-3 py-1 bg-neutral-800 hover:bg-neutral-700 text-white font-cyber text-[11px] rounded">STREAM PROJECT</a>
-              <a href="https://forms.gle/TsE7MAHSD1erDca59" target="_blank" class="px-3 py-1 bg-lowlife-gold text-black font-cyber font-bold text-[11px] rounded">CLAIM CASSETTE</a>
+              <a id="discoArchiveBtn" href="https://clublowlife.dimensions.fm/retrocade-evolved" target="_blank" class="px-3 py-1 bg-neutral-800 hover:bg-neutral-700 text-white font-cyber text-[11px] rounded">STREAM PROJECT</a>
+              <a id="discoClaimBtn" href="https://forms.gle/TsE7MAHSD1erDca59" target="_blank" class="px-3 py-1 bg-lowlife-gold text-black font-cyber font-bold text-[11px] rounded">CLAIM CASSETTE</a>
             </div>
           </div>
         </div>
@@ -260,11 +261,11 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
           <div class="p-3 bg-neutral-900/60 border border-neutral-800 rounded">
             <h4 class="font-cyber font-bold text-white text-xs">777 // LIVING ON THE HIGHS</h4>
-            <p class="text-[11px] text-neutral-400 mt-1">High-stakes lyricism over pulsing electronic chords. This track samples Casino machines located in Las Vegas, Nevada</p>
+            <p class="text-[11px] text-neutral-400 mt-1">High-stakes lyricism over pulsing electronic chords. Samples casino machines located in Las Vegas, Nevada.</p>
           </div>
           <div class="p-3 bg-neutral-900/60 border border-neutral-800 rounded">
             <h4 class="font-cyber font-bold text-white text-xs">LOUD!</h4>
-            <p class="text-[11px] text-neutral-400 mt-1">Distorted 808s and energetic vocal delivery designed for live warehouse pits and raves. This EDM/Trap Hybrid track features huge synthy drops over trap percussion. Perfectly blending the 2 genres into 1</p>
+            <p class="text-[11px] text-neutral-400 mt-1">Distorted 808s and energetic vocal delivery designed for live warehouse pits and raves. EDM/Trap hybrid track.</p>
           </div>
           <div class="p-3 bg-neutral-900/60 border border-neutral-800 rounded">
             <h4 class="font-cyber font-bold text-white text-xs">MARTIAN UNIVERSITY</h4>
@@ -333,7 +334,6 @@
         <button onclick="closeModals()" class="text-neutral-400 hover:text-white p-1 text-lg">✕</button>
       </div>
 
-      <!-- DAW Control Toolbar: Play, Stop, BPM, Clear -->
       <div class="flex flex-wrap items-center justify-between gap-3 p-3 bg-black/70 rounded-lg border border-neutral-800 mb-4">
         <div class="flex items-center gap-2">
           <button id="dawPlayBtn" onclick="toggleDawPlayback()" class="px-4 py-1.5 bg-[#22c55e] hover:bg-green-600 text-black font-cyber font-bold text-xs rounded transition flex items-center gap-1">
@@ -544,27 +544,41 @@
         <button onclick="closeModals()" class="text-neutral-400 hover:text-white p-1 text-lg">✕</button>
       </div>
 
-      <div class="space-y-2.5 font-cyber text-sm">
-        <a href="https://open.spotify.com" target="_blank" class="flex items-center justify-between p-3.5 rounded-lg bg-black/60 border border-lowlife-cyan/40 hover:border-lowlife-cyan transition">
+      <div id="quickLinksContainer" class="space-y-2.5 font-cyber text-sm">
+        <a href="https://open.spotify.com/track/6jfPp34RiWhv8HUEfSpuhg?si=0d4c1e54e1fd4ee2" target="_blank" class="flex items-center justify-between p-3.5 rounded-lg bg-black/60 border border-lowlife-cyan/40 hover:border-lowlife-cyan transition">
           <div>
-            <div class="text-white font-bold">STREAM NEW SINGLE "DANCING"</div>
-            <div class="text-[11px] text-neutral-400 font-mono">Original + Slowed/Verb + Sped-Up</div>
+            <div class="text-white font-bold">STREAM 'DANCING' (SPOTIFY)</div>
+            <div class="text-[11px] text-neutral-400 font-mono">Single // Out Now Everywhere</div>
           </div>
           <span class="text-xs text-lowlife-cyan">LISTEN</span>
         </a>
+        <a href="https://music.apple.com/us/song/dancing/6824158392" target="_blank" class="flex items-center justify-between p-3.5 rounded-lg bg-black/60 border border-lowlife-cyan/40 hover:border-lowlife-cyan transition">
+          <div>
+            <div class="text-white font-bold">STREAM 'DANCING' (APPLE MUSIC)</div>
+            <div class="text-[11px] text-neutral-400 font-mono">High-Res Master Audio</div>
+          </div>
+          <span class="text-xs text-lowlife-cyan">LISTEN</span>
+        </a>
+        <a href="https://www.instagram.com/omglowlife" target="_blank" class="flex items-center justify-between p-3.5 rounded-lg bg-black/60 border border-neutral-700 hover:border-pink-500 transition">
+          <div>
+            <div class="text-white font-bold">INSTAGRAM SYNDICATE (@CLUBLOWLIFE)</div>
+            <div class="text-[11px] text-neutral-400 font-mono">Exclusive unreleased fits, VIP links, studio cuts</div>
+          </div>
+          <span class="text-xs text-pink-400">JOIN</span>
+        </a>
         <a href="https://forms.gle/TsE7MAHSD1erDca59" target="_blank" class="flex items-center justify-between p-3.5 rounded-lg bg-black/60 border border-lowlife-gold/40 hover:border-lowlife-gold transition">
           <div>
-            <div class="text-lowlife-gold font-bold">PHYSICAL CASSETTE GIVEAWAY</div>
+            <div class="text-lowlife-gold font-bold">CASSETTE TAPE GIVEAWAY CLAIM</div>
             <div class="text-[11px] text-neutral-400 font-mono">Claim address form for the 6 lucky winners</div>
           </div>
           <span class="text-xs text-lowlife-gold">CLAIM</span>
         </a>
-        <a href="https://instagram.com" target="_blank" class="flex items-center justify-between p-3.5 rounded-lg bg-black/60 border border-neutral-700 hover:border-pink-500 transition">
+        <a href="https://clublowlife.dimensions.fm/retrocade-evolved" target="_blank" class="flex items-center justify-between p-3.5 rounded-lg bg-black/60 border border-neutral-700 hover:border-lowlife-cyan transition">
           <div>
-            <div class="text-white font-bold">INSTAGRAM SYNDICATE CHANNEL</div>
-            <div class="text-[11px] text-neutral-400 font-mono">Exclusive unreleased fits, VIP links, studio cuts</div>
+            <div class="text-white font-bold">RETROCADE ARCHIVE</div>
+            <div class="text-[11px] text-neutral-400 font-mono">Explore the Retro Cade Evolved universe</div>
           </div>
-          <span class="text-xs text-pink-400">JOIN</span>
+          <span class="text-xs text-lowlife-cyan">VISIT</span>
         </a>
       </div>
     </div>
@@ -595,7 +609,7 @@
   <!-- 11. RETROCADE CASINO: LUCKY 777 // LIVING ON THE HIGHS SLOT MACHINE -->
   <div id="casinoModal" class="hidden fixed inset-0 z-50 bg-black/95 backdrop-blur-md flex items-center justify-center p-3 sm:p-5">
     <div class="relative w-full max-w-lg bg-[#140b22] border-2 border-pink-500 rounded-2xl p-5 shadow-[0_0_50px_rgba(236,72,153,0.5)] flex flex-col text-center">
-      <div class="flex items-center justify-between border-b border-pink-500/40 pb-3 mb-4">
+      <div class="flex items-center justify-between border-pink-500/40 pb-3 mb-4">
         <div class="flex items-center gap-2">
           <span class="text-2xl animate-bounce">🎰</span>
           <div class="text-left">
@@ -654,8 +668,137 @@
     </div>
   </div>
 
+  <!-- 12. VEHICLE TRUNK MERCH MODAL -->
+  <div id="merchModal" class="hidden fixed inset-0 z-50 bg-black/95 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="relative w-full max-w-md bg-lowlife-charcoal border-2 border-lowlife-cyan rounded-xl p-5 shadow-[0_0_40px_rgba(0,240,255,0.3)]">
+      <div class="flex items-center justify-between border-b border-neutral-800 pb-3 mb-4">
+        <div>
+          <h3 id="merchModalTitle" class="text-base font-cyber font-bold text-white uppercase tracking-wider">CAR TRUNK // ARCHIVE</h3>
+          <p class="text-xs text-neutral-400 font-mono">LIMITED PIECES SOURCED DIRECTLY FROM THE SYNDICATE</p>
+        </div>
+        <button onclick="closeModals()" class="text-neutral-400 hover:text-white p-1 text-lg">✕</button>
+      </div>
+
+      <div class="p-3 bg-black/70 border border-lowlife-cyan/40 rounded mb-3 flex items-center justify-between font-mono text-xs">
+        <span class="text-neutral-400">PROMO CODE:</span>
+        <span id="merchPromoCode" class="text-lowlife-cyan font-bold tracking-wider">LOWLIFE10 (10% OFF)</span>
+      </div>
+
+      <div id="merchItemsList" class="space-y-2.5 font-mono text-xs mb-4">
+        <div class="flex justify-between items-center p-2.5 bg-black/40 border border-neutral-800 rounded">
+          <span class="text-white font-cyber">Black Heavyweight Nirvana Tee</span>
+          <strong class="text-lowlife-cyan font-bold">$40</strong>
+        </div>
+        <div class="flex justify-between items-center p-2.5 bg-black/40 border border-neutral-800 rounded">
+          <span class="text-white font-cyber">White Heavyweight Nirvana Tee</span>
+          <strong class="text-lowlife-cyan font-bold">$40</strong>
+        </div>
+        <div class="flex justify-between items-center p-2.5 bg-black/40 border border-neutral-800 rounded">
+          <span class="text-white font-cyber">Club Lowlife Cassette Tape</span>
+          <strong class="text-lowlife-gold font-bold">$15</strong>
+        </div>
+      </div>
+
+      <a id="merchStoreLink" href="https://clublowlife.com" target="_blank" class="block w-full py-2.5 bg-lowlife-cyan hover:bg-white text-black font-cyber font-bold text-center text-xs rounded transition shadow-[0_0_15px_rgba(0,240,255,0.4)]">
+        ENTER MERCH STORE // CHECKOUT
+      </a>
+    </div>
+  </div>
+
   <!-- JAVASCRIPT: ENGINE, DUAL-UNIVERSE PORTALS, 2 FULL WORLDS, CASINO & AUDIO -->
   <script>
+    // ==============================================================
+    // CONFIG.JSON ASYNCHRONOUS AUTO-LOADER & MASTER DATA
+    // ==============================================================
+    let ACTIVE_CONFIG = {
+      music: {
+        featuredTrack: "DANCING",
+        status: "OUT NOW ON ALL PLATFORMS",
+        spotifyUrl: "https://open.spotify.com/track/6jfPp34RiWhv8HUEfSpuhg?si=0d4c1e54e1fd4ee2",
+        appleUrl: "https://music.apple.com/us/song/dancing/6824158392",
+        youtubeUrl: "https://youtu.be/_fj5qm2m0K0?si=YlB1ofWNYIrlpiXH"
+      },
+      giveawayFormUrl: "https://forms.gle/TsE7MAHSD1erDca59",
+      quickLinks: [
+        { label: "STREAM 'DANCING' (SPOTIFY)", url: "https://open.spotify.com/track/6jfPp34RiWhv8HUEfSpuhg?si=0d4c1e54e1fd4ee2" },
+        { label: "STREAM 'DANCING' (APPLE MUSIC)", url: "https://music.apple.com/us/song/dancing/6824158392" },
+        { label: "INSTAGRAM SYNDICATE (@CLUBLOWLIFE)", url: "https://www.instagram.com/omglowlife" },
+        { label: "CASSETTE TAPE GIVEAWAY CLAIM", url: "https://forms.gle/TsE7MAHSD1erDca59" },
+        { label: "RETROCADE ARCHIVE", url: "https://clublowlife.dimensions.fm/retrocade-evolved" }
+      ],
+      merchDrop: {
+        title: "CAR TRUNK // ARCHIVE",
+        discountCode: "LOWLIFE10",
+        storeUrl: "https://clublowlife.com",
+        items: [
+          { name: "Black Heavyweight Nirvana Tee", price: "$40" },
+          { name: "White Heavyweight Nirvana Tee", price: "$40" },
+          { name: "Club Lowlife Cassette Tape", price: "$15" }
+        ]
+      }
+    };
+
+    // Auto-fetch config.json to allow frictionless on-the-fly updates
+    async function loadConfigJson() {
+      try {
+        const res = await fetch(`config.json?v=${Date.now()}`);
+        if (res.ok) {
+          const data = await res.json();
+          ACTIVE_CONFIG = { ...ACTIVE_CONFIG, ...data };
+          applyConfigToDom();
+          console.log("Club Lowlife config.json loaded successfully.");
+        }
+      } catch (e) {
+        console.warn("Using built-in config fallback:", e);
+      }
+    }
+
+    function applyConfigToDom() {
+      // Discography buttons
+      const sp = document.getElementById('discoSpotifyBtn');
+      if (sp) sp.href = ACTIVE_CONFIG.music.spotifyUrl;
+      const ap = document.getElementById('discoAppleBtn');
+      if (ap) ap.href = ACTIVE_CONFIG.music.appleUrl;
+      const yt = document.getElementById('discoYoutubeBtn');
+      if (yt) yt.href = ACTIVE_CONFIG.music.youtubeUrl;
+      const cl = document.getElementById('discoClaimBtn');
+      if (cl) cl.href = ACTIVE_CONFIG.giveawayFormUrl;
+      const claimTapes = document.getElementById('claimTapesBtn');
+      if (claimTapes) claimTapes.href = ACTIVE_CONFIG.giveawayFormUrl;
+
+      // Merch Modal
+      const mt = document.getElementById('merchModalTitle');
+      if (mt && ACTIVE_CONFIG.merchDrop) mt.innerText = ACTIVE_CONFIG.merchDrop.title;
+      const mp = document.getElementById('merchPromoCode');
+      if (mp && ACTIVE_CONFIG.merchDrop) mp.innerText = `${ACTIVE_CONFIG.merchDrop.discountCode} (10% OFF)`;
+      const ml = document.getElementById('merchStoreLink');
+      if (ml && ACTIVE_CONFIG.merchDrop) ml.href = ACTIVE_CONFIG.merchDrop.storeUrl;
+
+      const mList = document.getElementById('merchItemsList');
+      if (mList && ACTIVE_CONFIG.merchDrop && ACTIVE_CONFIG.merchDrop.items) {
+        mList.innerHTML = ACTIVE_CONFIG.merchDrop.items.map(item => `
+          <div class="flex justify-between items-center p-2.5 bg-black/40 border border-neutral-800 rounded">
+            <span class="text-white font-cyber">${item.name}</span>
+            <strong class="text-lowlife-cyan font-bold">${item.price}</strong>
+          </div>
+        `).join('');
+      }
+
+      // Quick links
+      const qCont = document.getElementById('quickLinksContainer');
+      if (qCont && ACTIVE_CONFIG.quickLinks) {
+        qCont.innerHTML = ACTIVE_CONFIG.quickLinks.map(l => `
+          <a href="${l.url}" target="_blank" class="flex items-center justify-between p-3.5 rounded-lg bg-black/60 border border-lowlife-cyan/40 hover:border-lowlife-cyan transition">
+            <div>
+              <div class="text-white font-bold">${l.label}</div>
+              <div class="text-[11px] text-neutral-400 font-mono">Official Syndicate Gateway</div>
+            </div>
+            <span class="text-xs text-lowlife-cyan">VISIT</span>
+          </a>
+        `).join('');
+      }
+    }
+
     // ==============================================================
     // 1. DATA STATE, PROFILE & MULTIVERSE TRACKING
     // ==============================================================
@@ -901,11 +1044,6 @@
     const camera = { x: 0, y: 0, width: 0, height: 0 };
     const keys = { up: false, down: false, left: false, right: false };
 
-    // --- WORLD A: THE DYSTOPIAN UNDERGROUND SOLID OBSTACLES (WITH WIDE DOORWAYS) ---
-    // Sector 1: Disco (x: 28-360), Doorway at y: 350-380 (x: 150-250)
-    // Sector 2: Arcade (x: 360-740), Doorway at y: 350-380 (x: 510-610)
-    // Sector 3: Sound Lab (x: 740-1160), Doorway at y: 350-380 (x: 910-1010)
-    // Sector 4: Restroom (x: 1160-1572), Doorway at y: 350-380 (x: 1330-1430)
     const undergroundObstacles = [
       // Outer Perimeter Walls
       { x: 0, y: 0, width: WORLD_WIDTH, height: 28 },
@@ -913,32 +1051,27 @@
       { x: 0, y: 0, width: 28, height: WORLD_HEIGHT },
       { x: WORLD_WIDTH - 28, y: 0, width: 28, height: WORLD_HEIGHT },
 
-      // Main Corridor Wall with 100px Wide Doorway Openings
-      { x: 28, y: 350, width: 122, height: 30 },     // Door 1 at 150-250 (Disco Room)
-      { x: 250, y: 350, width: 260, height: 30 },    // Door 2 at 510-610 (Arcade Cab)
-      { x: 610, y: 350, width: 300, height: 30 },    // Door 3 at 910-1010 (Sound Lab)
-      { x: 1010, y: 350, width: 320, height: 30 },   // Door 4 at 1330-1430 (Restroom Mirror)
+      // Main Corridor Wall with 100px Wide Doorways
+      { x: 28, y: 350, width: 122, height: 30 },
+      { x: 250, y: 350, width: 260, height: 30 },
+      { x: 610, y: 350, width: 300, height: 30 },
+      { x: 1010, y: 350, width: 320, height: 30 },
       { x: 1430, y: 350, width: 142, height: 30 },
 
-      // Vertical Partition Walls with 100px Doorway Openings
-      { x: 360, y: 28, width: 20, height: 210 },     // Doorway at 238-350
-      { x: 740, y: 28, width: 20, height: 210 },     // Doorway at 238-350
-      { x: 1160, y: 28, width: 20, height: 210 },    // Doorway at 238-350
+      // Vertical Partition Walls with 100px Openings
+      { x: 360, y: 28, width: 20, height: 210 },
+      { x: 740, y: 28, width: 20, height: 210 },
+      { x: 1160, y: 28, width: 20, height: 210 },
 
       // Props (Walk-Around Bounding Boxes)
-      { x: 80, y: 150, width: 130, height: 70 },     // Discography Monolith
-      { x: 410, y: 150, width: 140, height: 70 },    // Arcade Machine Row
-      { x: 800, y: 150, width: 150, height: 70 },    // Mixing Console
-      { x: 1230, y: 150, width: 110, height: 70 },   // Restroom Sink/Mirror
-      { x: 300, y: 550, width: 150, height: 70 },    // Merch Vehicle
-      { x: 750, y: 650, width: 80, height: 60 }      // Holding CRT Station
+      { x: 80, y: 150, width: 130, height: 70 },
+      { x: 410, y: 150, width: 140, height: 70 },
+      { x: 800, y: 150, width: 150, height: 70 },
+      { x: 1230, y: 150, width: 110, height: 70 },
+      { x: 300, y: 550, width: 150, height: 70 },
+      { x: 750, y: 650, width: 80, height: 60 }
     ];
 
-    // --- WORLD B: THE RETROCADE UNIVERSE SOLID OBSTACLES (WITH WIDE ENTRANCES) ---
-    // Sector B1: Lucky 777 Casino (x: 28-480) with 120px entrance at 200-320
-    // Sector B2: Neon Arcade Palace (x: 480-1080) with 120px entrance at 730-850
-    // Sector B3: VIP Lounge (x: 1080-1572) with 120px entrance at 1280-1400
-    // Sector B4: Dance Club & Stage (Bottom Right, x: 1160-1540, y: 520-850) with 120px open entrance at 1160-1280
     const retrocadeObstacles = [
       // Outer Perimeter Walls
       { x: 0, y: 0, width: WORLD_WIDTH, height: 28 },
@@ -946,15 +1079,15 @@
       { x: 0, y: 0, width: 28, height: WORLD_HEIGHT },
       { x: WORLD_WIDTH - 28, y: 0, width: 28, height: WORLD_HEIGHT },
 
-      // Boulevard Dividing Wall with 120px Wide Entrances into Every Hall
-      { x: 28, y: 440, width: 172, height: 30 },     // Casino Entrance at 200-320
-      { x: 320, y: 440, width: 410, height: 30 },    // Arcade Palace Entrance at 730-850
-      { x: 850, y: 440, width: 430, height: 30 },    // VIP Lounge Entrance at 1280-1400
+      // Boulevard Dividing Wall with 120px Wide Entrances
+      { x: 28, y: 440, width: 172, height: 30 },
+      { x: 320, y: 440, width: 410, height: 30 },
+      { x: 850, y: 440, width: 430, height: 30 },
       { x: 1400, y: 440, width: 172, height: 30 },
 
       // Partition Walls with Wide Doorways
-      { x: 480, y: 28, width: 22, height: 300 },     // Entrance at 328-440
-      { x: 1080, y: 28, width: 22, height: 300 },    // Entrance at 328-440
+      { x: 480, y: 28, width: 22, height: 300 },
+      { x: 1080, y: 28, width: 22, height: 300 },
 
       // Casino Slot Banks
       { x: 100, y: 140, width: 220, height: 60 },
@@ -972,7 +1105,6 @@
       { x: 680, y: 620, width: 60, height: 60 }
     ];
 
-    // Dimensional Portals
     const portalToRetrocade = {
       x: 1440, y: 640, width: 80, height: 80,
       label: "DIMENSIONAL RIFT // WARP TO RETROCADE",
@@ -985,7 +1117,6 @@
       action: () => warpDimension('underground', 750, 500)
     };
 
-    // --- DANCING NPCS IN THE RETROCADE CLUB ---
     const clubDancers = [
       { id: "dj", name: "DJ LOWLIFE", x: 1350, y: 550, skin: "handler", role: "dj" },
       { id: "d1", name: "Syndicate Dancer", x: 1220, y: 660, skin: "enforcer", role: "dancer" },
@@ -995,7 +1126,6 @@
       { id: "d5", name: "VIP Regular", x: 1460, y: 650, skin: "enforcer", role: "dancer" }
     ];
 
-    // --- INTERACTIVE ZONES: WORLD A (DYSTOPIAN UNDERGROUND) ---
     const undergroundZones = [
       { id: 'disco_room', x: 70, y: 140, width: 160, height: 100, label: 'DISCOGRAPHY VAULT [ALBUMS & SINGLES]', action: openDiscoHub },
       { id: 'arcade_cab', x: 390, y: 140, width: 170, height: 100, label: 'RETRO ARCADE CAB [PLAY MINI-GAMES]', action: openArcadeHub },
@@ -1006,7 +1136,6 @@
       portalToRetrocade
     ];
 
-    // --- INTERACTIVE ZONES: WORLD B (RETROCADE UNIVERSE) ---
     const retrocadeZones = [
       { id: 'casino_slots', x: 90, y: 130, width: 240, height: 100, label: 'LUCKY 777 CASINO SLOTS [BET TOKENS]', action: openCasinoSlots },
       { id: 'retrocade_arcade', x: 540, y: 140, width: 440, height: 100, label: 'RETROCADE ARCADE PALACE [MINI-GAMES]', action: openArcadeHub },
@@ -1017,10 +1146,9 @@
     ];
 
     // ==============================================================
-    // 4. EXPANDED 12-CASSETTE ECOSYSTEM (6 LORE + 6 VIP GOLD STEMS)
+    // 4. EXPANDED 12-CASSETTE ECOSYSTEM
     // ==============================================================
     const crossUniverseCassettes = [
-      // --- WORLD A: THE DYSTOPIAN UNDERGROUND CASSETTES (3 Lore + 3 Gold) ---
       { id: 'lore1', dimension: 'underground', type: 'lore', x: 120, y: 280, title: "LORE TAPE 01: THE ARCHIVE GENESIS", desc: "Before the dark aesthetic, Retrocade was pure high-saturation neon synthwave and raw electronic trap. The shift into the cold underground was deliberate." },
       { id: 'lore2', dimension: 'underground', type: 'lore', x: 500, y: 280, title: "LORE TAPE 02: THE HOLDING CHAMBER", desc: "The bound captive in the metal folding chair is the previous creative self. Stripped of loud colors and held hostage in the static." },
       { id: 'lore3', dimension: 'underground', type: 'lore', x: 900, y: 280, title: "LORE TAPE 03: CASSHERN × BLADE PROTOCOL", desc: "Dystopian cyber-noir aesthetics: the heavy floor-length black duster, combat boots, and the reflective helmet obscuring true identity." },
@@ -1028,7 +1156,6 @@
       { id: 'gold2', dimension: 'underground', type: 'gold', x: 620, y: 780, title: "VIP DEMO: LIVING ON THE HIGHS (CLUB STEMS)", stemNote: "Analog synth lead arpeggio runs and stripped warehouse club percussion." },
       { id: 'gold3', dimension: 'underground', type: 'gold', x: 1100, y: 780, title: "VIP DEMO: LOUD! (SUB-BASS ISOLATION)", stemNote: "Heavyweight saturated 808 sub harmonic stems dialed specifically for high-output systems." },
 
-      // --- WORLD B: THE RETROCADE UNIVERSE CASSETTES (3 Lore + 3 Gold) ---
       { id: 'lore4', dimension: 'retrocade', type: 'lore', x: 220, y: 220, title: "LORE TAPE 04: THE CASINO HEIST OF '777'", desc: "The original Retrocade era peaked inside neon casinos and 16-bit arcades, fueled by high stakes and uncompromised tempo." },
       { id: 'lore5', dimension: 'retrocade', type: 'lore', x: 740, y: 220, title: "LORE TAPE 05: THE AFTERHOURS SYNDICATE", desc: "How the late-night listening community formed around the Retrocade bonfire sessions and underground DJ linkups." },
       { id: 'lore6', dimension: 'retrocade', type: 'lore', x: 1360, y: 220, title: "LORE TAPE 06: THE DIMENSIONAL SPLIT", desc: "The portal opens between past and future. The masked enforcer steps across time to preserve both musical timelines forever." },
@@ -1090,7 +1217,6 @@
       }
     });
 
-    // Rain for Dystopian Alleyway
     const rainParticles = [];
     for (let i = 0; i < 180; i++) {
       rainParticles.push({
@@ -1110,7 +1236,7 @@
     window.addEventListener('resize', resizeCanvas);
 
     // ==============================================================
-    // 6. MOVEMENT & COLLISION DETECTION (UNIVERSE-AWARE)
+    // 6. MOVEMENT & COLLISION DETECTION
     // ==============================================================
     window.addEventListener('keydown', (e) => {
       initAudio();
@@ -1167,7 +1293,6 @@
         player.isMoving = true;
         player.animTimer++;
 
-        // Sub-pixel X-axis sliding collision
         const newX = player.x + dx * player.speed;
         let collideX = false;
         const playerBoxX = { x: newX, y: player.y, width: player.width, height: player.height };
@@ -1179,7 +1304,6 @@
         }
         if (!collideX) player.x = newX;
 
-        // Sub-pixel Y-axis sliding collision
         const newY = player.y + dy * player.speed;
         let collideY = false;
         const playerBoxY = { x: player.x, y: newY, width: player.width, height: player.height };
@@ -1263,7 +1387,7 @@
     }
 
     // ==============================================================
-    // 7. WORLD DRAWING PIPELINE: TWO CONTRASTING REALITIES
+    // 7. WORLD DRAWING PIPELINE
     // ==============================================================
     function draw() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -1428,11 +1552,11 @@
         ctx.strokeRect(obs.x, obs.y, obs.width, obs.height);
       });
 
-      // Clear Doorways Floor Markings into Retrocade Rooms
+      // Clear Doorways Floor Markings
       ctx.fillStyle = 'rgba(250, 204, 21, 0.15)';
-      ctx.fillRect(200, 440, 120, 30); // Casino entrance
-      ctx.fillRect(730, 440, 120, 30); // Arcade palace entrance
-      ctx.fillRect(1280, 440, 120, 30); // VIP lounge entrance
+      ctx.fillRect(200, 440, 120, 30);
+      ctx.fillRect(730, 440, 120, 30);
+      ctx.fillRect(1280, 440, 120, 30);
 
       ctx.fillStyle = '#16082c';
       ctx.fillRect(28, 470, WORLD_WIDTH - 56, 502);
@@ -1528,7 +1652,6 @@
         const sway = Math.cos(time + d.y) * 3;
         drawAvatar(d.x + sway, d.y + bob, d.skin, 'down', true, Math.floor(time * 5));
 
-        // Floating dance music notes
         if (Math.sin(time + d.x * 2) > 0.4) {
           ctx.fillStyle = '#facc15';
           ctx.font = '10px "Share Tech Mono"';
@@ -1848,7 +1971,6 @@
       }
     }
 
-    // --- GAME 1: LOWLIFE INVADERS (GALAGA) ---
     let invadersState = null;
     function initInvaders() {
       if (miniGameLoopId) cancelAnimationFrame(miniGameLoopId);
@@ -1932,7 +2054,6 @@
       miniGameLoopId = requestAnimationFrame(runInvadersLoop);
     }
 
-    // Spacebar Shoot in Invaders & Jump in Runner
     window.addEventListener('keydown', (e) => {
       if (e.code === 'Space') {
         if (!document.getElementById('arcadeModal').classList.contains('hidden')) {
@@ -1949,7 +2070,6 @@
       }
     });
 
-    // --- GAME 2: PAC-ENFORCER (MAZE) ---
     let pacState = null;
     function initPacMan() {
       if (miniGameLoopId) cancelAnimationFrame(miniGameLoopId);
@@ -1976,7 +2096,6 @@
       if (keys.up && pacState.y > 30) pacState.y -= 4;
       if (keys.down && pacState.y < miniCanvas.height - 30) pacState.y += 4;
 
-      // Draw Dots
       miniCtx.fillStyle = '#facc15';
       pacState.dots.forEach(d => {
         if (d.active) {
@@ -1991,7 +2110,6 @@
         }
       });
 
-      // Draw Mini Pac-Avatar
       drawAvatar(pacState.x - 12, pacState.y - 18, userProfile.activeSkin, 'down', true, 0);
 
       miniCtx.fillStyle = '#fff';
@@ -2001,7 +2119,6 @@
       miniGameLoopId = requestAnimationFrame(runPacLoop);
     }
 
-    // --- GAME 3: DYSTOPIAN RUN (MARIO PLATFORMER) ---
     let runnerState = null;
     function initRunner() {
       if (miniGameLoopId) cancelAnimationFrame(miniGameLoopId);
@@ -2035,18 +2152,16 @@
       else if (keys.right) runnerState.vx = 4;
       else runnerState.vx *= 0.8;
 
-      runnerState.vy += 0.6; // Gravity
+      runnerState.vy += 0.6;
       runnerState.x += runnerState.vx;
       runnerState.y += runnerState.vy;
 
-      // Floor
       if (runnerState.y > 270) {
         runnerState.y = 270;
         runnerState.vy = 0;
         runnerState.grounded = true;
       }
 
-      // Blocks
       miniCtx.fillStyle = '#1b2233';
       runnerState.blocks.forEach(b => {
         miniCtx.fillRect(b.x, b.y, b.w, b.h);
@@ -2060,11 +2175,9 @@
         }
       });
 
-      // Ground
       miniCtx.fillStyle = '#11151f';
       miniCtx.fillRect(0, 306, miniCanvas.width, 54);
 
-      // Coins
       miniCtx.fillStyle = '#facc15';
       runnerState.coins.forEach(c => {
         if (!c.taken) {
@@ -2104,7 +2217,6 @@
       Array(16).fill(false)
     ];
 
-    // Default Club Lowlife Trap Bounce Preset
     dawGrid[0][0] = true; dawGrid[0][8] = true;
     dawGrid[1][4] = true; dawGrid[1][12] = true;
     dawGrid[2][2] = true; dawGrid[2][6] = true; dawGrid[2][10] = true; dawGrid[2][14] = true;
@@ -2165,7 +2277,6 @@
       if (!audioCtx) return;
       const now = audioCtx.currentTime;
 
-      // Track 0: 808 Kick
       if (dawGrid[0][step]) {
         const osc = audioCtx.createOscillator();
         const g = audioCtx.createGain();
@@ -2177,7 +2288,6 @@
         osc.start(now); osc.stop(now + 0.25);
       }
 
-      // Track 1: Snare / Clap
       if (dawGrid[1][step]) {
         const osc = audioCtx.createOscillator();
         const g = audioCtx.createGain();
@@ -2190,7 +2300,6 @@
         osc.start(now); osc.stop(now + 0.15);
       }
 
-      // Track 2: Hi-Hat
       if (dawGrid[2][step]) {
         const osc = audioCtx.createOscillator();
         const g = audioCtx.createGain();
@@ -2202,7 +2311,6 @@
         osc.start(now); osc.stop(now + 0.05);
       }
 
-      // Track 3: Synth Stab
       if (dawGrid[3][step]) {
         const osc = audioCtx.createOscillator();
         const g = audioCtx.createGain();
@@ -2370,8 +2478,7 @@
     }
 
     function openMerchHub() {
-      showToast("OPENING VEHICLE TRUNK // ARCHIVE CLEARANCE...");
-      window.open('https://instagram.com', '_blank');
+      document.getElementById('merchModal').classList.remove('hidden');
     }
 
     function openHoldingLore() {
@@ -2473,6 +2580,7 @@
     window.onload = function () {
       resizeCanvas();
       loadProfile();
+      loadConfigJson();
       gameLoop();
     };
   </script>
