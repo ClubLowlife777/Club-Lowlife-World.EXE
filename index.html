@@ -47,12 +47,14 @@
       user-select: none;
       -webkit-user-select: none;
       -webkit-touch-callout: none;
-      touch-action: none;
     }
     body, html {
       margin: 0; padding: 0; width: 100%; height: 100%;
       overflow: hidden; background-color: #050608;
       font-family: 'Share Tech Mono', monospace; color: #e2e8f0;
+    }
+    canvas {
+      touch-action: none;
     }
     .crt-overlay {
       pointer-events: none; position: absolute; inset: 0; z-index: 40;
@@ -177,32 +179,32 @@
     </div>
   </main>
 
-  <!-- MOBILE ON-SCREEN TOUCH CONTROLS -->
-  <div id="touchControls" class="sm:hidden pointer-events-none absolute inset-x-0 bottom-6 z-30 px-5 flex items-end justify-between">
+  <!-- ON-SCREEN CONTROLS -->
+  <div id="touchControls" class="pointer-events-none absolute inset-x-0 bottom-6 z-30 px-5 flex items-end justify-between">
     <!-- Virtual 360 Analog Joystick Base -->
-    <div id="joystickZone" class="pointer-events-auto relative w-28 h-28 rounded-full bg-black/50 border border-lowlife-border/80 backdrop-blur-md flex items-center justify-center shadow-inner">
+    <div id="joystickZone" class="pointer-events-auto relative w-28 h-28 rounded-full bg-black/50 border border-lowlife-border/80 backdrop-blur-md flex items-center justify-center shadow-inner" style="touch-action: none;">
       <div class="absolute inset-0 rounded-full border border-lowlife-cyan/20"></div>
       <div id="joystickKnob" class="w-12 h-12 rounded-full bg-gradient-to-br from-lowlife-cyan to-blue-700 opacity-80 border-2 border-white shadow-[0_0_15px_rgba(0,240,255,0.6)] transform translate-x-0 translate-y-0 transition-transform duration-75"></div>
     </div>
 
     <!-- Combat & Action Cluster -->
     <div class="pointer-events-auto flex items-end gap-2">
-      <!-- Projectile Plasma Attack Button -->
-      <button id="btnShoot" class="relative w-14 h-14 p-2 rounded-full bg-black/70 border-2 border-lowlife-cyan text-lowlife-cyan active:scale-95 font-cyber font-bold text-[10px] flex flex-col items-center justify-center shadow-[0_0_12px_rgba(0,240,255,0.4)] backdrop-blur transition">
+      <!-- Projectile Plasma Attack Button (Tap: Fast bolt / Hold: Heavy AOE Orb) -->
+      <button id="btnShoot" class="relative w-14 h-14 p-2 rounded-full bg-black/70 border-2 border-lowlife-cyan text-lowlife-cyan active:scale-95 font-cyber font-bold text-[10px] flex flex-col items-center justify-center shadow-[0_0_12px_rgba(0,240,255,0.4)] backdrop-blur transition cursor-pointer">
         <span id="btnShootLabel">FIRE</span>
         <span class="text-[8px] font-mono text-neutral-400">[J]</span>
         <div id="btnShootChargeFill" class="absolute inset-0 rounded-full bg-lowlife-cyan/30 opacity-0 transition-opacity pointer-events-none"></div>
       </button>
 
       <!-- Melee Tactical Slash Button (3-Hit Combo + Fast 2.5s Purple Charge) -->
-      <button id="btnSlash" class="relative w-16 h-16 p-2 rounded-full bg-black/70 border-2 border-lowlife-red text-lowlife-red active:scale-95 font-cyber font-bold text-xs flex flex-col items-center justify-center shadow-[0_0_15px_rgba(255,0,60,0.5)] backdrop-blur transition">
+      <button id="btnSlash" class="relative w-16 h-16 p-2 rounded-full bg-black/70 border-2 border-lowlife-red text-lowlife-red active:scale-95 font-cyber font-bold text-xs flex flex-col items-center justify-center shadow-[0_0_15px_rgba(255,0,60,0.5)] backdrop-blur transition cursor-pointer">
         <span id="btnSlashLabel">SLASH</span>
         <span id="btnSlashSub" class="text-[8px] font-mono text-neutral-400">[K]</span>
         <div id="btnSlashChargeRing" class="absolute inset-0 rounded-full border-2 border-purple-500 opacity-0 transition-opacity pointer-events-none"></div>
       </button>
 
-      <!-- Adaptive Contextual Interact Button -->
-      <button id="btnAction" class="btn-action-idle w-14 h-14 p-2 rounded-full border-2 font-cyber font-bold text-[10px] flex flex-col items-center justify-center backdrop-blur transition-all duration-200 active:scale-95">
+      <!-- Adaptive Contextual Interact Button (Morphs Blue -> Purple) -->
+      <button id="btnAction" class="btn-action-idle w-14 h-14 p-2 rounded-full border-2 font-cyber font-bold text-[10px] flex flex-col items-center justify-center backdrop-blur transition-all duration-200 active:scale-95 cursor-pointer">
         <span id="btnActionLabel">ACTION</span>
         <span id="btnActionSub" class="text-[8px] font-mono text-neutral-300">[E]</span>
       </button>
@@ -264,7 +266,7 @@
               <span class="text-[9px] text-lowlife-cyan border border-lowlife-cyan/40 px-1.5 py-0.5 rounded font-cyber">OUT NOW</span>
             </div>
             <p class="text-neutral-300 text-[11px] mt-1 leading-relaxed">
-              The flagship single introducing the Blade x Casshern Sins dystopian timeline. A sharp fusion of electronic dance bounce and melodic rap flows.
+              The flagship single introducing the Blade x Casshern Sins dystopian timeline[cite: 1]. A sharp fusion of electronic dance bounce and melodic rap flows[cite: 1].
             </p>
             <div class="flex flex-wrap gap-1.5 mt-2.5">
               <a href="https://open.spotify.com/track/6jfPp34RiWhv8HUEfSpuhg" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 bg-[#1DB954] text-black font-cyber font-bold text-[10px] rounded">SPOTIFY</a>
@@ -401,34 +403,17 @@
     </div>
   </div>
 
-  <!-- JAVASCRIPT MASTER BUNDLE: 3 WORLDS, ELABORATE SLASHES, FAST CHARGE, NPC AI -->
+  <!-- JAVASCRIPT MASTER BUNDLE -->
   <script>
     // ==============================================================
-    // 1. MULTIVERSE WORLD CONFIGURATION
-    // ==============================================================
-    let currentDimension = 'underground'; // 'underground', 'retrocade', 'wasteland'
-
-    const DIMENSIONS = {
-      underground: { name: "UNDERGROUND", width: 1600, height: 1000 },
-      retrocade: { name: "RETROCADE NEON", width: 1600, height: 1000 },
-      wasteland: { name: "RUINED GRID", width: 3200, height: 2400 }
-    };
-
-    function switchDimension(dimKey, spawnX, spawnY) {
-      currentDimension = dimKey;
-      const cfg = DIMENSIONS[dimKey];
-      player.x = spawnX; 
-      player.y = spawnY;
-      
-      const badge = document.getElementById('dimensionBadge');
-      if (badge) badge.innerText = `DIMENSION: ${cfg.name}`;
-      showToast(`WARPED TO ${cfg.name}! 🌀`);
-    }
-
-    // ==============================================================
-    // 2. PERSISTENT PROFILE & CASSETTE PROGRESSION
+    // 1. DATA, CONFIG & GLOBALS (DECLARED BEFORE INITIALIZATION)
     // ==============================================================
     const RARE_TAPES_THRESHOLD = 50;
+
+    const SKINS_DATA = [
+      { id: 'enforcer', name: 'THE NEW ERA ENFORCER', desc: 'Default trench coat.' },
+      { id: 'drifter', name: 'THE WASTELAND DRIFTER', desc: 'Unlocked from Obsolete Vault Safe.' }
+    ];
 
     const DEFAULT_PROFILE = {
       handle: "Enforcer_Guest",
@@ -441,49 +426,122 @@
 
     let userProfile = { ...DEFAULT_PROFILE };
 
-    function loadProfile() {
-      try {
-        const saved = localStorage.getItem('club_lowlife_save');
-        if (saved) userProfile = { ...DEFAULT_PROFILE, ...JSON.parse(saved) };
-      } catch (e) {}
-      updateHudProfile();
-      renderSkins();
-    }
+    let currentDimension = 'underground'; // 'underground', 'retrocade', 'wasteland'
 
-    function saveProfile() {
-      try { localStorage.setItem('club_lowlife_save', JSON.stringify(userProfile)); } catch (e) {}
-      updateHudProfile();
-    }
+    const DIMENSIONS = {
+      underground: { name: "UNDERGROUND", width: 1600, height: 1000 },
+      retrocade: { name: "RETROCADE NEON", width: 1600, height: 1000 },
+      wasteland: { name: "RUINED GRID", width: 3200, height: 2400 }
+    };
 
-    function updateHudProfile() {
-      document.getElementById('casinoTokensCount').innerText = userProfile.casinoTokens;
-      document.getElementById('rareBattleTapeCount').innerText = `${userProfile.collectedRareTapes}/${RARE_TAPES_THRESHOLD}`;
-      
-      const gatedProgressText = document.getElementById('gatedTapeProgress');
-      if (gatedProgressText) gatedProgressText.innerText = `${userProfile.collectedRareTapes} / ${RARE_TAPES_THRESHOLD} TAPES`;
-      const gatedBar = document.getElementById('gatedProgressBar');
-      if (gatedBar) {
-        const pct = Math.min(100, Math.floor((userProfile.collectedRareTapes / RARE_TAPES_THRESHOLD) * 100));
-        gatedBar.style.width = `${pct}%`;
-      }
-      const gatedMsg = document.getElementById('gatedStatusMessage');
-      const gatedBtn = document.getElementById('gatedProceedBtn');
-      if (gatedMsg && gatedBtn) {
-        if (userProfile.collectedRareTapes >= RARE_TAPES_THRESHOLD) {
-          gatedMsg.className = "text-xs font-mono text-green-400 mb-4";
-          gatedMsg.innerText = "ACCESS GRANTED // NEURAL LINK DECONTAMINATED // DIMENSIONAL PASS ACTIVE";
-          gatedBtn.className = "flex-1 py-2 bg-gradient-to-r from-lowlife-cyan to-pink-500 hover:opacity-90 text-black font-cyber font-bold text-xs rounded transition cursor-pointer";
-        } else {
-          gatedMsg.className = "text-xs font-mono text-red-400 mb-4";
-          gatedMsg.innerText = `ACCESS RESTRICTED // REQUIRE ${RARE_TAPES_THRESHOLD - userProfile.collectedRareTapes} MORE RARE BATTLE CASSETTES`;
-          gatedBtn.className = "flex-1 py-2 bg-neutral-800 text-neutral-500 font-cyber font-bold text-xs rounded cursor-not-allowed";
-        }
-      }
+    // Canvas & Camera
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+
+    const player = {
+      x: 320, y: 750, width: 24, height: 38, speed: 4.8,
+      direction: 'down', isMoving: false, animTimer: 0,
+      hp: 100, maxHp: 100, iFrames: 0,
+      knockbackVx: 0, knockbackVy: 0
+    };
+
+    const camera = { x: 0, y: 0, width: 0, height: 0 };
+    const keys = { up: false, down: false, left: false, right: false };
+    const analogVector = { x: 0, y: 0, active: false };
+
+    // ==============================================================
+    // 2. WORLD OBSTACLES, DOORS, CHESTS & ZONES
+    // ==============================================================
+    const undergroundObstacles = [
+      { x: 0, y: 0, width: 1600, height: 28 }, { x: 0, y: 972, width: 1600, height: 28 },
+      { x: 0, y: 0, width: 28, height: 1000 }, { x: 1572, y: 0, width: 28, height: 1000 },
+      { x: 28, y: 350, width: 1300, height: 30 }, { x: 360, y: 28, width: 20, height: 210 }
+    ];
+
+    const retrocadeObstacles = [
+      { x: 0, y: 0, width: 1600, height: 28 }, { x: 0, y: 972, width: 1600, height: 28 },
+      { x: 0, y: 0, width: 28, height: 1000 }, { x: 1572, y: 0, width: 28, height: 1000 },
+      { x: 28, y: 440, width: 1300, height: 30 }, { x: 480, y: 28, width: 22, height: 300 }
+    ];
+
+    const worldObstacles = [
+      { x: 0, y: 0, width: 3200, height: 40 },
+      { x: 0, y: 2360, width: 3200, height: 40 },
+      { x: 0, y: 0, width: 40, height: 2400 },
+      { x: 3160, y: 0, width: 40, height: 2400 },
+      { x: 1200, y: 900, width: 350, height: 160, label: "COMMERCE MONOLITH" },
+      { x: 1750, y: 900, width: 350, height: 160, label: "REFINERY ANNEX" },
+      { x: 500, y: 1350, width: 360, height: 260, label: "SUBSTANCE SILO 07" },
+      { x: 2300, y: 1350, width: 380, height: 260, label: "CASSETTE PRESSING RUINS" },
+      { x: 200, y: 600, width: 20, height: 300 }, { x: 200, y: 600, width: 250, height: 20 },
+      { x: 200, y: 900, width: 250, height: 20 }, { x: 450, y: 600, width: 20, height: 100 }, { x: 450, y: 800, width: 20, height: 120 }
+    ];
+
+    const destructibleDoors = [
+      { id: "pipeline_breach", x: 450, y: 700, width: 20, height: 100, hp: 120, maxHp: 120, shattered: false, label: "DRAINAGE BREACH [120 HP]" }
+    ];
+
+    const environmentalHazards = [
+      { x: 880, y: 1450, radius: 45, type: 'steam' },
+      { x: 2050, y: 1400, width: 220, height: 280, type: 'ribbon_sludge' }
+    ];
+
+    const lootChests = [
+      { id: "chest_common_1", x: 1450, y: 1120, width: 32, height: 24, type: "common", label: "SYNDICATE SUPPLY CRATE", opened: false },
+      { id: "chest_silo_biohazard", x: 520, y: 1760, width: 36, height: 28, type: "biohazard", label: "DECOMMISSIONED STASH", opened: false },
+      { id: "chest_pipeline_secret", x: 240, y: 740, width: 36, height: 28, type: "vault", label: "OBSOLETE VAULT LOCKER", opened: false }
+    ];
+
+    const undergroundZones = [
+      { id: 'disco_room', x: 70, y: 140, width: 160, height: 100, label: 'DISCOGRAPHY VAULT', action: () => document.getElementById('discoModal').classList.remove('hidden') },
+      { id: 'portal_retrocade', x: 1440, y: 640, width: 80, height: 80, label: 'WARP: RETROCADE NEON', action: () => switchDimension('retrocade', 750, 750) }
+    ];
+
+    const retrocadeZones = [
+      { id: 'portal_underground', x: 100, y: 840, width: 80, height: 80, label: 'WARP: UNDERGROUND', action: () => switchDimension('underground', 320, 750) },
+      { id: 'portal_wasteland', x: 750, y: 840, width: 80, height: 80, label: 'WARP: WASTELAND RUINS', action: () => switchDimension('wasteland', 1600, 1200) }
+    ];
+
+    const wastelandZones = [
+      { id: 'portal_retrocade_back', x: 1600, y: 2300, width: 80, height: 80, label: 'WARP: RETROCADE', action: () => switchDimension('retrocade', 750, 750) },
+      { id: 'trunk_drop', x: 520, y: 1300, width: 140, height: 70, label: 'BURNED-OUT TRUNK // MERCH DROP', action: () => document.getElementById('merchModal').classList.remove('hidden') },
+      { id: 'broadcast_relay', x: 1530, y: 810, width: 140, height: 70, label: 'STATIC BROADCAST RELAY', action: () => document.getElementById('relayModal').classList.remove('hidden') },
+      { id: 'cassette_drop', x: 2350, y: 1300, width: 140, height: 70, label: 'CASSETTE AIR-DROP [CLAIM FORM]', action: () => document.getElementById('cassetteClaimModal').classList.remove('hidden') },
+      { id: 'gated_rift', x: 1520, y: 150, width: 160, height: 100, label: 'NEURAL EXTRACTION GATE [50 TAPES]', action: () => document.getElementById('gatedModal').classList.remove('hidden') }
+    ];
+
+    // Rain in Underground
+    const rainParticles = [];
+    for (let i = 0; i < 120; i++) {
+      rainParticles.push({
+        x: Math.random() * 1600, y: Math.random() * 1000,
+        len: 8 + Math.random() * 6, spd: 10 + Math.random() * 6
+      });
     }
 
     // ==============================================================
-    // 3. AUDIO ENGINE & PROCEDURAL SYNTHESIZER
+    // 3. COMBAT DATA & AUDIO ENGINE
     // ==============================================================
+    const projectiles = [];
+    const enemyProjectiles = [];
+    const meleeSlashes = [];
+    const enemyMeleeSlashes = [];
+    const explosions = [];
+
+    let projectileCooldown = 0;
+    let isChargingShoot = false;
+    let shootChargeStartTime = 0;
+
+    let comboStep = 0;
+    let lastSlashTapTime = 0;
+    const COMBO_RESET_WINDOW_MS = 900;
+    let isHoldingSlash = false;
+    let slashHoldStartTime = 0;
+
+    const npcs = [];
+    const MAX_NPCS = 22;
+    const lootPickups = [];
+
     let audioCtx = null, isBgmPlaying = false, bgmMasterGain = null, bgmStepIndex = 0, bgmTimer = null, bgmTempo = 130, bgmVersion = 'original';
     const noirBassNotes = [110, 110, 130.81, 146.83, 164.81, 146.83, 130.81, 110, 98, 98, 110, 130.81, 146.83, 130.81, 123.47, 98];
 
@@ -615,104 +673,81 @@
     }
 
     // ==============================================================
-    // 4. MAPS, OBSTACLES & WORLD DATA
+    // 4. USER PROFILE & SAVING
     // ==============================================================
-    const undergroundObstacles = [
-      { x: 0, y: 0, width: 1600, height: 28 }, { x: 0, y: 972, width: 1600, height: 28 },
-      { x: 0, y: 0, width: 28, height: 1000 }, { x: 1572, y: 0, width: 28, height: 1000 },
-      { x: 28, y: 350, width: 1300, height: 30 }, { x: 360, y: 28, width: 20, height: 210 }
-    ];
+    function loadProfile() {
+      try {
+        const saved = localStorage.getItem('club_lowlife_save');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          userProfile = Object.assign({}, DEFAULT_PROFILE, parsed);
+          if (!Array.isArray(userProfile.unlockedSkins)) userProfile.unlockedSkins = ["enforcer"];
+          if (!Array.isArray(userProfile.chestsOpened)) userProfile.chestsOpened = [];
+        }
+      } catch (e) {
+        console.warn("Storage load error:", e);
+      }
+      updateHudProfile();
+      renderSkins();
+    }
 
-    const retrocadeObstacles = [
-      { x: 0, y: 0, width: 1600, height: 28 }, { x: 0, y: 972, width: 1600, height: 28 },
-      { x: 0, y: 0, width: 28, height: 1000 }, { x: 1572, y: 0, width: 28, height: 1000 },
-      { x: 28, y: 440, width: 1300, height: 30 }, { x: 480, y: 28, width: 22, height: 300 }
-    ];
+    function saveProfile() {
+      try { localStorage.setItem('club_lowlife_save', JSON.stringify(userProfile)); } catch (e) {}
+      updateHudProfile();
+    }
 
-    const worldObstacles = [
-      { x: 0, y: 0, width: 3200, height: 40 },
-      { x: 0, y: 2360, width: 3200, height: 40 },
-      { x: 0, y: 0, width: 40, height: 2400 },
-      { x: 3160, y: 0, width: 40, height: 2400 },
-      { x: 1200, y: 900, width: 350, height: 160, label: "COMMERCE MONOLITH" },
-      { x: 1750, y: 900, width: 350, height: 160, label: "REFINERY ANNEX" },
-      { x: 500, y: 1350, width: 360, height: 260, label: "SUBSTANCE SILO 07" },
-      { x: 2300, y: 1350, width: 380, height: 260, label: "CASSETTE PRESSING RUINS" },
-      { x: 200, y: 600, width: 20, height: 300 }, { x: 200, y: 600, width: 250, height: 20 },
-      { x: 200, y: 900, width: 250, height: 20 }, { x: 450, y: 600, width: 20, height: 100 }, { x: 450, y: 800, width: 20, height: 120 }
-    ];
+    function updateHudProfile() {
+      try {
+        document.getElementById('casinoTokensCount').innerText = userProfile.casinoTokens;
+        document.getElementById('rareBattleTapeCount').innerText = `${userProfile.collectedRareTapes}/${RARE_TAPES_THRESHOLD}`;
+        
+        const gatedProgressText = document.getElementById('gatedTapeProgress');
+        if (gatedProgressText) gatedProgressText.innerText = `${userProfile.collectedRareTapes} / ${RARE_TAPES_THRESHOLD} TAPES`;
+        const gatedBar = document.getElementById('gatedProgressBar');
+        if (gatedBar) {
+          const pct = Math.min(100, Math.floor((userProfile.collectedRareTapes / RARE_TAPES_THRESHOLD) * 100));
+          gatedBar.style.width = `${pct}%`;
+        }
+        const gatedMsg = document.getElementById('gatedStatusMessage');
+        const gatedBtn = document.getElementById('gatedProceedBtn');
+        if (gatedMsg && gatedBtn) {
+          if (userProfile.collectedRareTapes >= RARE_TAPES_THRESHOLD) {
+            gatedMsg.className = "text-xs font-mono text-green-400 mb-4";
+            gatedMsg.innerText = "ACCESS GRANTED // NEURAL LINK DECONTAMINATED // DIMENSIONAL PASS ACTIVE";
+            gatedBtn.className = "flex-1 py-2 bg-gradient-to-r from-lowlife-cyan to-pink-500 hover:opacity-90 text-black font-cyber font-bold text-xs rounded transition cursor-pointer";
+          } else {
+            gatedMsg.className = "text-xs font-mono text-red-400 mb-4";
+            gatedMsg.innerText = `ACCESS RESTRICTED // REQUIRE ${RARE_TAPES_THRESHOLD - userProfile.collectedRareTapes} MORE RARE BATTLE CASSETTES`;
+            gatedBtn.className = "flex-1 py-2 bg-neutral-800 text-neutral-500 font-cyber font-bold text-xs rounded cursor-not-allowed";
+          }
+        }
+      } catch (err) {}
+    }
 
-    const destructibleDoors = [
-      { id: "pipeline_breach", x: 450, y: 700, width: 20, height: 100, hp: 120, maxHp: 120, shattered: false, label: "DRAINAGE BREACH [120 HP]" }
-    ];
+    function renderSkins() {
+      const list = document.getElementById('skinsList'); 
+      if (!list) return;
+      list.innerHTML = '';
+      SKINS_DATA.forEach(s => {
+        const isUnlocked = userProfile.unlockedSkins.includes(s.id);
+        const isEquipped = userProfile.activeSkin === s.id;
+        const item = document.createElement('div');
+        item.className = `p-2.5 rounded border flex justify-between items-center ${isEquipped ? 'border-lowlife-cyan bg-lowlife-cyan/10' : (isUnlocked ? 'border-neutral-700 bg-black/60' : 'border-neutral-900 bg-neutral-950 opacity-50')}`;
+        item.innerHTML = `<div><div class="font-cyber font-bold text-white">${s.name} ${isEquipped ? '<span class="text-[9px] bg-lowlife-cyan text-black px-1 rounded ml-1">EQUIPPED</span>' : ''}</div><div class="text-[10px] text-neutral-400">${s.desc}</div></div><div>${isUnlocked ? (isEquipped ? '' : `<button onclick="equipSkin('${s.id}')" class="px-2 py-1 bg-neutral-800 text-white rounded text-xs cursor-pointer">EQUIP</button>`) : '<span class="text-[9px] text-red-400 font-mono">[LOCKED]</span>'}</div>`;
+        list.appendChild(item);
+      });
+    }
 
-    const environmentalHazards = [
-      { x: 880, y: 1450, radius: 45, type: 'steam' },
-      { x: 2050, y: 1400, width: 220, height: 280, type: 'ribbon_sludge' }
-    ];
-
-    const lootChests = [
-      { id: "chest_common_1", x: 1450, y: 1120, width: 32, height: 24, type: "common", label: "SYNDICATE SUPPLY CRATE", opened: false },
-      { id: "chest_silo_biohazard", x: 520, y: 1760, width: 36, height: 28, type: "biohazard", label: "DECOMMISSIONED STASH", opened: false },
-      { id: "chest_pipeline_secret", x: 240, y: 740, width: 36, height: 28, type: "vault", label: "OBSOLETE VAULT LOCKER", opened: false }
-    ];
-
-    // Portals & Interactive Zones
-    const undergroundZones = [
-      { id: 'disco_room', x: 70, y: 140, width: 160, height: 100, label: 'DISCOGRAPHY VAULT', action: () => document.getElementById('discoModal').classList.remove('hidden') },
-      { id: 'portal_retrocade', x: 1440, y: 640, width: 80, height: 80, label: 'WARP: RETROCADE NEON', action: () => switchDimension('retrocade', 750, 750) }
-    ];
-
-    const retrocadeZones = [
-      { id: 'portal_underground', x: 100, y: 840, width: 80, height: 80, label: 'WARP: UNDERGROUND', action: () => switchDimension('underground', 320, 750) },
-      { id: 'portal_wasteland', x: 750, y: 840, width: 80, height: 80, label: 'WARP: WASTELAND RUINS', action: () => switchDimension('wasteland', 1600, 1200) }
-    ];
-
-    const wastelandZones = [
-      { id: 'portal_retrocade_back', x: 1600, y: 2300, width: 80, height: 80, label: 'WARP: RETROCADE', action: () => switchDimension('retrocade', 750, 750) },
-      { id: 'trunk_drop', x: 520, y: 1300, width: 140, height: 70, label: 'BURNED-OUT TRUNK // MERCH DROP', action: () => document.getElementById('merchModal').classList.remove('hidden') },
-      { id: 'broadcast_relay', x: 1530, y: 810, width: 140, height: 70, label: 'STATIC BROADCAST RELAY', action: () => document.getElementById('relayModal').classList.remove('hidden') },
-      { id: 'cassette_drop', x: 2350, y: 1300, width: 140, height: 70, label: 'CASSETTE AIR-DROP [CLAIM FORM]', action: () => document.getElementById('cassetteClaimModal').classList.remove('hidden') },
-      { id: 'gated_rift', x: 1520, y: 150, width: 160, height: 100, label: 'NEURAL EXTRACTION GATE [50 TAPES]', action: () => document.getElementById('gatedModal').classList.remove('hidden') }
-    ];
-
-    // ==============================================================
-    // 5. CANVAS AND PLAYER SETUP
-    // ==============================================================
-    const canvas = document.getElementById('gameCanvas');
-    const ctx = canvas.getContext('2d');
-
-    // PLAYER STARTS AT (320, 750) INSIDE THE UNDERGROUND WORLD
-    const player = {
-      x: 320, y: 750, width: 24, height: 38, speed: 4.8,
-      direction: 'down', isMoving: false, animTimer: 0,
-      hp: 100, maxHp: 100, iFrames: 0,
-      knockbackVx: 0, knockbackVy: 0
-    };
-
-    const camera = { x: 0, y: 0, width: 0, height: 0 };
-    const keys = { up: false, down: false, left: false, right: false };
-    const analogVector = { x: 0, y: 0, active: false };
+    function equipSkin(id) {
+      userProfile.activeSkin = id;
+      saveProfile();
+      renderSkins();
+      showToast(`EQUIPPED SKIN: ${id.toUpperCase()}`);
+    }
 
     // ==============================================================
-    // 6. ELABORATE COMBAT SYSTEM (3-HIT COMBO + FAST 2.5s PURPLE CHARGE)
+    // 5. COMBAT SYSTEM: ATTACK ROUTINES & 2.5s PURPLE CHARGE
     // ==============================================================
-    const projectiles = [];
-    const enemyProjectiles = [];
-    const meleeSlashes = [];
-    const enemyMeleeSlashes = [];
-    const explosions = [];
-
-    let projectileCooldown = 0;
-    let isChargingShoot = false;
-    let shootChargeStartTime = 0;
-
-    let comboStep = 0;
-    let lastSlashTapTime = 0;
-    const COMBO_RESET_WINDOW_MS = 900;
-    let isHoldingSlash = false;
-    let slashHoldStartTime = 0;
-
     function startShootInput() {
       initAudio();
       if (Date.now() < projectileCooldown) return;
@@ -830,7 +865,7 @@
       else if (player.direction === 'left') slashX -= offset;
       else if (player.direction === 'right') slashX += offset;
 
-      // FAST 2.5 SECOND CHARGE THRESHOLD FOR COSMIC PURPLE SLASH
+      // FAST 2.5-SECOND CHARGE THRESHOLD FOR PURPLE CHARGE
       if (seconds >= 2.5) {
         playSfx('magicPurple');
         meleeSlashes.push({
@@ -850,7 +885,9 @@
           }
         });
 
-        checkDestructibleDoors(slashX, slashY, 80, 160, true);
+        if (currentDimension === 'wasteland') {
+          checkDestructibleDoors(slashX, slashY, 80, 160, true);
+        }
         showToast("COSMIC PURPLE SLASH! PROXIMITY SHOCKWAVE DISCHARGED! ⚡💜");
       } else if (seconds >= 1.2) {
         playSfx('slash3');
@@ -1040,12 +1077,8 @@
     }
 
     // ==============================================================
-    // 7. ENEMY NPC AI & LOOT
+    // 6. ENEMY NPC AI & LOOT ENGINE
     // ==============================================================
-    const npcs = [];
-    const MAX_NPCS = 22;
-    const lootPickups = [];
-
     for (let c = 0; c < 35; c++) {
       lootPickups.push({
         x: 200 + Math.random() * (3200 - 400),
@@ -1080,9 +1113,6 @@
         knockbackVx: 0, knockbackVy: 0
       });
     }
-
-    for (let i = 0; i < 15; i++) spawnNpc();
-    setInterval(spawnNpc, 3500);
 
     function damageNpc(npc, amount, knockDir) {
       if (!npc.alive) return;
@@ -1169,7 +1199,7 @@
           }
 
           const nBoxX = { x: npc.x + moveVx, y: npc.y, width: npc.width, height: npc.height };
-          const nBoxY = { x: npc.x + moveVy, width: npc.width, height: npc.height, y: npc.y };
+          const nBoxY = { x: npc.x, width: npc.width, height: npc.height, y: npc.y + moveVy };
           let colX = false, colY = false;
 
           for (let obs of worldObstacles) {
@@ -1234,7 +1264,7 @@
     }
 
     // ==============================================================
-    // 8. CONTROLS & JOYSTICK
+    // 7. INPUT LISTENERS (POINTER EVENTS FOR ALL BUTTONS)
     // ==============================================================
     const joystickZone = document.getElementById('joystickZone');
     const joystickKnob = document.getElementById('joystickKnob');
@@ -1243,20 +1273,24 @@
 
     function handleJoystickStart(e) {
       initAudio();
-      for (let t of e.changedTouches) {
+      for (let t of (e.changedTouches || [e])) {
         if (joystickTouchId === null) {
-          joystickTouchId = t.identifier; updateJoystick(t.clientX, t.clientY); break;
+          joystickTouchId = t.identifier !== undefined ? t.identifier : 'mouse';
+          updateJoystick(t.clientX, t.clientY); 
+          break;
         }
       }
     }
     function handleJoystickMove(e) {
-      for (let t of e.changedTouches) {
-        if (t.identifier === joystickTouchId) { updateJoystick(t.clientX, t.clientY); break; }
+      for (let t of (e.changedTouches || [e])) {
+        const id = t.identifier !== undefined ? t.identifier : 'mouse';
+        if (id === joystickTouchId) { updateJoystick(t.clientX, t.clientY); break; }
       }
     }
     function handleJoystickEnd(e) {
-      for (let t of e.changedTouches) {
-        if (t.identifier === joystickTouchId) {
+      for (let t of (e.changedTouches || [e])) {
+        const id = t.identifier !== undefined ? t.identifier : 'mouse';
+        if (id === joystickTouchId) {
           joystickTouchId = null; analogVector.x = 0; analogVector.y = 0; analogVector.active = false;
           joystickKnob.style.transform = `translate(0px, 0px)`; break;
         }
@@ -1274,18 +1308,21 @@
       else { analogVector.active = false; analogVector.x = 0; analogVector.y = 0; }
     }
 
-    joystickZone.addEventListener('touchstart', handleJoystickStart, { passive: false });
-    window.addEventListener('touchmove', handleJoystickMove, { passive: false });
-    window.addEventListener('touchend', handleJoystickEnd, { passive: false });
-    window.addEventListener('touchcancel', handleJoystickEnd, { passive: false });
+    joystickZone.addEventListener('pointerdown', handleJoystickStart);
+    window.addEventListener('pointermove', handleJoystickMove);
+    window.addEventListener('pointerup', handleJoystickEnd);
+    window.addEventListener('pointercancel', handleJoystickEnd);
 
+    // Multi-device Pointer Events for Combat Buttons
     const btnShoot = document.getElementById('btnShoot');
-    btnShoot.addEventListener('touchstart', (e) => { e.preventDefault(); startShootInput(); });
-    btnShoot.addEventListener('touchend', (e) => { e.preventDefault(); releaseShootInput(); });
+    btnShoot.addEventListener('pointerdown', (e) => { e.preventDefault(); startShootInput(); });
+    btnShoot.addEventListener('pointerup', (e) => { e.preventDefault(); releaseShootInput(); });
+    btnShoot.addEventListener('pointercancel', (e) => { releaseShootInput(); });
 
     const btnSlash = document.getElementById('btnSlash');
-    btnSlash.addEventListener('touchstart', (e) => { e.preventDefault(); startSlashInput(); });
-    btnSlash.addEventListener('touchend', (e) => { e.preventDefault(); releaseSlashInput(); });
+    btnSlash.addEventListener('pointerdown', (e) => { e.preventDefault(); startSlashInput(); });
+    btnSlash.addEventListener('pointerup', (e) => { e.preventDefault(); releaseSlashInput(); });
+    btnSlash.addEventListener('pointercancel', (e) => { releaseSlashInput(); });
 
     document.getElementById('btnAction').addEventListener('click', triggerActiveInteraction);
     document.getElementById('quickWarpBtn').addEventListener('click', () => {
@@ -1316,7 +1353,7 @@
     });
 
     // ==============================================================
-    // 9. PLAYER UPDATE & PROXIMITY DETECTION
+    // 8. PLAYER MOVEMENT & WORLD PROXIMITY
     // ==============================================================
     let activeZone = null;
     let activeChest = null;
@@ -1453,8 +1490,19 @@
       }
     }
 
+    function switchDimension(dimKey, spawnX, spawnY) {
+      currentDimension = dimKey;
+      const cfg = DIMENSIONS[dimKey];
+      player.x = spawnX; 
+      player.y = spawnY;
+      
+      const badge = document.getElementById('dimensionBadge');
+      if (badge) badge.innerText = `DIMENSION: ${cfg.name}`;
+      showToast(`WARPED TO ${cfg.name}! 🌀`);
+    }
+
     // ==============================================================
-    // 10. MULTI-WORLD RENDERING PIPELINE
+    // 9. RENDERING ENGINES FOR ALL 3 WORLDS
     // ==============================================================
     function draw() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -1473,9 +1521,22 @@
     }
 
     function drawUndergroundWorld() {
+      // Background & Walls
       ctx.fillStyle = '#080a0f'; ctx.fillRect(0, 0, 1600, 1000);
       ctx.fillStyle = '#1b2233';
       undergroundObstacles.forEach(obs => ctx.fillRect(obs.x, obs.y, obs.width, obs.height));
+
+      // Rain particles
+      ctx.strokeStyle = 'rgba(0, 240, 255, 0.2)';
+      ctx.lineWidth = 1;
+      rainParticles.forEach(p => {
+        ctx.beginPath();
+        ctx.moveTo(p.x, p.y);
+        ctx.lineTo(p.x - 2, p.y + p.len);
+        ctx.stroke();
+        p.y += p.spd;
+        if (p.y > 1000) p.y = 0;
+      });
 
       // Portal to Retrocade
       drawPortal(1440, 640, '#ec4899', '#00f0ff', "RETROCADE RIFT");
@@ -1486,21 +1547,38 @@
       ctx.fillStyle = '#fff'; ctx.font = '10px "Share Tech Mono"';
       ctx.fillText("ALBUM CATALOG", 95, 180); ctx.fillText("[ENTER ARCHIVE]", 95, 200);
 
-      drawAvatar(player.x, player.y, player.direction, player.isMoving, player.animTimer);
+      drawCombat();
+      if (player.iFrames % 4 < 2) drawAvatar(player.x, player.y, player.direction, player.isMoving, player.animTimer);
     }
 
     function drawRetrocadeWorld() {
+      // Neon 40px grid floor
       ctx.fillStyle = '#120524'; ctx.fillRect(0, 0, 1600, 1000);
+      ctx.strokeStyle = 'rgba(236, 72, 153, 0.15)'; ctx.lineWidth = 1;
+      for (let x = 0; x < 1600; x += 40) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, 1000); ctx.stroke(); }
+      for (let y = 0; y < 1000; y += 40) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(1600, y); ctx.stroke(); }
+
       ctx.fillStyle = '#2b104a';
       retrocadeObstacles.forEach(obs => {
         ctx.fillRect(obs.x, obs.y, obs.width, obs.height);
         ctx.strokeStyle = '#ec4899'; ctx.strokeRect(obs.x, obs.y, obs.width, obs.height);
       });
 
+      // Dancefloor tiles
+      const time = Date.now() / 300;
+      for (let tx = 1180; tx < 1520; tx += 40) {
+        for (let ty = 620; ty < 820; ty += 40) {
+          const hue = (tx + ty + time * 60) % 360;
+          ctx.fillStyle = `hsla(${hue}, 80%, 50%, 0.25)`;
+          ctx.fillRect(tx, ty, 36, 36);
+        }
+      }
+
       drawPortal(100, 840, '#00f0ff', '#ff003c', "UNDERGROUND RIFT");
       drawPortal(750, 840, '#ffb300', '#ec4899', "WASTELANDS RIFT");
 
-      drawAvatar(player.x, player.y, player.direction, player.isMoving, player.animTimer);
+      drawCombat();
+      if (player.iFrames % 4 < 2) drawAvatar(player.x, player.y, player.direction, player.isMoving, player.animTimer);
     }
 
     function drawWastelandWorld() {
@@ -1513,18 +1591,33 @@
         if (h.type === 'ribbon_sludge') {
           ctx.fillStyle = '#050608'; ctx.fillRect(h.x, h.y, h.width, h.height);
           ctx.strokeStyle = '#181d28'; ctx.strokeRect(h.x, h.y, h.width, h.height);
+          ctx.fillStyle = '#4b5563'; ctx.font = '10px "Share Tech Mono"';
+          ctx.fillText("MAGNETIC CASSETTE RIBBON SLUDGE (-40% SPD)", h.x + 10, h.y + 20);
+        } else if (h.type === 'steam') {
+          const plumeTime = (Date.now() / 300) % Math.PI;
+          ctx.fillStyle = 'rgba(255, 177, 0, 0.15)';
+          ctx.beginPath();
+          ctx.arc(h.x, h.y, h.radius + Math.sin(plumeTime) * 6, 0, Math.PI * 2);
+          ctx.fill();
         }
       });
 
       worldObstacles.forEach(obs => {
         ctx.fillStyle = '#0f141f'; ctx.fillRect(obs.x, obs.y, obs.width, obs.height);
         ctx.strokeStyle = '#262c3d'; ctx.strokeRect(obs.x, obs.y, obs.width, obs.height);
+        if (obs.label) {
+          ctx.fillStyle = '#4b5563'; ctx.font = 'bold 10px "Share Tech Mono"';
+          ctx.fillText(`// ${obs.label}`, obs.x + 12, obs.y + 24);
+        }
       });
 
       destructibleDoors.forEach(d => {
         if (!d.shattered) {
           ctx.fillStyle = '#2b1016'; ctx.fillRect(d.x, d.y, d.width, d.height);
           ctx.strokeStyle = '#ff003c'; ctx.lineWidth = 2.5; ctx.strokeRect(d.x, d.y, d.width, d.height);
+          const hpPct = d.hp / d.maxHp;
+          ctx.fillStyle = '#ff003c';
+          ctx.fillRect(d.x, d.y, d.width * hpPct, 4);
         }
       });
 
@@ -1536,13 +1629,16 @@
         } else {
           ctx.fillStyle = 'rgba(0, 240, 255, 0.12)'; ctx.fillRect(z.x, z.y, z.width, z.height);
           ctx.strokeStyle = '#00f0ff'; ctx.strokeRect(z.x, z.y, z.width, z.height);
+          ctx.fillStyle = '#ffffff'; ctx.font = '9px "Share Tech Mono"';
+          ctx.fillText(`[E] ${z.label}`, z.x + 6, z.y + 36);
         }
       });
 
       lootChests.forEach(c => {
-        ctx.fillStyle = c.opened ? '#1f2937' : (c.type === 'vault' ? '#2e1065' : '#082f49');
+        ctx.fillStyle = c.opened ? '#1f2937' : (c.type === 'vault' ? '#2e1065' : c.type === 'biohazard' ? '#3b2204' : '#082f49');
         ctx.fillRect(c.x, c.y, c.width, c.height);
-        ctx.strokeStyle = c.type === 'vault' ? '#a855f7' : '#00f0ff'; ctx.strokeRect(c.x, c.y, c.width, c.height);
+        ctx.strokeStyle = c.type === 'vault' ? '#a855f7' : c.type === 'biohazard' ? '#f59e0b' : '#00f0ff'; 
+        ctx.strokeRect(c.x, c.y, c.width, c.height);
       });
 
       lootPickups.forEach(p => {
@@ -1554,6 +1650,14 @@
         if (!npc.alive) return;
         ctx.fillStyle = npc.type === 'drone' ? '#00f0ff' : '#ff003c';
         ctx.fillRect(npc.x, npc.y, npc.width, npc.height);
+        if (npc.state === 'aggro') {
+          ctx.fillStyle = '#ff003c'; ctx.font = 'bold 14px "Share Tech Mono"';
+          ctx.fillText("!", npc.x + 8, npc.y - 14);
+        }
+        const hpPct = Math.max(0, npc.hp / npc.maxHp);
+        ctx.fillStyle = '#111'; ctx.fillRect(npc.x - 2, npc.y - 8, npc.width + 4, 4);
+        ctx.fillStyle = npc.hp < 25 ? '#ff003c' : '#22c55e';
+        ctx.fillRect(npc.x - 2, npc.y - 8, (npc.width + 4) * hpPct, 4);
       });
 
       drawCombat();
@@ -1572,9 +1676,6 @@
       ctx.fillText(label, px - 10, py + 95);
     }
 
-    // ==============================================================
-    // 11. ELABORATE COMBAT VISUALS
-    // ==============================================================
     function drawCombat() {
       projectiles.forEach(p => {
         ctx.save(); ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2); ctx.fill(); ctx.restore();
@@ -1583,31 +1684,29 @@
         ctx.save(); ctx.fillStyle = '#ff003c'; ctx.beginPath(); ctx.arc(ep.x, ep.y, ep.radius, 0, Math.PI * 2); ctx.fill(); ctx.restore();
       });
 
-      // MULTI-LAYERED ARTISTIC SLASH ANIMATIONS
+      // ELABORATE MULTI-LAYERED SLASH ANIMATIONS
       meleeSlashes.forEach(s => {
-        ctx.save();
+        ctx.save(); 
         ctx.strokeStyle = s.color;
         ctx.lineWidth = s.type === 'magic_purple' ? 6 : s.type === 'heavy_cleave' ? 5 : 3.5;
 
         if (s.type === 'stab') {
-          // HIT 1: Sharp Piercing Spearhead Thrust
-          ctx.beginPath();
-          ctx.moveTo(player.x + player.width / 2, player.y + player.height / 2);
-          ctx.lineTo(s.x, s.y);
+          // Sharp Piercing Spearhead Thrust
+          ctx.beginPath(); 
+          ctx.moveTo(player.x + player.width/2, player.y + player.height/2); 
+          ctx.lineTo(s.x, s.y); 
           ctx.stroke();
 
-          // Outer energy barb
           ctx.lineWidth = 1.5;
           ctx.beginPath();
           ctx.arc(s.x, s.y, 6, 0, Math.PI * 2);
           ctx.stroke();
         } else if (s.type === 'reverse_arc') {
-          // HIT 2: Sweeping Crescent Moon Blade
-          ctx.beginPath();
-          ctx.arc(s.x, s.y, s.radius, 0, Math.PI * 1.4);
+          // Sweeping Crescent Moon Blade
+          ctx.beginPath(); 
+          ctx.arc(s.x, s.y, s.radius, 0, Math.PI * 1.4); 
           ctx.stroke();
 
-          // Particle tail trace
           ctx.lineWidth = 1.5;
           ctx.beginPath();
           ctx.arc(s.x, s.y, s.radius - 6, 0, Math.PI * 1.2);
@@ -1620,11 +1719,9 @@
           else if (s.dir === 'down') { sa = Math.PI * 0.1; ea = Math.PI * 0.9; }
           else if (s.dir === 'left') { sa = Math.PI * 0.6; ea = Math.PI * 1.4; }
           else if (s.dir === 'right') { sa = -Math.PI * 0.4; ea = Math.PI * 0.4; }
-
-          ctx.arc(s.x, s.y, s.radius, sa, ea);
+          ctx.arc(s.x, s.y, s.radius, sa, ea); 
           ctx.stroke();
 
-          // Double layered energy ring for purple / cleave attacks
           if (s.type === 'magic_purple' || s.type === 'heavy_cleave') {
             ctx.lineWidth = 2;
             ctx.beginPath();
@@ -1666,24 +1763,9 @@
       else if (direction === 'right') ctx.fillRect(px + 14, py + 6, 5, 3);
     }
 
-    const SKINS_DATA = [
-      { id: 'enforcer', name: 'THE NEW ERA ENFORCER', desc: 'Default trench coat.' },
-      { id: 'drifter', name: 'THE WASTELAND DRIFTER', desc: 'Unlocked from Obsolete Vault Safe.' }
-    ];
-
-    function renderSkins() {
-      const list = document.getElementById('skinsList'); if (!list) return;
-      list.innerHTML = '';
-      SKINS_DATA.forEach(s => {
-        const isUnlocked = userProfile.unlockedSkins.includes(s.id);
-        const isEquipped = userProfile.activeSkin === s.id;
-        const item = document.createElement('div');
-        item.className = `p-2.5 rounded border flex justify-between items-center ${isEquipped ? 'border-lowlife-cyan bg-lowlife-cyan/10' : (isUnlocked ? 'border-neutral-700 bg-black/60' : 'border-neutral-900 bg-neutral-950 opacity-50')}`;
-        item.innerHTML = `<div><div class="font-cyber font-bold text-white">${s.name}</div><div class="text-[10px] text-neutral-400">${s.desc}</div></div><div>${isUnlocked ? (isEquipped ? '' : `<button onclick="userProfile.activeSkin='${s.id}';saveProfile();renderSkins();showToast('EQUIPPED');" class="px-2 py-1 bg-neutral-800 text-white rounded text-xs">EQUIP</button>`) : '[LOCKED]'}</div>`;
-        list.appendChild(item);
-      });
-    }
-
+    // ==============================================================
+    // 10. ENGINE INITIALIZATION & GAME LOOP
+    // ==============================================================
     function gameLoop() {
       try {
         updatePlayer();
@@ -1695,24 +1777,48 @@
         camera.x = Math.max(0, Math.min(cfg.width - camera.width, camera.x));
         camera.y = Math.max(0, Math.min(cfg.height - camera.height, camera.y));
         draw();
-      } catch (err) { console.error("Game loop error:", err); }
+      } catch (err) { 
+        console.error("Game loop error:", err); 
+      }
       requestAnimationFrame(gameLoop);
     }
 
-    function closeModals() { document.querySelectorAll('.fixed').forEach(m => m.classList.add('hidden')); }
+    function resizeCanvas() {
+      const w = window.innerWidth || document.documentElement.clientWidth || 1600;
+      const h = window.innerHeight || document.documentElement.clientHeight || 1000;
+      canvas.width = w;
+      canvas.height = h;
+      camera.width = w;
+      camera.height = h;
+    }
+
+    function closeModals() { 
+      document.querySelectorAll('.fixed').forEach(m => m.classList.add('hidden')); 
+    }
     
     function showToast(msg) {
-      const t = document.getElementById('toastMessage'); if (!t) return;
+      const t = document.getElementById('toastMessage'); 
+      if (!t) return;
       t.innerText = msg; t.style.opacity = '1'; t.style.transform = 'translateY(0)';
       setTimeout(() => { t.style.opacity = '0'; t.style.transform = 'translateY(12px)'; }, 2200);
     }
 
-    window.onload = function () {
-      resizeCanvas(); 
-      loadProfile(); 
-      updatePlayerHealthUI(); 
+    // Top Nav Listeners
+    document.getElementById('bgmToggleBtn').addEventListener('click', toggleBgm);
+    document.getElementById('trackVersionSelect').addEventListener('change', (e) => setTrackBgm(e.target.value));
+    document.getElementById('openLinksModalBtn').addEventListener('click', () => document.getElementById('linksModal').classList.remove('hidden'));
+    document.getElementById('openSkinsBtn').addEventListener('click', () => document.getElementById('skinsModal').classList.remove('hidden'));
+
+    // Safe multi-event startup sequence
+    window.addEventListener('DOMContentLoaded', () => {
+      resizeCanvas();
+      loadProfile();
+      updatePlayerHealthUI();
       gameLoop();
-    };
+      setInterval(spawnNpc, 3500);
+    });
+
+    window.addEventListener('resize', resizeCanvas);
   </script>
 </body>
 </html>
