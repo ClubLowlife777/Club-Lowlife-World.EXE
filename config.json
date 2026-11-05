@@ -2,19 +2,20 @@
   "music": {
     "featuredTrack": "DANCING",
     "status": "OUT NOW ON ALL PLATFORMS",
-    "spotifyUrl": "https://open.spotify.com/track/6jfPp34RiWhv8HUEfSpuhg?si=0d4c1e54e1fd4ee2",
-    "appleUrl": "https://music.apple.com/us/song/dancing/6824158392",
-    "youtubeUrl": "https://youtu.be/_fj5qm2m0K0?si=YlB1ofWNYIrlpiXH"
+    "spotifyUrl": "https://open.spotify.com/track/6jfPp34RiWhv8HUEfSpuhg",
+    "appleUrl": "https://music.apple.com/album/dancing/6824158392",
+    "youtubeUrl": "https://www.youtube.com/watch?v=_fj5qm2m0K0",
+    "universalUrl": "https://clublowlife.dimensions.fm/dancing"
   },
   "giveawayFormUrl": "https://forms.gle/TsE7MAHSD1erDca59",
   "quickLinks": [
     {
       "label": "STREAM 'DANCING' (SPOTIFY)",
-      "url": "https://open.spotify.com/track/6jfPp34RiWhv8HUEfSpuhg?si=0d4c1e54e1fd4ee2"
+      "url": "https://open.spotify.com/track/6jfPp34RiWhv8HUEfSpuhg"
     },
     {
       "label": "STREAM 'DANCING' (APPLE MUSIC)",
-      "url": "https://music.apple.com/us/song/dancing/6824158392"
+      "url": "https://music.apple.com/album/dancing/6824158392"
     },
     {
       "label": "STREAM 'DANCING' (EVERYWHERE ELSE)",
