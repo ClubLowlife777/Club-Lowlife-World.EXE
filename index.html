@@ -91,7 +91,7 @@
 </head>
 <body class="bg-lowlife-black text-white antialiased flex flex-col justify-between select-none">
 
-  <!-- CRT Scanlines & Screen Vignette -->
+  <!-- CRT Scanlines & Vignette -->
   <div id="crtOverlay" class="crt-overlay"></div>
   <div class="crt-vignette"></div>
 
@@ -189,21 +189,21 @@
 
     <!-- Combat & Action Cluster -->
     <div class="pointer-events-auto flex items-end gap-2">
-      <!-- Projectile Plasma Attack Button (Tap: Fast bolt / Hold: Heavy AOE Orb) -->
+      <!-- Projectile Plasma Attack Button -->
       <button id="btnShoot" class="relative w-14 h-14 p-2 rounded-full bg-black/70 border-2 border-lowlife-cyan text-lowlife-cyan active:scale-95 font-cyber font-bold text-[10px] flex flex-col items-center justify-center shadow-[0_0_12px_rgba(0,240,255,0.4)] backdrop-blur transition">
         <span id="btnShootLabel">FIRE</span>
         <span class="text-[8px] font-mono text-neutral-400">[J]</span>
         <div id="btnShootChargeFill" class="absolute inset-0 rounded-full bg-lowlife-cyan/30 opacity-0 transition-opacity pointer-events-none"></div>
       </button>
 
-      <!-- Melee Tactical Slash Button (3-Hit Combo + Fast 2.5s Purple Charge) -->
+      <!-- Melee Tactical Slash Button -->
       <button id="btnSlash" class="relative w-16 h-16 p-2 rounded-full bg-black/70 border-2 border-lowlife-red text-lowlife-red active:scale-95 font-cyber font-bold text-xs flex flex-col items-center justify-center shadow-[0_0_15px_rgba(255,0,60,0.5)] backdrop-blur transition">
         <span id="btnSlashLabel">SLASH</span>
         <span id="btnSlashSub" class="text-[8px] font-mono text-neutral-400">[K]</span>
         <div id="btnSlashChargeRing" class="absolute inset-0 rounded-full border-2 border-purple-500 opacity-0 transition-opacity pointer-events-none"></div>
       </button>
 
-      <!-- Adaptive Contextual Interact Button (Morphs Blue -> Purple) -->
+      <!-- Adaptive Contextual Interact Button -->
       <button id="btnAction" class="btn-action-idle w-14 h-14 p-2 rounded-full border-2 font-cyber font-bold text-[10px] flex flex-col items-center justify-center backdrop-blur transition-all duration-200 active:scale-95">
         <span id="btnActionLabel">ACTION</span>
         <span id="btnActionSub" class="text-[8px] font-mono text-neutral-300">[E]</span>
@@ -211,11 +211,7 @@
     </div>
   </div>
 
-  <!-- ============================================================== -->
-  <!-- MODALS: GATED RIFT, DISCOGRAPHY, LINKS, TRUNK, RELICS, CASSETTE -->
-  <!-- ============================================================== -->
-
-  <!-- GATED PORTAL MODAL -->
+  <!-- MODALS -->
   <div id="gatedModal" class="hidden fixed inset-0 z-50 bg-black/95 backdrop-blur-md flex items-center justify-center p-4">
     <div class="relative w-full max-w-md bg-lowlife-charcoal border-2 border-lowlife-gold rounded-xl p-5 shadow-[0_0_40px_rgba(255,179,0,0.4)] text-center font-mono">
       <div class="w-16 h-16 mx-auto mb-3 bg-lowlife-gold/10 border-2 border-lowlife-gold rounded-full flex items-center justify-center text-3xl">🌌</div>
@@ -247,7 +243,6 @@
     </div>
   </div>
 
-  <!-- DISCOGRAPHY VAULT MODAL -->
   <div id="discoModal" class="hidden fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-3 sm:p-5">
     <div class="relative w-full max-w-2xl bg-lowlife-charcoal border border-lowlife-border rounded-xl p-4 sm:p-5 max-h-[88vh] flex flex-col">
       <div class="flex items-center justify-between border-b border-neutral-800 pb-3 mb-3">
@@ -266,7 +261,7 @@
               <span class="text-[9px] text-lowlife-cyan border border-lowlife-cyan/40 px-1.5 py-0.5 rounded font-cyber">OUT NOW</span>
             </div>
             <p class="text-neutral-300 text-[11px] mt-1 leading-relaxed">
-              The flagship single introducing the Blade x Casshern Sins dystopian timeline[cite: 2]. A sharp fusion of electronic dance bounce and melodic rap flows[cite: 2].
+              The flagship single introducing the Blade x Casshern Sins dystopian timeline[cite: 4]. A sharp fusion of electronic dance bounce and melodic rap flows[cite: 4].
             </p>
             <div class="flex flex-wrap gap-1.5 mt-2.5">
               <a href="https://open.spotify.com/track/6jfPp34RiWhv8HUEfSpuhg" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 bg-[#1DB954] text-black font-cyber font-bold text-[10px] rounded">SPOTIFY</a>
@@ -280,7 +275,6 @@
     </div>
   </div>
 
-  <!-- DIRECTORY LINKS MODAL -->
   <div id="linksModal" class="hidden fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-3 sm:p-4">
     <div class="relative w-full max-w-sm bg-lowlife-charcoal border border-neutral-700 rounded-xl p-4 sm:p-5 shadow-2xl max-h-[88vh] overflow-y-auto">
       <div class="flex items-center justify-between border-b border-neutral-800 pb-2.5 mb-3">
@@ -323,7 +317,6 @@
     </div>
   </div>
 
-  <!-- WASTELAND MERCH TRUNK DROP MODAL -->
   <div id="merchModal" class="hidden fixed inset-0 z-50 bg-black/95 backdrop-blur-md flex items-center justify-center p-3 sm:p-4">
     <div class="relative w-full max-w-sm bg-lowlife-charcoal border-2 border-lowlife-cyan rounded-xl p-4 sm:p-5 shadow-[0_0_30px_rgba(0,240,255,0.3)]">
       <div class="flex items-center justify-between border-b border-neutral-800 pb-2.5 mb-3">
@@ -343,7 +336,6 @@
     </div>
   </div>
 
-  <!-- STATIC BROADCAST RELAY TERMINAL MODAL -->
   <div id="relayModal" class="hidden fixed inset-0 z-50 bg-black/95 backdrop-blur-md flex items-center justify-center p-4">
     <div class="relative w-full max-w-md bg-lowlife-charcoal border-2 border-lowlife-cyan rounded-xl p-5 shadow-[0_0_40px_rgba(0,240,255,0.4)] text-center font-mono">
       <div class="w-16 h-16 mx-auto mb-3 bg-lowlife-cyan/10 border-2 border-lowlife-cyan rounded-full flex items-center justify-center text-3xl">📡</div>
@@ -372,7 +364,6 @@
     </div>
   </div>
 
-  <!-- PHYSICAL CASSETTE CLAIM MODAL -->
   <div id="cassetteClaimModal" class="hidden fixed inset-0 z-50 bg-black/95 backdrop-blur-md flex items-center justify-center p-4">
     <div class="relative w-full max-w-md bg-lowlife-charcoal border-2 border-lowlife-gold rounded-xl p-5 shadow-[0_0_40px_rgba(255,179,0,0.4)] text-center font-mono">
       <div class="w-16 h-16 mx-auto mb-3 bg-lowlife-gold/10 border-2 border-lowlife-gold rounded-full flex items-center justify-center text-3xl">📼</div>
@@ -392,7 +383,6 @@
     </div>
   </div>
 
-  <!-- LOCKER MODAL -->
   <div id="skinsModal" class="hidden fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-3">
     <div class="relative w-full max-w-sm bg-lowlife-charcoal border border-lowlife-border rounded-xl p-4 max-h-[85vh] flex flex-col">
       <div class="flex items-center justify-between border-b border-neutral-800 pb-2 mb-3">
@@ -403,7 +393,7 @@
     </div>
   </div>
 
-  <!-- JAVASCRIPT MASTER BUNDLE: 3 WORLDS, ELABORATE SLASHES, FAST CHARGE, NPC AI -->
+  <!-- JAVASCRIPT MASTER BUNDLE -->
   <script>
     // ==============================================================
     // MULTIVERSE WORLD CONFIGURATION
@@ -631,10 +621,10 @@
     ];
 
     const worldObstacles = [
-      { x: 0, y: 0, width: WORLD_WIDTH, height: 40 },
-      { x: 0, y: WORLD_HEIGHT - 40, width: WORLD_WIDTH, height: 40 },
-      { x: 0, y: 0, width: 40, height: WORLD_HEIGHT },
-      { x: WORLD_WIDTH - 40, y: 0, width: 40, height: WORLD_HEIGHT },
+      { x: 0, y: 0, width: 3200, height: 40 },
+      { x: 0, y: 2360, width: 3200, height: 40 },
+      { x: 0, y: 0, width: 40, height: 2400 },
+      { x: 3160, y: 0, width: 40, height: 2400 },
       { x: 1200, y: 900, width: 350, height: 160, label: "COMMERCE MONOLITH" },
       { x: 1750, y: 900, width: 350, height: 160, label: "REFINERY ANNEX" },
       { x: 500, y: 1350, width: 360, height: 260, label: "SUBSTANCE SILO 07" },
@@ -677,17 +667,23 @@
       { id: 'gated_rift', x: 1520, y: 150, width: 160, height: 100, label: 'NEURAL EXTRACTION GATE [50 TAPES]', action: () => document.getElementById('gatedModal').classList.remove('hidden') }
     ];
 
-    function resizeCanvas() {
-      canvas.width = canvas.parentElement.clientWidth;
-      canvas.height = canvas.parentElement.clientHeight;
-      camera.width = canvas.width;
-      camera.height = canvas.height;
-    }
-    window.addEventListener('resize', resizeCanvas);
+    // ==============================================================
+    // CANVAS AND PLAYER SETUP
+    // ==============================================================
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
 
-    function checkCollision(r1, r2) {
-      return (r1.x < r2.x + r2.width && r1.x + r1.width > r2.x && r1.y < r2.y + r2.height && r1.y + r1.height > r2.y);
-    }
+    // PLAYER STARTS AT (320, 750) INSIDE THE UNDERGROUND WORLD
+    const player = {
+      x: 320, y: 750, width: 24, height: 38, speed: 4.8,
+      direction: 'down', isMoving: false, animTimer: 0,
+      hp: 100, maxHp: 100, iFrames: 0,
+      knockbackVx: 0, knockbackVy: 0
+    };
+
+    const camera = { x: 0, y: 0, width: 0, height: 0 };
+    const keys = { up: false, down: false, left: false, right: false };
+    const analogVector = { x: 0, y: 0, active: false };
 
     // ==============================================================
     // ELABORATE COMBAT SYSTEM (3-HIT COMBO + FAST 2.5s PURPLE CHARGE)
@@ -1043,8 +1039,8 @@
 
     for (let c = 0; c < 35; c++) {
       lootPickups.push({
-        x: 200 + Math.random() * (WORLD_WIDTH - 400),
-        y: 200 + Math.random() * (WORLD_HEIGHT - 400),
+        x: 200 + Math.random() * (3200 - 400),
+        y: 200 + Math.random() * (2400 - 400),
         type: 'coin', value: 2 + Math.floor(Math.random() * 4),
         radius: 6, floatOffset: Math.random() * Math.PI * 2
       });
@@ -1053,8 +1049,8 @@
     function spawnNpc() {
       if (currentDimension !== 'wasteland') return;
       if (npcs.filter(n => n.alive).length >= MAX_NPCS) return;
-      const spawnX = 300 + Math.random() * (WORLD_WIDTH - 600);
-      const spawnY = 300 + Math.random() * (WORLD_HEIGHT - 600);
+      const spawnX = 300 + Math.random() * (3200 - 600);
+      const spawnY = 300 + Math.random() * (2400 - 600);
 
       const box = { x: spawnX, y: spawnY, width: 24, height: 36 };
       for (let obs of worldObstacles) {
@@ -1397,7 +1393,7 @@
         }
       }
 
-      const activeZones = currentDimension === 'wasteland' ? openWorldZones : (currentDimension === 'retrocade' ? retrocadeZones : undergroundZones);
+      const activeZones = currentDimension === 'wasteland' ? wastelandZones : (currentDimension === 'retrocade' ? retrocadeZones : undergroundZones);
       for (let z of activeZones) {
         if (checkCollision(pBox, z)) {
           activeZone = z;
@@ -1499,10 +1495,10 @@
     }
 
     function drawWastelandWorld() {
-      ctx.fillStyle = '#07090e'; ctx.fillRect(0, 0, WORLD_WIDTH, WORLD_HEIGHT);
+      ctx.fillStyle = '#07090e'; ctx.fillRect(0, 0, 3200, 2400);
       ctx.strokeStyle = 'rgba(0, 240, 255, 0.05)'; ctx.lineWidth = 1;
-      for (let x = 0; x < WORLD_WIDTH; x += 80) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, WORLD_HEIGHT); ctx.stroke(); }
-      for (let y = 0; y < WORLD_HEIGHT; y += 80) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(WORLD_WIDTH, y); ctx.stroke(); }
+      for (let x = 0; x < 3200; x += 80) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, 2400); ctx.stroke(); }
+      for (let y = 0; y < 2400; y += 80) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(3200, y); ctx.stroke(); }
 
       environmentalHazards.forEach(h => {
         if (h.type === 'ribbon_sludge') {
@@ -1525,7 +1521,7 @@
 
       drawPortal(1600, 2300, '#ec4899', '#00f0ff', "RETROCADE RIFT");
 
-      openWorldZones.forEach(z => {
+      wastelandZones.forEach(z => {
         if (z.id === 'gated_rift') {
           drawPortal(z.x, z.y, '#10b981', '#ffb300', "NEURAL EXTRACTION GATE");
         } else {
@@ -1574,7 +1570,6 @@
       enemyProjectiles.forEach(ep => {
         ctx.save(); ctx.fillStyle = '#ff003c'; ctx.beginPath(); ctx.arc(ep.x, ep.y, ep.radius, 0, Math.PI * 2); ctx.fill(); ctx.restore();
       });
-      // ELABORATE MULTI-LAYERED SLASH ANIMATIONS
       meleeSlashes.forEach(s => {
         ctx.save(); ctx.strokeStyle = s.color;
         ctx.lineWidth = s.type === 'magic_purple' ? 6 : s.type === 'heavy_cleave' ? 5 : 3.5;
@@ -1657,7 +1652,7 @@
     }
 
     window.onload = function () {
-      resizeCanvas(); loadProfile(); loadConfigJson(); updatePlayerHealthUI(); gameLoop();
+      resizeCanvas(); loadProfile(); updatePlayerHealthUI(); gameLoop();
     };
   </script>
 </body>
