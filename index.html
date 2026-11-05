@@ -91,7 +91,7 @@
 </head>
 <body class="bg-lowlife-black text-white antialiased flex flex-col justify-between select-none">
 
-  <!-- CRT Scanlines & Vignette -->
+  <!-- CRT Scanlines & Screen Vignette -->
   <div id="crtOverlay" class="crt-overlay"></div>
   <div class="crt-vignette"></div>
 
@@ -133,13 +133,11 @@
 
     <!-- Stats & Navigation Badges -->
     <div class="flex items-center gap-1 sm:gap-2">
-      <!-- Universal Sound Tokens -->
       <div class="px-2 py-1 bg-black/70 border border-yellow-500/50 rounded text-[10px] sm:text-xs text-yellow-400 font-mono flex items-center gap-1" title="Sound Tokens">
         <span>🪙</span>
         <b id="casinoTokensCount">100</b>
       </div>
 
-      <!-- Rare Battle Cassettes Counter -->
       <div class="px-2 py-1 bg-black/70 border border-lowlife-gold/60 rounded text-[10px] sm:text-xs text-lowlife-gold font-mono flex items-center gap-1" title="Battle Cassettes needed for Gated Rift">
         <span>📼</span>
         <b id="rareBattleTapeCount">0/50</b>
@@ -196,7 +194,7 @@
         <div id="btnShootChargeFill" class="absolute inset-0 rounded-full bg-lowlife-cyan/30 opacity-0 transition-opacity pointer-events-none"></div>
       </button>
 
-      <!-- Melee Tactical Slash Button -->
+      <!-- Melee Tactical Slash Button (3-Hit Combo + Fast 2.5s Purple Charge) -->
       <button id="btnSlash" class="relative w-16 h-16 p-2 rounded-full bg-black/70 border-2 border-lowlife-red text-lowlife-red active:scale-95 font-cyber font-bold text-xs flex flex-col items-center justify-center shadow-[0_0_15px_rgba(255,0,60,0.5)] backdrop-blur transition">
         <span id="btnSlashLabel">SLASH</span>
         <span id="btnSlashSub" class="text-[8px] font-mono text-neutral-400">[K]</span>
@@ -211,7 +209,11 @@
     </div>
   </div>
 
-  <!-- MODALS -->
+  <!-- ============================================================== -->
+  <!-- MODALS: GATED RIFT, DISCOGRAPHY, LINKS, TRUNK, RELICS, CASSETTE -->
+  <!-- ============================================================== -->
+
+  <!-- GATED PORTAL MODAL -->
   <div id="gatedModal" class="hidden fixed inset-0 z-50 bg-black/95 backdrop-blur-md flex items-center justify-center p-4">
     <div class="relative w-full max-w-md bg-lowlife-charcoal border-2 border-lowlife-gold rounded-xl p-5 shadow-[0_0_40px_rgba(255,179,0,0.4)] text-center font-mono">
       <div class="w-16 h-16 mx-auto mb-3 bg-lowlife-gold/10 border-2 border-lowlife-gold rounded-full flex items-center justify-center text-3xl">🌌</div>
@@ -243,6 +245,7 @@
     </div>
   </div>
 
+  <!-- DISCOGRAPHY VAULT MODAL -->
   <div id="discoModal" class="hidden fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-3 sm:p-5">
     <div class="relative w-full max-w-2xl bg-lowlife-charcoal border border-lowlife-border rounded-xl p-4 sm:p-5 max-h-[88vh] flex flex-col">
       <div class="flex items-center justify-between border-b border-neutral-800 pb-3 mb-3">
@@ -261,7 +264,7 @@
               <span class="text-[9px] text-lowlife-cyan border border-lowlife-cyan/40 px-1.5 py-0.5 rounded font-cyber">OUT NOW</span>
             </div>
             <p class="text-neutral-300 text-[11px] mt-1 leading-relaxed">
-              The flagship single introducing the Blade x Casshern Sins dystopian timeline[cite: 4]. A sharp fusion of electronic dance bounce and melodic rap flows[cite: 4].
+              The flagship single introducing the Blade x Casshern Sins dystopian timeline. A sharp fusion of electronic dance bounce and melodic rap flows.
             </p>
             <div class="flex flex-wrap gap-1.5 mt-2.5">
               <a href="https://open.spotify.com/track/6jfPp34RiWhv8HUEfSpuhg" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 bg-[#1DB954] text-black font-cyber font-bold text-[10px] rounded">SPOTIFY</a>
@@ -275,6 +278,7 @@
     </div>
   </div>
 
+  <!-- DIRECTORY LINKS MODAL -->
   <div id="linksModal" class="hidden fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-3 sm:p-4">
     <div class="relative w-full max-w-sm bg-lowlife-charcoal border border-neutral-700 rounded-xl p-4 sm:p-5 shadow-2xl max-h-[88vh] overflow-y-auto">
       <div class="flex items-center justify-between border-b border-neutral-800 pb-2.5 mb-3">
@@ -317,6 +321,7 @@
     </div>
   </div>
 
+  <!-- WASTELAND MERCH TRUNK DROP MODAL -->
   <div id="merchModal" class="hidden fixed inset-0 z-50 bg-black/95 backdrop-blur-md flex items-center justify-center p-3 sm:p-4">
     <div class="relative w-full max-w-sm bg-lowlife-charcoal border-2 border-lowlife-cyan rounded-xl p-4 sm:p-5 shadow-[0_0_30px_rgba(0,240,255,0.3)]">
       <div class="flex items-center justify-between border-b border-neutral-800 pb-2.5 mb-3">
@@ -336,6 +341,7 @@
     </div>
   </div>
 
+  <!-- STATIC BROADCAST RELAY TERMINAL MODAL -->
   <div id="relayModal" class="hidden fixed inset-0 z-50 bg-black/95 backdrop-blur-md flex items-center justify-center p-4">
     <div class="relative w-full max-w-md bg-lowlife-charcoal border-2 border-lowlife-cyan rounded-xl p-5 shadow-[0_0_40px_rgba(0,240,255,0.4)] text-center font-mono">
       <div class="w-16 h-16 mx-auto mb-3 bg-lowlife-cyan/10 border-2 border-lowlife-cyan rounded-full flex items-center justify-center text-3xl">📡</div>
@@ -364,6 +370,7 @@
     </div>
   </div>
 
+  <!-- PHYSICAL CASSETTE CLAIM MODAL -->
   <div id="cassetteClaimModal" class="hidden fixed inset-0 z-50 bg-black/95 backdrop-blur-md flex items-center justify-center p-4">
     <div class="relative w-full max-w-md bg-lowlife-charcoal border-2 border-lowlife-gold rounded-xl p-5 shadow-[0_0_40px_rgba(255,179,0,0.4)] text-center font-mono">
       <div class="w-16 h-16 mx-auto mb-3 bg-lowlife-gold/10 border-2 border-lowlife-gold rounded-full flex items-center justify-center text-3xl">📼</div>
@@ -383,6 +390,7 @@
     </div>
   </div>
 
+  <!-- LOCKER MODAL -->
   <div id="skinsModal" class="hidden fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-3">
     <div class="relative w-full max-w-sm bg-lowlife-charcoal border border-lowlife-border rounded-xl p-4 max-h-[85vh] flex flex-col">
       <div class="flex items-center justify-between border-b border-neutral-800 pb-2 mb-3">
@@ -393,10 +401,10 @@
     </div>
   </div>
 
-  <!-- JAVASCRIPT MASTER BUNDLE -->
+  <!-- JAVASCRIPT MASTER BUNDLE: 3 WORLDS, ELABORATE SLASHES, FAST CHARGE, NPC AI -->
   <script>
     // ==============================================================
-    // MULTIVERSE WORLD CONFIGURATION
+    // 1. MULTIVERSE WORLD CONFIGURATION
     // ==============================================================
     let currentDimension = 'underground'; // 'underground', 'retrocade', 'wasteland'
 
@@ -409,7 +417,8 @@
     function switchDimension(dimKey, spawnX, spawnY) {
       currentDimension = dimKey;
       const cfg = DIMENSIONS[dimKey];
-      player.x = spawnX; player.y = spawnY;
+      player.x = spawnX; 
+      player.y = spawnY;
       
       const badge = document.getElementById('dimensionBadge');
       if (badge) badge.innerText = `DIMENSION: ${cfg.name}`;
@@ -417,7 +426,7 @@
     }
 
     // ==============================================================
-    // PERSISTENT PROFILE & CASSETTE PROGRESSION
+    // 2. PERSISTENT PROFILE & CASSETTE PROGRESSION
     // ==============================================================
     const RARE_TAPES_THRESHOLD = 50;
 
@@ -473,7 +482,7 @@
     }
 
     // ==============================================================
-    // AUDIO ENGINE & PROCEDURAL SYNTHESIZER
+    // 3. AUDIO ENGINE & PROCEDURAL SYNTHESIZER
     // ==============================================================
     let audioCtx = null, isBgmPlaying = false, bgmMasterGain = null, bgmStepIndex = 0, bgmTimer = null, bgmTempo = 130, bgmVersion = 'original';
     const noirBassNotes = [110, 110, 130.81, 146.83, 164.81, 146.83, 130.81, 110, 98, 98, 110, 130.81, 146.83, 130.81, 123.47, 98];
@@ -606,7 +615,7 @@
     }
 
     // ==============================================================
-    // MAPS, OBSTACLES & WORLD DATA
+    // 4. MAPS, OBSTACLES & WORLD DATA
     // ==============================================================
     const undergroundObstacles = [
       { x: 0, y: 0, width: 1600, height: 28 }, { x: 0, y: 972, width: 1600, height: 28 },
@@ -648,7 +657,7 @@
       { id: "chest_pipeline_secret", x: 240, y: 740, width: 36, height: 28, type: "vault", label: "OBSOLETE VAULT LOCKER", opened: false }
     ];
 
-    // Portals & Zones per World
+    // Portals & Interactive Zones
     const undergroundZones = [
       { id: 'disco_room', x: 70, y: 140, width: 160, height: 100, label: 'DISCOGRAPHY VAULT', action: () => document.getElementById('discoModal').classList.remove('hidden') },
       { id: 'portal_retrocade', x: 1440, y: 640, width: 80, height: 80, label: 'WARP: RETROCADE NEON', action: () => switchDimension('retrocade', 750, 750) }
@@ -668,7 +677,7 @@
     ];
 
     // ==============================================================
-    // CANVAS AND PLAYER SETUP
+    // 5. CANVAS AND PLAYER SETUP
     // ==============================================================
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
@@ -686,7 +695,7 @@
     const analogVector = { x: 0, y: 0, active: false };
 
     // ==============================================================
-    // ELABORATE COMBAT SYSTEM (3-HIT COMBO + FAST 2.5s PURPLE CHARGE)
+    // 6. ELABORATE COMBAT SYSTEM (3-HIT COMBO + FAST 2.5s PURPLE CHARGE)
     // ==============================================================
     const projectiles = [];
     const enemyProjectiles = [];
@@ -1031,7 +1040,7 @@
     }
 
     // ==============================================================
-    // ENEMY NPC AI & LOOT
+    // 7. ENEMY NPC AI & LOOT
     // ==============================================================
     const npcs = [];
     const MAX_NPCS = 22;
@@ -1160,7 +1169,7 @@
           }
 
           const nBoxX = { x: npc.x + moveVx, y: npc.y, width: npc.width, height: npc.height };
-          const nBoxY = { x: npc.x, y: npc.y + moveVy, width: npc.width, height: npc.height };
+          const nBoxY = { x: npc.x + moveVy, width: npc.width, height: npc.height, y: npc.y };
           let colX = false, colY = false;
 
           for (let obs of worldObstacles) {
@@ -1225,7 +1234,7 @@
     }
 
     // ==============================================================
-    // CONTROLS & JOYSTICK
+    // 8. CONTROLS & JOYSTICK
     // ==============================================================
     const joystickZone = document.getElementById('joystickZone');
     const joystickKnob = document.getElementById('joystickKnob');
@@ -1307,7 +1316,7 @@
     });
 
     // ==============================================================
-    // PLAYER UPDATE & PROXIMITY
+    // 9. PLAYER UPDATE & PROXIMITY DETECTION
     // ==============================================================
     let activeZone = null;
     let activeChest = null;
@@ -1445,7 +1454,7 @@
     }
 
     // ==============================================================
-    // CANVAS RENDERING PIPELINE
+    // 10. MULTI-WORLD RENDERING PIPELINE
     // ==============================================================
     function draw() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -1563,6 +1572,9 @@
       ctx.fillText(label, px - 10, py + 95);
     }
 
+    // ==============================================================
+    // 11. ELABORATE COMBAT VISUALS
+    // ==============================================================
     function drawCombat() {
       projectiles.forEach(p => {
         ctx.save(); ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2); ctx.fill(); ctx.restore();
@@ -1570,24 +1582,59 @@
       enemyProjectiles.forEach(ep => {
         ctx.save(); ctx.fillStyle = '#ff003c'; ctx.beginPath(); ctx.arc(ep.x, ep.y, ep.radius, 0, Math.PI * 2); ctx.fill(); ctx.restore();
       });
+
+      // MULTI-LAYERED ARTISTIC SLASH ANIMATIONS
       meleeSlashes.forEach(s => {
-        ctx.save(); ctx.strokeStyle = s.color;
+        ctx.save();
+        ctx.strokeStyle = s.color;
         ctx.lineWidth = s.type === 'magic_purple' ? 6 : s.type === 'heavy_cleave' ? 5 : 3.5;
+
         if (s.type === 'stab') {
-          ctx.beginPath(); ctx.moveTo(player.x + player.width/2, player.y + player.height/2); ctx.lineTo(s.x, s.y); ctx.stroke();
+          // HIT 1: Sharp Piercing Spearhead Thrust
+          ctx.beginPath();
+          ctx.moveTo(player.x + player.width / 2, player.y + player.height / 2);
+          ctx.lineTo(s.x, s.y);
+          ctx.stroke();
+
+          // Outer energy barb
+          ctx.lineWidth = 1.5;
+          ctx.beginPath();
+          ctx.arc(s.x, s.y, 6, 0, Math.PI * 2);
+          ctx.stroke();
         } else if (s.type === 'reverse_arc') {
-          ctx.beginPath(); ctx.arc(s.x, s.y, s.radius, 0, Math.PI * 1.4); ctx.stroke();
+          // HIT 2: Sweeping Crescent Moon Blade
+          ctx.beginPath();
+          ctx.arc(s.x, s.y, s.radius, 0, Math.PI * 1.4);
+          ctx.stroke();
+
+          // Particle tail trace
+          ctx.lineWidth = 1.5;
+          ctx.beginPath();
+          ctx.arc(s.x, s.y, s.radius - 6, 0, Math.PI * 1.2);
+          ctx.stroke();
         } else {
+          // Overhead Cleave or Charge Arcs
           ctx.beginPath();
           let sa = 0, ea = Math.PI;
           if (s.dir === 'up') { sa = Math.PI * 1.1; ea = Math.PI * 1.9; }
           else if (s.dir === 'down') { sa = Math.PI * 0.1; ea = Math.PI * 0.9; }
           else if (s.dir === 'left') { sa = Math.PI * 0.6; ea = Math.PI * 1.4; }
           else if (s.dir === 'right') { sa = -Math.PI * 0.4; ea = Math.PI * 0.4; }
-          ctx.arc(s.x, s.y, s.radius, sa, ea); ctx.stroke();
+
+          ctx.arc(s.x, s.y, s.radius, sa, ea);
+          ctx.stroke();
+
+          // Double layered energy ring for purple / cleave attacks
+          if (s.type === 'magic_purple' || s.type === 'heavy_cleave') {
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(s.x, s.y, s.radius + 8, sa + 0.1, ea - 0.1);
+            ctx.stroke();
+          }
         }
         ctx.restore();
       });
+
       explosions.forEach(exp => {
         ctx.save(); ctx.strokeStyle = exp.color; ctx.lineWidth = 4 * (exp.life / 25);
         ctx.beginPath(); ctx.arc(exp.x, exp.y, exp.radius, 0, Math.PI * 2); ctx.stroke(); ctx.restore();
@@ -1598,10 +1645,16 @@
       const walk = isMoving ? Math.sin(animTimer * 0.3) * 3 : 0;
       ctx.fillStyle = 'rgba(0,0,0,0.6)'; ctx.beginPath(); ctx.ellipse(px + 12, py + 36, 14, 5, 0, 0, Math.PI * 2); ctx.fill();
       
+      // CHARGE AURA TURNS PURPLE AT 2.5s!
       if (isHoldingSlash && comboStep === 3) {
         const holdSec = (Date.now() - slashHoldStartTime) / 1000;
-        ctx.save(); ctx.strokeStyle = holdSec >= 2.5 ? '#a855f7' : holdSec >= 1.2 ? '#ff7700' : '#ff003c';
-        ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(px + 12, py + 18, 22 + Math.sin(Date.now() / 80) * 3, 0, Math.PI * 2); ctx.stroke(); ctx.restore();
+        ctx.save(); 
+        ctx.strokeStyle = holdSec >= 2.5 ? '#a855f7' : holdSec >= 1.2 ? '#ff7700' : '#ff003c';
+        ctx.lineWidth = 2.5; 
+        ctx.beginPath(); 
+        ctx.arc(px + 12, py + 18, 22 + Math.sin(Date.now() / 70) * 4, 0, Math.PI * 2); 
+        ctx.stroke(); 
+        ctx.restore();
       }
 
       ctx.fillStyle = userProfile.activeSkin === 'drifter' ? '#1c1917' : '#0a0b0f';
@@ -1635,8 +1688,10 @@
       try {
         updatePlayer();
         const cfg = DIMENSIONS[currentDimension];
-        const targetX = player.x - camera.width / 2; const targetY = player.y - camera.height / 2;
-        camera.x += (targetX - camera.x) * 0.1; camera.y += (targetY - camera.y) * 0.1;
+        const targetX = player.x - camera.width / 2; 
+        const targetY = player.y - camera.height / 2;
+        camera.x += (targetX - camera.x) * 0.1; 
+        camera.y += (targetY - camera.y) * 0.1;
         camera.x = Math.max(0, Math.min(cfg.width - camera.width, camera.x));
         camera.y = Math.max(0, Math.min(cfg.height - camera.height, camera.y));
         draw();
@@ -1645,6 +1700,7 @@
     }
 
     function closeModals() { document.querySelectorAll('.fixed').forEach(m => m.classList.add('hidden')); }
+    
     function showToast(msg) {
       const t = document.getElementById('toastMessage'); if (!t) return;
       t.innerText = msg; t.style.opacity = '1'; t.style.transform = 'translateY(0)';
@@ -1652,7 +1708,10 @@
     }
 
     window.onload = function () {
-      resizeCanvas(); loadProfile(); updatePlayerHealthUI(); gameLoop();
+      resizeCanvas(); 
+      loadProfile(); 
+      updatePlayerHealthUI(); 
+      gameLoop();
     };
   </script>
 </body>
