@@ -1,1 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Club Lowlife // The Underground Universe</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Courier New', Courier, monospace; user-select: none; }
+    body { background: #000; color: #fff; overflow: hidden; height: 100vh; display: flex; align-items: center; justify-content: center; }
+    #gameContainer { position: relative; width: 100vw; height: 100vh; max-width: 1600px; max-height: 960px; background: #050505; overflow: hidden; }
+    #gameCanvas { display: block; width: 100%; height: 100%; image-rendering: pixelated; }
+    .scanline { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.45) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 255, 0, 0.03)); background-size: 100% 4px, 6px 100%; z-index: 10; }
+    #topHud { position: absolute; top: 0; left: 0; right: 0; padding: 10px 14px; display: flex; justify-content: space-between; align-items: center; background: rgba(5, 5, 5, 0.88); border-bottom: 2px solid #222; z-index: 20; }
+    #hudLeft, #hudRight { display: flex; align-items: center; gap: 8px; }
+    .hud-tag { background: #111; border: 1px solid #333; color: #00ffcc; padding: 4px 8px; font-size: 11px; font-weight: bold; letter-spacing: 1px; }
+    .hud-btn { background: #111; border: 1px solid #444; color: #eee; padding: 5px 10px; font-size: 11px; font-weight: bold; cursor: pointer; transition: all 0.2s; }
+    .hud-btn:hover { background: #222; border-color: #00ffcc; color: #00ffcc; }
+    .hud-btn.highlight { background: #00ffcc; color: #000; border-color: #00ffcc; }
+    #musicControls { display: flex; align-items: center; gap: 6px; background: #161616; border: 1px solid #333; padding: 2px 6px; }
+    #musicControls select, #musicControls input { background: #000; color: #00ffcc; border: 1px solid #333; font-size: 10px; padding: 2px 4px; }
+    #interactionToast { position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%); background: rgba(0, 0, 0, 0.9); border: 2px solid #00ffcc; color: #00ffcc; padding: 10px 20px; font-size: 13px; font-weight: bold; letter-spacing: 1px; display: none; z-index: 30; box-shadow: 0 0 15px rgba(0, 255, 204, 0.3); }
+    .modal-backdrop { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); display: none; align-items: center; justify-content: center; z-index: 100; }
+    .terminal-modal { width: 90%; max-width: 600px; background: #0a0a0a; border: 2px solid #00ffcc; padding: 20px; max-height: 85vh; overflow-y: auto; box-shadow: 0 0 25px rgba(0, 255, 204, 0.2); }
+    .terminal-modal.large-modal { max-width: 800px; }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #222; padding-bottom: 10px; margin-bottom: 16px; }
+    .modal-header h2 { font-size: 14px; color: #00ffcc; letter-spacing: 1px; }
+    .close-btn { background: none; border: none; color: #888; font-size: 18px; cursor: pointer; }
+    .close-btn:hover { color: #fff; }
+    .modal-body { display: flex; flex-direction: column; gap: 12px; }
+    .action-btn { background: #111; border: 1px solid #00ffcc; color: #00ffcc; padding: 10px; font-size: 12px; font-weight: bold; cursor: pointer; text-align: center; text-decoration: none; transition: all 0.2s; }
+    .action-btn:hover { background: #00ffcc; color: #000; }
+    .tape-tabs { display: flex; gap: 8px; margin-bottom: 12px; }
+    .tab-btn { flex: 1; background: #111; border: 1px solid #333; color: #888; padding: 8px; font-size: 11px; cursor: pointer; }
+    .tab-btn.active { border-color: #00ffcc; color: #00ffcc; background: #161616; }
+    .arcade-hud-bar { display: flex; justify-content: space-between; background: #111; padding: 8px 12px; border: 1px solid #333; margin-bottom: 8px; color: #00ffcc; font-size: 12px; }
+    #arcadeCanvas { display: block; margin: 0 auto; background: #000; border: 2px solid #222; }
+    .daw-transport { display: flex; gap: 10px; align-items: center; background: #181818; padding: 10px; border: 1px solid #333; }
+    .daw-btn { background: #252525; border: 1px solid #444; color: #fff; padding: 6px 12px; font-size: 11px; cursor: pointer; }
+    .daw-btn:hover { background: #00ffcc; color: #000; }
+    .slot-machine { display: flex; justify-content: center; gap: 15px; margin: 20px 0; }
+    .slot-reel { width: 70px; height: 90px; background: #111; border: 3px solid #ff007f; display: flex; align-items: center; justify-content: center; font-size: 38px; color: #ff007f; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <div id="gameContainer">
+    <canvas id="gameCanvas" width="1600" height="960"></canvas>
+    <div id="crtOverlay" class="scanline"></div>
 
+    <div id="topHud">
+      <div id="hudLeft">
+        <span class="hud-tag" id="hudUniverseTag">UNIVERSE: THE UNDERGROUND</span>
+        <span class="hud-tag" id="hudCoords">POS: 750, 750</span>
+        <span class="hud-tag" id="hudTokens">TOKENS: 10</span>
+        <span class="hud-tag" id="hudTapesCount">TAPES: 0/12</span>
+      </div>
+      <div id="hudRight">
+        <div id="musicControls">
+          <button class="hud-btn" id="audioToggleBtn" onclick="toggleAudioEngine()">[START AUDIO]</button>
+          <select id="trackSelect" onchange="switchTrackMode(this.value)">
+            <option value="orig">DANCING (ORIGINAL)</option>
+            <option value="sped">DANCING (SPED-UP)</option>
+            <option value="slow">DANCING (SLOWED+VERB)</option>
+          </select>
+          <input type="range" id="volSlider" min="0" max="1" step="0.05" value="0.5" oninput="setWorldVolume(this.value)">
+        </div>
+        <button class="hud-btn" id="crtToggleBtn" onclick="toggleCrtScanlines()">📺 CRT: ON</button>
+        <button class="hud-btn" onclick="triggerDimensionalWarp()">🌀 WARP REALM</button>
+        <button class="hud-btn" onclick="openProfileHub()">👤 SYNDICATE ID</button>
+        <button class="hud-btn" onclick="openSkinsLocker()">🧥 SKINS</button>
+        <button class="hud-btn" onclick="openTapesModal()">📼 TAPES</button>
+        <button class="hud-btn highlight" onclick="openQuickLinks()">🔗 ALL LINKS</button>
+      </div>
+    </div>
+
+    <div id="interactionToast"></div>
+  </div>
+
+  <!-- MODALS -->
+  <div id="quickLinksModal" class="modal-backdrop">
+    <div class="terminal-modal">
+      <div class="modal-header">
+        <h2>CLUB LOWLIFE // SYNDICATE LINKS</h2>
+        <button class="close-btn" onclick="closeModals()">✕</button>
+      </div>
+      <div class="modal-body" id="quickLinksContainer"></div>
+    </div>
+  </div>
+
+  <div id="discoModal" class="modal-backdrop">
+    <div class="terminal-modal large-modal">
+      <div class="modal-header">
+        <h2>DISCOGRAPHY VAULT // MASTER ARCHIVES</h2>
+        <button class="close-btn" onclick="closeModals()">✕</button>
+      </div>
+      <div class="modal-body" id="discoContainer"></div>
+    </div>
+  </div>
+
+  <div id="merchModal" class="modal-backdrop">
+    <div class="terminal-modal">
+      <div class="modal-header">
+        <h2 id="merchModalTitle">TRUNK DROP // ARCHIVE CLEARANCE</h2>
+        <button class="close-btn" onclick="closeModals()">✕</button>
+      </div>
+      <div class="modal-body" id="merchContainer"></div>
+    </div>
+  </div>
+
+  <div id="tapesModal" class="modal-backdrop">
+    <div class="terminal-modal large-modal">
+      <div class="modal-header">
+        <h2>CASSETTE ARCHIVE // LORE & STEM VAULT</h2>
+        <button class="close-btn" onclick="closeModals()">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="tape-tabs">
+          <button class="tab-btn active" id="tabLore" onclick="switchTapeTab('lore')">LORE CASSETTES (STORY)</button>
+          <button class="tab-btn" id="tabVip" onclick="switchTapeTab('vip')">VIP GOLD STEM TAPES (UNRELEASED)</button>
+        </div>
+        <div id="tapesListContainer"></div>
+        <div id="vaultBonusBox" style="margin-top:10px;"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="skinsModal" class="modal-backdrop">
+    <div class="terminal-modal">
+      <div class="modal-header">
+        <h2>SYNDICATE LOCKER // AVATAR CUSTOMIZATION</h2>
+        <button class="close-btn" onclick="closeModals()">✕</button>
+      </div>
+      <div class="modal-body" id="skinsContainer"></div>
+    </div>
+  </div>
+
+  <div id="profileModal" class="modal-backdrop">
+    <div class="terminal-modal">
+      <div class="modal-header">
+        <h2>SYNDICATE PROFILE // CREDENTIALS</h2>
+        <button class="close-btn" onclick="closeModals()">✕</button>
+      </div>
+      <div class="modal-body">
+        <label style="font-size:11px;color:#00ffcc;">HANDLE:</label>
+        <input type="text" id="profileHandleInput" style="background:#000;color:#00ffcc;border:1px solid #333;padding:8px;" placeholder="@username">
+        <label style="font-size:11px;color:#00ffcc;">SECURITY PIN:</label>
+        <input type="password" id="profilePinInput" maxlength="4" style="background:#000;color:#00ffcc;border:1px solid #333;padding:8px;" placeholder="••••">
+        <button class="action-btn" onclick="saveUserProfile()">SAVE PROFILE</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="arcadeModal" class="modal-backdrop">
+    <div class="terminal-modal large-modal">
+      <div class="modal-header">
+        <h2 id="arcadeGameTitle">UNDERGROUND ARCADE</h2>
+        <button class="close-btn" onclick="closeModals()">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="arcade-hud-bar">
+          <span>SCORE: <strong id="arcadeScore">0</strong></span>
+          <span>LIVES: <strong id="arcadeLives">3</strong></span>
+          <span>HIGH: <strong id="arcadeHigh">0</strong></span>
+        </div>
+        <canvas id="arcadeCanvas" width="640" height="480"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div id="dawModal" class="modal-backdrop">
+    <div class="terminal-modal large-modal">
+      <div class="modal-header">
+        <h2>IMAGE-LINE // FL STUDIO MINI (CHANNEL RACK)</h2>
+        <button class="close-btn" onclick="closeModals()">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="daw-transport">
+          <button id="dawPlayBtn" class="daw-btn" onclick="toggleDawPlayback()">▶ PLAY</button>
+          <button class="daw-btn" onclick="stopDawPlayback()">■ STOP</button>
+          <span style="font-size:11px;color:#00ffcc;">BPM: <strong id="dawBpmVal">130</strong></span>
+        </div>
+        <div id="dawStepSequencer" style="display:flex;flex-direction:column;gap:6px;margin:12px 0;"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="casinoModal" class="modal-backdrop">
+    <div class="terminal-modal">
+      <div class="modal-header">
+        <h2>LUCKY 777 // RETROCADE HIGH-ROLLER SLOTS</h2>
+        <button class="close-btn" onclick="closeModals()">✕</button>
+      </div>
+      <div class="modal-body" style="text-align:center;">
+        <div class="slot-machine">
+          <div class="slot-reel" id="reel1">7</div>
+          <div class="slot-reel" id="reel2">7</div>
+          <div class="slot-reel" id="reel3">7</div>
+        </div>
+        <div style="display:flex;gap:10px;justify-content:center;">
+          <button class="action-btn" onclick="spinSlot(1)">SPIN (1 TOKEN)</button>
+          <button class="action-btn" onclick="spinSlot(5)">MAX (5 TOKENS)</button>
+        </div>
+        <div id="casinoPayoutText" style="margin-top:10px;color:#ff007f;font-size:12px;">MATCH THREE 7s FOR 100 TOKENS JACKPOT</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LOAD MASTER CONFIG -->
+  <script src="config.js"></script>
+
+  <!-- BULLETPROOF ENGINE SCRIPT -->
+  <script>
+    // FALLBACK IF CONFIG.JS NOT LOADED
+    if (typeof WORLD_CONFIG === 'undefined') {
+      console.warn("config.js not found, loading default fallback.");
+      window.WORLD_CONFIG = {
+        music: { title: "DANCING", status: "OUT NOW", spotifyUrl: "#", appleUrl: "#" },
+        quickLinks: [{ label: "STREAM 'DANCING'", url: "https://open.spotify.com" }],
+        discography: [],
+        cassettes: []
+      };
+    }
+
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    let currentRealm = 'underground'; // 'underground' or 'retrocade'
+    let player = { x: 750, y: 750, w: 26, h: 36, speed: 4 };
+    let keys = {};
+
+    let currentProfile = {
+      handle: "@enforcer",
+      pin: "7777",
+      tokens: 10,
+      activeSkin: "enforcer",
+      unlockedSkins: ["enforcer"],
+      collectedTapes: []
+    };
+
+    // SAVED PROFILE
+    try {
+      const s = localStorage.getItem('club_lowlife_save');
+      if (s) currentProfile = JSON.parse(s);
+    } catch(e){}
+
+    function saveState() {
+      localStorage.setItem('club_lowlife_save', JSON.stringify(currentProfile));
+      document.getElementById('hudTokens').innerText = `TOKENS: ${currentProfile.tokens}`;
+      document.getElementById('hudTapesCount').innerText = `TAPES: ${currentProfile.collectedTapes.length}/12`;
+    }
+
+    // AUDIO ENGINE
+    let audioCtx = null, masterGain = null, isAudioRunning = false, audioTimer = null, synthStep = 0, trackMode = 'orig';
+    function initAudioEngine() {
+      if (audioCtx) return;
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      audioCtx = new AudioContext();
+      masterGain = audioCtx.createGain();
+      masterGain.gain.setValueAtTime(0.5, audioCtx.currentTime);
+      masterGain.connect(audioCtx.destination);
+      startAudioLoop();
+    }
+    function toggleAudioEngine() {
+      if (!audioCtx) initAudioEngine();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      isAudioRunning = !isAudioRunning;
+      document.getElementById('audioToggleBtn').innerText = isAudioRunning ? '[AUDIO: ON]' : '[AUDIO: MUTED]';
+    }
+    function setWorldVolume(v) { if (masterGain && audioCtx) masterGain.gain.setValueAtTime(parseFloat(v), audioCtx.currentTime); }
+    function switchTrackMode(m) { trackMode = m; }
+    function startAudioLoop() {
+      const notesUnderground = [65.41, 65.41, 77.78, 65.41, 58.27, 65.41, 87.31, 77.78];
+      const notesRetrocade = [130.81, 164.81, 196.00, 261.63, 196.00, 220.00, 164.81, 196.00];
+      setInterval(() => {
+        if (!isAudioRunning || !audioCtx) return;
+        const now = audioCtx.currentTime;
+        const isU = currentRealm === 'underground';
+        const notes = isU ? notesUnderground : notesRetrocade;
+        const osc = audioCtx.createOscillator();
+        const g = audioCtx.createGain();
+        const f = audioCtx.createBiquadFilter();
+        osc.type = isU ? 'sawtooth' : 'square';
+        osc.frequency.setValueAtTime(notes[synthStep % notes.length], now);
+        f.type = 'lowpass';
+        f.frequency.setValueAtTime(isU ? 550 : 2200, now);
+        g.gain.setValueAtTime(0.2, now);
+        g.gain.exponentialRampToValueAtTime(0.001, now + (trackMode === 'slow' ? 0.45 : 0.22));
+        osc.connect(f); f.connect(g); g.connect(masterGain);
+        osc.start(now); osc.stop(now + 0.45);
+        synthStep++;
+      }, 220);
+    }
+
+    // BOUNDS & OPEN DOORWAYS (100-120px)
+    const boundsUnderground = [
+      [0, 0, 1600, 30], [0, 930, 1600, 30], [0, 0, 30, 960], [1570, 0, 30, 960],
+      [30, 480, 220, 20], [340, 480, 420, 20], [860, 480, 420, 20], [1380, 480, 190, 20],
+      [420, 30, 20, 450], [1180, 30, 20, 450]
+    ];
+    const boundsRetrocade = [
+      [0, 0, 1600, 30], [0, 930, 1600, 30], [0, 0, 30, 960], [1570, 0, 30, 960],
+      [30, 480, 320, 20], [440, 480, 300, 20], [840, 480, 320, 20], [1260, 480, 310, 20],
+      [500, 30, 20, 450], [1100, 30, 20, 450]
+    ];
+
+    window.addEventListener('keydown', e => {
+      keys[e.key.toLowerCase()] = true;
+      if (e.key.toLowerCase() === 'e') triggerInteract();
+      if (e.key.toLowerCase() === 'c') toggleCrtScanlines();
+      if (e.key === 'Escape') closeModals();
+    });
+    window.addEventListener('keyup', e => { keys[e.key.toLowerCase()] = false; });
+
+    function triggerDimensionalWarp() {
+      currentRealm = currentRealm === 'underground' ? 'retrocade' : 'underground';
+      player.x = 750; player.y = 750;
+      document.getElementById('hudUniverseTag').innerText = `UNIVERSE: ${currentRealm.toUpperCase()}`;
+    }
+
+    function checkCollision(nx, ny) {
+      const bounds = currentRealm === 'underground' ? boundsUnderground : boundsRetrocade;
+      for (let b of bounds) {
+        if (nx < b[0] + b[2] && nx + player.w > b[0] && ny < b[1] + b[3] && ny + player.h > b[1]) return true;
+      }
+      return false;
+    }
+
+    function update() {
+      let dx = 0, dy = 0;
+      if (keys['w'] || keys['arrowup']) dy -= player.speed;
+      if (keys['s'] || keys['arrowdown']) dy += player.speed;
+      if (keys['a'] || keys['arrowleft']) dx -= player.speed;
+      if (keys['d'] || keys['arrowright']) dx += player.speed;
+      if (dx !== 0 && !checkCollision(player.x + dx, player.y)) player.x += dx;
+      if (dy !== 0 && !checkCollision(player.x, player.y + dy)) player.y += dy;
+      document.getElementById('hudCoords').innerText = `POS: ${Math.round(player.x)}, ${Math.round(player.y)}`;
+      checkProximity();
+    }
+
+    // DRAW AVATAR (Blade / Casshern Sins Enforcer & Skin Variations)
+    function drawAvatar(x, y, skin) {
+      ctx.save();
+      if (skin === 'captive') {
+        // Retrocade Captive: Neon tee & denim
+        ctx.fillStyle = '#ff007f'; ctx.fillRect(x + 4, y + 10, 18, 14);
+        ctx.fillStyle = '#00f0ff'; ctx.fillRect(x + 6, y + 24, 14, 12);
+        ctx.fillStyle = '#ffccaa'; ctx.fillRect(x + 6, y + 2, 14, 10);
+      } else if (skin === 'handler') {
+        // Syndicate Handler: Techwear crop & boots
+        ctx.fillStyle = '#111'; ctx.fillRect(x + 4, y + 10, 18, 12);
+        ctx.fillStyle = '#222'; ctx.fillRect(x + 5, y + 22, 16, 14);
+        ctx.fillStyle = '#00ffcc'; ctx.fillRect(x + 7, y + 4, 12, 6);
+      } else {
+        // Default Enforcer: Floor-length black duster + visor
+        ctx.fillStyle = '#0a0a0a'; ctx.fillRect(x + 2, y + 8, 22, 26);
+        ctx.fillStyle = '#151515'; ctx.fillRect(x + 4, y + 2, 18, 12);
+        ctx.fillStyle = '#00ffcc'; ctx.fillRect(x + 6, y + 6, 14, 4); // Visor glow
+      }
+      ctx.restore();
+    }
+
+    // DRAW CASSETTE
+    function drawCassette(c) {
+      ctx.save();
+      ctx.fillStyle = c.type === 'vip' ? '#ffd700' : '#00ffcc';
+      ctx.fillRect(c.x, c.y, 22, 14);
+      ctx.fillStyle = '#000';
+      ctx.fillRect(c.x + 3, c.y + 3, 16, 8);
+      ctx.fillStyle = '#fff';
+      ctx.fillRect(c.x + 5, c.y + 5, 4, 4);
+      ctx.fillRect(c.x + 13, c.y + 5, 4, 4);
+      ctx.restore();
+    }
+
+    function checkProximity() {
+      const toast = document.getElementById('interactionToast');
+      let msg = null;
+
+      // Check Cassette Pickup
+      WORLD_CONFIG.cassettes.forEach(c => {
+        if (c.realm === currentRealm && !currentProfile.collectedTapes.includes(c.id)) {
+          if (Math.hypot(player.x - c.x, player.y - c.y) < 30) {
+            msg = `PRESS [E] // COLLECT ${c.title.toUpperCase()}`;
+          }
+        }
+      });
+
+      // Warp Portal Proximity
+      if (Math.hypot(player.x - 750, player.y - 750) < 45) {
+        msg = `PRESS [E] // WARP TO ${currentRealm === 'underground' ? 'RETROCADE' : 'THE UNDERGROUND'}`;
+      }
+
+      // Underground Hubs
+      if (currentRealm === 'underground') {
+        if (player.x > 80 && player.x < 360 && player.y > 60 && player.y < 300) msg = "PRESS [E] // DISCOGRAPHY MASTER VAULT";
+        else if (player.x > 460 && player.x < 740 && player.y > 60 && player.y < 300) msg = "PRESS [E] // CRT HOLDING CHAMBER";
+        else if (player.x > 820 && player.x < 1120 && player.y > 60 && player.y < 300) msg = "PRESS [E] // UNDERGROUND ARCADE CAB";
+        else if (player.x > 1220 && player.x < 1520 && player.y > 60 && player.y < 300) msg = "PRESS [E] // FL STUDIO SOUND LAB";
+        else if (player.x > 100 && player.x < 300 && player.y > 600 && player.y < 850) msg = "PRESS [E] // CAR TRUNK MERCH DROP";
+      }
+
+      // Retrocade Hubs
+      if (currentRealm === 'retrocade') {
+        if (player.x > 80 && player.x < 420 && player.y > 60 && player.y < 300) msg = "PRESS [E] // LUCKY 777 CASINO";
+        else if (player.x > 1160 && player.x < 1540 && player.y > 520 && player.y < 830) msg = "PRESS [E] // DANCE WITH THE SYNDICATE (+2 TOKENS)";
+      }
+
+      if (msg) {
+        toast.style.display = 'block';
+        toast.innerText = msg;
+      } else {
+        toast.style.display = 'none';
+      }
+    }
+
+    function triggerInteract() {
+      // Cassette Collection
+      WORLD_CONFIG.cassettes.forEach(c => {
+        if (c.realm === currentRealm && !currentProfile.collectedTapes.includes(c.id)) {
+          if (Math.hypot(player.x - c.x, player.y - c.y) < 30) {
+            currentProfile.collectedTapes.push(c.id);
+            if (!currentProfile.unlockedSkins.includes('captive')) currentProfile.unlockedSkins.push('captive');
+            saveState();
+            alert(`COLLECTED: ${c.title}\n\n${c.log}`);
+          }
+        }
+      });
+
+      // Warp
+      if (Math.hypot(player.x - 750, player.y - 750) < 45) {
+        triggerDimensionalWarp();
+        return;
+      }
+
+      // Underground Triggers
+      if (currentRealm === 'underground') {
+        if (player.x > 80 && player.x < 360 && player.y > 60 && player.y < 300) openDiscoHub();
+        else if (player.x > 460 && player.x < 740 && player.y > 60 && player.y < 300) alert("CRT INTERROGATION MONITOR // [DANCING] STREAMING LIVE.");
+        else if (player.x > 820 && player.x < 1120 && player.y > 60 && player.y < 300) startArcadeGame('invaders');
+        else if (player.x > 1220 && player.x < 1520 && player.y > 60 && player.y < 300) openDawHub();
+        else if (player.x > 100 && player.x < 300 && player.y > 600 && player.y < 850) openMerchHub();
+      }
+
+      // Retrocade Triggers
+      if (currentRealm === 'retrocade') {
+        if (player.x > 80 && player.x < 420 && player.y > 60 && player.y < 300) openCasinoHub();
+        else if (player.x > 1160 && player.x < 1540 && player.y > 520 && player.y < 830) {
+          currentProfile.tokens += 2;
+          saveState();
+          alert("DANCED TO 'DANCING' ON THE AFTERHOURS FLOOR! +2 TOKENS REWARDED.");
+        }
+      }
+    }
+
+    function render() {
+      ctx.fillStyle = currentRealm === 'underground' ? '#070707' : '#0a0017';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Draw Walls
+      const bounds = currentRealm === 'underground' ? boundsUnderground : boundsRetrocade;
+      ctx.fillStyle = currentRealm === 'underground' ? '#222' : '#ff007f';
+      for (let b of bounds) ctx.fillRect(b[0], b[1], b[2], b[3]);
+
+      // Draw Doors / Floor Indicators (Green open pathways)
+      ctx.fillStyle = '#00ffcc';
+      if (currentRealm === 'underground') {
+        ctx.fillRect(250, 480, 90, 20);
+        ctx.fillRect(760, 480, 100, 20);
+        ctx.fillRect(1280, 480, 100, 20);
+      } else {
+        ctx.fillRect(350, 480, 90, 20);
+        ctx.fillRect(740, 480, 100, 20);
+        ctx.fillRect(1160, 480, 100, 20);
+      }
+
+      // Draw Dimensional Rift
+      ctx.fillStyle = '#00ffcc';
+      ctx.beginPath();
+      ctx.arc(750, 750, 28, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Render Active Realm Cassettes
+      WORLD_CONFIG.cassettes.forEach(c => {
+        if (c.realm === currentRealm && !currentProfile.collectedTapes.includes(c.id)) {
+          drawCassette(c);
+        }
+      });
+
+      // Render Retrocade Dancing NPCs
+      if (currentRealm === 'retrocade') {
+        ctx.fillStyle = '#111';
+        ctx.fillRect(1160, 520, 380, 310); // Dancefloor
+        ctx.fillStyle = '#ff007f';
+        ctx.fillRect(1320, 530, 80, 30); // DJ Booth
+        ctx.fillStyle = '#fff';
+        ctx.fillText("DJ LOWLIFE", 1330, 550);
+        // Animated Dancers
+        const t = Date.now() * 0.005;
+        for (let i = 0; i < 6; i++) {
+          const dx = 1220 + (i % 3) * 80 + Math.sin(t + i) * 6;
+          const dy = 620 + Math.floor(i / 3) * 70 + Math.cos(t + i) * 4;
+          drawAvatar(dx, dy, i % 2 === 0 ? 'captive' : 'handler');
+        }
+      }
+
+      // Draw Player
+      drawAvatar(player.x, player.y, currentProfile.activeSkin);
+
+      update();
+      requestAnimationFrame(render);
+    }
+
+    // MODAL ROUTINES
+    function closeModals() {
+      document.querySelectorAll('.modal-backdrop').forEach(m => m.style.display = 'none');
+    }
+    function openQuickLinks() {
+      const c = document.getElementById('quickLinksContainer');
+      c.innerHTML = WORLD_CONFIG.quickLinks.map(l => `<a href="${l.url}" target="_blank" class="action-btn" style="display:block;margin:6px 0;">${l.label}</a>`).join('');
+      document.getElementById('quickLinksModal').style.display = 'flex';
+    }
+    function openDiscoHub() {
+      const c = document.getElementById('discoContainer');
+      c.innerHTML = WORLD_CONFIG.discography.map(d => `
+        <div style="background:#111;padding:12px;border-left:3px solid #00ffcc;margin-bottom:8px;">
+          <h3 style="color:#00ffcc;font-size:13px;">${d.title} (${d.year}) // ${d.type}</h3>
+          <p style="font-size:11px;color:#aaa;margin:6px 0;">${d.desc}</p>
+          <a href="${d.spotify}" target="_blank" class="action-btn" style="padding:4px 8px;font-size:10px;margin-right:6px;">SPOTIFY</a>
+          <a href="${d.apple}" target="_blank" class="action-btn" style="padding:4px 8px;font-size:10px;">APPLE</a>
+        </div>
+      `).join('');
+      document.getElementById('discoModal').style.display = 'flex';
+    }
+    function openMerchHub() {
+      const m = WORLD_CONFIG.merchDrop;
+      document.getElementById('merchModalTitle').innerText = m.title;
+      const c = document.getElementById('merchContainer');
+      c.innerHTML = `
+        <div style="background:#111;padding:10px;border:1px solid #333;margin-bottom:10px;">
+          <span style="color:#00ffcc;font-size:11px;">PROMO CODE: <strong>${m.discountCode}</strong> (10% OFF ARCHIVE)</span>
+        </div>
+        ${m.items.map(i => `
+          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #222;font-size:12px;">
+            <span>${i.name}</span>
+            <strong style="color:#00ffcc;">${i.price}</strong>
+          </div>
+        `).join('')}
+        <a href="${m.storeUrl}" target="_blank" class="action-btn" style="margin-top:10px;display:block;">VISIT OFFICIAL STORE</a>
+      `;
+      document.getElementById('merchModal').style.display = 'flex';
+    }
+    function openTapesModal() {
+      switchTapeTab('lore');
+      document.getElementById('tapesModal').style.display = 'flex';
+    }
+    function switchTapeTab(type) {
+      document.getElementById('tabLore').className = type === 'lore' ? 'tab-btn active' : 'tab-btn';
+      document.getElementById('tabVip').className = type === 'vip' ? 'tab-btn active' : 'tab-btn';
+      const c = document.getElementById('tapesListContainer');
+      const filtered = WORLD_CONFIG.cassettes.filter(t => t.type === type);
+      c.innerHTML = filtered.map(t => {
+        const has = currentProfile.collectedTapes.includes(t.id);
+        return `
+          <div style="background:#111;padding:10px;margin:6px 0;border-left:3px solid ${has ? '#00ffcc' : '#444'};">
+            <h4 style="color:${has ? '#00ffcc' : '#666'};font-size:12px;">${t.title} [${t.realm.toUpperCase()}] ${has ? '✓ FOUND' : '[LOCKED]'}</h4>
+            <p style="font-size:11px;color:${has ? '#aaa' : '#444'};">${has ? t.log : 'LOCATE CASSETTE TAPE IN THE WORLD TO UNLOCK AUDIO & LORE.'}</p>
+          </div>
+        `;
+      }).join('');
+
+      const box = document.getElementById('vaultBonusBox');
+      if (currentProfile.collectedTapes.length >= 12) {
+        box.innerHTML = `<a href="${WORLD_CONFIG.giveawayFormUrl}" target="_blank" class="action-btn" style="display:block;background:#ffd700;color:#000;">★ ALL 12 TAPES FOUND // CLAIM PHYSICAL CASSETTE TAPE</a>`;
+      } else {
+        box.innerHTML = `<div style="font-size:10px;color:#666;text-align:center;">FIND ALL 12 TAPES (${currentProfile.collectedTapes.length}/12) TO UNLOCK PHYSICAL TAPE GIVEAWAY</div>`;
+      }
+    }
+    function openSkinsLocker() {
+      const c = document.getElementById('skinsContainer');
+      const skins = [
+        { id: 'enforcer', name: 'DEFAULT ENFORCER', desc: 'Floor-length black duster coat & reflective helmet visor.' },
+        { id: 'captive', name: 'RETROCADE CAPTIVE', desc: 'Oversized neon graphic tee & light-wash denim. (Unlocked via Tape 01).' },
+        { id: 'handler', name: 'SYNDICATE HANDLER', desc: 'Tactical techwear crop vest & combat boots. (Unlocked via Arcade).' }
+      ];
+      c.innerHTML = skins.map(s => {
+        const unl = currentProfile.unlockedSkins.includes(s.id);
+        return `
+          <div style="background:#111;padding:10px;margin:6px 0;border-left:3px solid ${unl ? '#00ffcc' : '#444'};">
+            <h4 style="color:${unl ? '#00ffcc' : '#666'};font-size:12px;">${s.name}</h4>
+            <p style="font-size:11px;color:#888;">${s.desc}</p>
+            ${unl ? `<button class="action-btn" style="margin-top:6px;padding:4px 8px;font-size:10px;" onclick="equipSkin('${s.id}')">${currentProfile.activeSkin === s.id ? 'EQUIPPED' : 'EQUIP'}</button>` : '<span style="font-size:10px;color:#555;">[LOCKED BY OBJECTIVE]</span>'}
+          </div>
+        `;
+      }).join('');
+      document.getElementById('skinsModal').style.display = 'flex';
+    }
+    function equipSkin(id) { currentProfile.activeSkin = id; saveState(); openSkinsLocker(); }
+    function openProfileHub() {
+      document.getElementById('profileHandleInput').value = currentProfile.handle;
+      document.getElementById('profilePinInput').value = currentProfile.pin;
+      document.getElementById('profileModal').style.display = 'flex';
+    }
+    function saveUserProfile() {
+      currentProfile.handle = document.getElementById('profileHandleInput').value || '@enforcer';
+      currentProfile.pin = document.getElementById('profilePinInput').value || '7777';
+      saveState();
+      alert("PROFILE SAVED LOCALLY.");
+      closeModals();
+    }
+    function toggleCrtScanlines() {
+      const c = document.getElementById('crtOverlay');
+      const b = document.getElementById('crtToggleBtn');
+      c.style.display = c.style.display === 'none' ? 'block' : 'none';
+      b.innerText = c.style.display === 'none' ? '📺 CRT: OFF' : '📺 CRT: ON';
+    }
+
+    // ARCADE ENGINES
+    let arcadeLoopId = null;
+    function startArcadeGame(type) {
+      document.getElementById('arcadeGameTitle').innerText = `ARCADE // ${type.toUpperCase()}`;
+      document.getElementById('arcadeModal').style.display = 'flex';
+      const c = document.getElementById('arcadeCanvas');
+      const ac = c.getContext('2d');
+      if (arcadeLoopId) cancelAnimationFrame(arcadeLoopId);
+
+      let px = 320, drones = [{ x: 200, y: 100 }, { x: 300, y: 100 }, { x: 400, y: 100 }];
+      function loop() {
+        ac.fillStyle = '#000'; ac.fillRect(0, 0, 640, 480);
+        // Player
+        ac.fillStyle = '#00ffcc'; ac.fillRect(px - 15, 430, 30, 18);
+        // Drones
+        ac.fillStyle = '#ff007f';
+        drones.forEach(d => {
+          ac.fillRect(d.x, d.y, 24, 16);
+          d.x += Math.sin(Date.now() * 0.003) * 2;
+        });
+        ac.fillStyle = '#fff';
+        ac.fillText("ARCADE RUNNING // PRESS ESC TO RETURN TO VAULT", 20, 30);
+        arcadeLoopId = requestAnimationFrame(loop);
+      }
+      loop();
+    }
+
+    // DAW MINI SEQUENCER
+    let dawStep = 0, isDawPlaying = false, dawTimer = null;
+    const dawPattern = { kick: [1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0], snare: [0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0], hat: [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1] };
+    function openDawHub() { renderDaw(); document.getElementById('dawModal').style.display = 'flex'; }
+    function renderDaw() {
+      const c = document.getElementById('dawStepSequencer'); c.innerHTML = '';
+      ['kick', 'snare', 'hat'].forEach(track => {
+        const row = document.createElement('div');
+        row.style.display = 'flex'; row.style.gap = '4px'; row.style.alignItems = 'center';
+        const lbl = document.createElement('span'); lbl.style.width = '60px'; lbl.style.fontSize = '10px'; lbl.style.color = '#00ffcc'; lbl.innerText = track.toUpperCase();
+        row.appendChild(lbl);
+        for (let i = 0; i < 16; i++) {
+          const btn = document.createElement('div');
+          btn.style.width = '24px'; btn.style.height = '24px';
+          btn.style.background = dawPattern[track][i] ? '#00ffcc' : (Math.floor(i/4)%2 === 0 ? '#333' : '#222');
+          btn.style.cursor = 'pointer';
+          btn.onclick = () => { dawPattern[track][i] = dawPattern[track][i] ? 0 : 1; renderDaw(); };
+          row.appendChild(btn);
+        }
+        c.appendChild(row);
+      });
+    }
+    function toggleDawPlayback() {
+      isDawPlaying = !isDawPlaying;
+      document.getElementById('dawPlayBtn').innerText = isDawPlaying ? '❚❚ PAUSE' : '▶ PLAY';
+      if (isDawPlaying) {
+        dawTimer = setInterval(() => {
+          if (!audioCtx) initAudioEngine();
+          const t = audioCtx.currentTime;
+          if (dawPattern.kick[dawStep]) { const osc = audioCtx.createOscillator(); osc.frequency.setValueAtTime(120, t); osc.frequency.exponentialRampToValueAtTime(35, t + 0.1); osc.connect(masterGain); osc.start(t); osc.stop(t + 0.1); }
+          dawStep = (dawStep + 1) % 16;
+        }, 115);
+      } else { clearInterval(dawTimer); }
+    }
+    function stopDawPlayback() { isDawPlaying = false; clearInterval(dawTimer); dawStep = 0; document.getElementById('dawPlayBtn').innerText = '▶ PLAY'; }
+
+    // CASINO
+    function openCasinoHub() { document.getElementById('casinoModal').style.display = 'flex'; }
+    function spinSlot(cost) {
+      if (currentProfile.tokens < cost) { alert("NOT ENOUGH TOKENS. DANCE ON THE AFTERHOURS FLOOR TO EARN MORE."); return; }
+      currentProfile.tokens -= cost;
+      const s = ['7', '📼', '💎', '💀', '⚡'];
+      const r1 = s[Math.floor(Math.random() * s.length)], r2 = s[Math.floor(Math.random() * s.length)], r3 = s[Math.floor(Math.random() * s.length)];
+      document.getElementById('reel1').innerText = r1; document.getElementById('reel2').innerText = r2; document.getElementById('reel3').innerText = r3;
+      if (r1 === '7' && r2 === '7' && r3 === '7') { currentProfile.tokens += 100; document.getElementById('casinoPayoutText').innerText = "JACKPOT! +100 TOKENS!"; }
+      else if (r1 === r2 && r2 === r3) { currentProfile.tokens += 20; document.getElementById('casinoPayoutText').innerText = "MATCH 3! +20 TOKENS!"; }
+      else { document.getElementById('casinoPayoutText').innerText = "NO MATCH // SPIN AGAIN"; }
+      saveState();
+    }
+
+    // BOOTSTRAP ENGINE
+    saveState();
+    render();
+  </script>
+</body>
+</html>
