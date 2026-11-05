@@ -47,14 +47,12 @@
       user-select: none;
       -webkit-user-select: none;
       -webkit-touch-callout: none;
+      touch-action: none;
     }
     body, html {
       margin: 0; padding: 0; width: 100%; height: 100%;
       overflow: hidden; background-color: #050608;
       font-family: 'Share Tech Mono', monospace; color: #e2e8f0;
-    }
-    canvas {
-      touch-action: none;
     }
     .crt-overlay {
       pointer-events: none; position: absolute; inset: 0; z-index: 40;
@@ -119,14 +117,14 @@
 
     <!-- Active Audio Player HUD Bar -->
     <div class="flex items-center gap-1.5 bg-lowlife-charcoal/90 px-2 py-1 rounded-lg border border-lowlife-border text-xs">
-      <button id="bgmToggleBtn" class="p-1 text-lowlife-cyan hover:text-white transition cursor-pointer" title="Play / Pause Audio">
+      <button id="bgmToggleBtn" class="p-1 text-lowlife-cyan hover:text-white transition" title="Play / Pause Audio">
         <svg id="bgmPlayIcon" class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
       </button>
       <div class="flex flex-col max-w-[95px] sm:max-w-none truncate">
         <span class="text-[8px] text-neutral-400 font-mono uppercase leading-tight">BROADCAST:</span>
         <span id="activeTrackName" class="text-[10px] sm:text-[11px] font-bold text-white leading-tight truncate">"DANCING"</span>
       </div>
-      <select id="trackVersionSelect" class="bg-black text-[9px] sm:text-[10px] text-lowlife-cyan border border-neutral-700 rounded px-1 py-0.5 font-mono focus:outline-none cursor-pointer">
+      <select id="trackVersionSelect" class="bg-black text-[9px] sm:text-[10px] text-lowlife-cyan border border-neutral-700 rounded px-1 py-0.5 font-mono focus:outline-none">
         <option value="original">ORIGINAL</option>
         <option value="spedup">SPED (+15%)</option>
         <option value="slowed">SLOW (-15%)</option>
@@ -135,29 +133,31 @@
 
     <!-- Stats & Navigation Badges -->
     <div class="flex items-center gap-1 sm:gap-2">
+      <!-- Universal Sound Tokens -->
       <div class="px-2 py-1 bg-black/70 border border-yellow-500/50 rounded text-[10px] sm:text-xs text-yellow-400 font-mono flex items-center gap-1" title="Sound Tokens">
         <span>🪙</span>
         <b id="casinoTokensCount">100</b>
       </div>
 
+      <!-- Rare Battle Cassettes Counter -->
       <div class="px-2 py-1 bg-black/70 border border-lowlife-gold/60 rounded text-[10px] sm:text-xs text-lowlife-gold font-mono flex items-center gap-1" title="Battle Cassettes needed for Gated Rift">
         <span>📼</span>
         <b id="rareBattleTapeCount">0/50</b>
       </div>
 
       <!-- Quick Warp Button -->
-      <button id="quickWarpBtn" class="px-2 py-1 bg-gradient-to-r from-pink-600 to-cyan-500 hover:from-pink-500 hover:to-cyan-400 text-black font-cyber font-bold text-[10px] sm:text-xs rounded transition shadow-[0_0_12px_rgba(236,72,153,0.4)] cursor-pointer">
+      <button id="quickWarpBtn" class="px-2 py-1 bg-gradient-to-r from-pink-600 to-cyan-500 hover:from-pink-500 hover:to-cyan-400 text-black font-cyber font-bold text-[10px] sm:text-xs rounded transition shadow-[0_0_12px_rgba(236,72,153,0.4)]">
         <span>🌀</span>
-        <span id="quickWarpText" class="hidden sm:inline">WARP: RETROCADE</span>
+        <span id="quickWarpText" class="hidden sm:inline">WARP</span>
       </button>
 
       <!-- Quick All-Links Directory -->
-      <button id="openLinksModalBtn" class="px-2 py-1 bg-lowlife-cyan hover:bg-white text-black font-cyber font-bold text-[10px] sm:text-xs rounded transition shadow-[0_0_10px_rgba(0,240,255,0.3)] cursor-pointer">
+      <button id="openLinksModalBtn" class="px-2 py-1 bg-lowlife-cyan hover:bg-white text-black font-cyber font-bold text-[10px] sm:text-xs rounded transition shadow-[0_0_10px_rgba(0,240,255,0.3)]">
         LINKS
       </button>
 
       <!-- Locker Button -->
-      <button id="openSkinsBtn" class="px-1.5 py-1 bg-lowlife-charcoal hover:bg-neutral-800 border border-lowlife-border rounded text-[10px] sm:text-xs text-white cursor-pointer" title="Locker">
+      <button id="openSkinsBtn" class="px-1.5 py-1 bg-lowlife-charcoal hover:bg-neutral-800 border border-lowlife-border rounded text-[10px] sm:text-xs text-white" title="Locker">
         🧥
       </button>
     </div>
@@ -168,7 +168,7 @@
     <canvas id="gameCanvas" class="w-full h-full block cursor-crosshair"></canvas>
 
     <!-- IN-WORLD PROXIMITY INTERACTION BANNER -->
-    <div id="interactionPrompt" class="hidden pointer-events-auto absolute bottom-28 sm:bottom-12 z-30 px-4 py-2 bg-black/90 border border-lowlife-neonPurple text-lowlife-neonPurple rounded-md shadow-[0_0_20px_rgba(168,85,247,0.5)] flex items-center gap-2 font-mono text-xs sm:text-sm backdrop-blur cursor-pointer" onclick="triggerActiveInteraction()">
+    <div id="interactionPrompt" class="hidden pointer-events-auto absolute bottom-28 sm:bottom-12 z-30 px-4 py-2 bg-black/90 border border-lowlife-neonPurple text-lowlife-neonPurple rounded-md shadow-[0_0_20px_rgba(168,85,247,0.5)] flex items-center gap-2 font-mono text-xs sm:text-sm backdrop-blur">
       <span class="w-2.5 h-2.5 rounded-full bg-lowlife-neonPurple prompt-pulse"></span>
       <span id="promptText" class="font-bold text-white tracking-wide">TAP ACTION</span>
     </div>
@@ -179,41 +179,39 @@
     </div>
   </main>
 
-  <!-- ON-SCREEN CONTROLS -->
-  <div id="touchControls" class="pointer-events-none absolute inset-x-0 bottom-6 z-30 px-5 flex items-end justify-between">
+  <!-- MOBILE ON-SCREEN TOUCH CONTROLS -->
+  <div id="touchControls" class="sm:hidden pointer-events-none absolute inset-x-0 bottom-6 z-30 px-5 flex items-end justify-between">
     <!-- Virtual 360 Analog Joystick Base -->
-    <div id="joystickZone" class="pointer-events-auto relative w-28 h-28 rounded-full bg-black/50 border border-lowlife-border/80 backdrop-blur-md flex items-center justify-center shadow-inner cursor-pointer" style="touch-action: none;">
-      <div class="absolute inset-0 rounded-full border border-lowlife-cyan/20 pointer-events-none"></div>
-      <div id="joystickKnob" class="w-12 h-12 rounded-full bg-gradient-to-br from-lowlife-cyan to-blue-700 opacity-80 border-2 border-white shadow-[0_0_15px_rgba(0,240,255,0.6)] transform translate-x-0 translate-y-0 transition-transform duration-75 pointer-events-none"></div>
+    <div id="joystickZone" class="pointer-events-auto relative w-28 h-28 rounded-full bg-black/50 border border-lowlife-border/80 backdrop-blur-md flex items-center justify-center shadow-inner">
+      <div class="absolute inset-0 rounded-full border border-lowlife-cyan/20"></div>
+      <div id="joystickKnob" class="w-12 h-12 rounded-full bg-gradient-to-br from-lowlife-cyan to-blue-700 opacity-80 border-2 border-white shadow-[0_0_15px_rgba(0,240,255,0.6)] transform translate-x-0 translate-y-0 transition-transform duration-75"></div>
     </div>
 
     <!-- Combat & Action Cluster -->
     <div class="pointer-events-auto flex items-end gap-2">
-      <!-- Projectile Plasma Attack Button (Tap: Fast bolt / Hold: Heavy AOE Orb) -->
-      <button id="btnShoot" class="relative w-14 h-14 p-2 rounded-full bg-black/70 border-2 border-lowlife-cyan text-lowlife-cyan active:scale-95 font-cyber font-bold text-[10px] flex flex-col items-center justify-center shadow-[0_0_12px_rgba(0,240,255,0.4)] backdrop-blur transition cursor-pointer" style="touch-action: none;">
+      <!-- Projectile Plasma Attack Button -->
+      <button id="btnShoot" class="relative w-14 h-14 p-2 rounded-full bg-black/70 border-2 border-lowlife-cyan text-lowlife-cyan active:scale-95 font-cyber font-bold text-[10px] flex flex-col items-center justify-center shadow-[0_0_12px_rgba(0,240,255,0.4)] backdrop-blur transition">
         <span id="btnShootLabel">FIRE</span>
         <span class="text-[8px] font-mono text-neutral-400">[J]</span>
         <div id="btnShootChargeFill" class="absolute inset-0 rounded-full bg-lowlife-cyan/30 opacity-0 transition-opacity pointer-events-none"></div>
       </button>
 
-      <!-- Melee Tactical Slash Button (3-Hit Combo + Fast 2.5s Purple Charge) -->
-      <button id="btnSlash" class="relative w-16 h-16 p-2 rounded-full bg-black/70 border-2 border-lowlife-red text-lowlife-red active:scale-95 font-cyber font-bold text-xs flex flex-col items-center justify-center shadow-[0_0_15px_rgba(255,0,60,0.5)] backdrop-blur transition cursor-pointer" style="touch-action: none;">
+      <!-- Melee Tactical Slash Button -->
+      <button id="btnSlash" class="relative w-16 h-16 p-2 rounded-full bg-black/70 border-2 border-lowlife-red text-lowlife-red active:scale-95 font-cyber font-bold text-xs flex flex-col items-center justify-center shadow-[0_0_15px_rgba(255,0,60,0.5)] backdrop-blur transition">
         <span id="btnSlashLabel">SLASH</span>
         <span id="btnSlashSub" class="text-[8px] font-mono text-neutral-400">[K]</span>
         <div id="btnSlashChargeRing" class="absolute inset-0 rounded-full border-2 border-purple-500 opacity-0 transition-opacity pointer-events-none"></div>
       </button>
 
-      <!-- Adaptive Contextual Interact Button (Morphs Blue -> Purple) -->
-      <button id="btnAction" class="btn-action-idle w-14 h-14 p-2 rounded-full border-2 font-cyber font-bold text-[10px] flex flex-col items-center justify-center backdrop-blur transition-all duration-200 active:scale-95 cursor-pointer">
+      <!-- Adaptive Contextual Interact Button -->
+      <button id="btnAction" class="btn-action-idle w-14 h-14 p-2 rounded-full border-2 font-cyber font-bold text-[10px] flex flex-col items-center justify-center backdrop-blur transition-all duration-200 active:scale-95">
         <span id="btnActionLabel">ACTION</span>
         <span id="btnActionSub" class="text-[8px] font-mono text-neutral-300">[E]</span>
       </button>
     </div>
   </div>
 
-  <!-- ============================================================== -->
-  <!-- MODALS: GATED RIFT, DISCOGRAPHY, LINKS, TRUNK, RELICS, CASSETTE -->
-  <!-- ============================================================== -->
+  <!-- MODALS -->
 
   <!-- GATED PORTAL MODAL -->
   <div id="gatedModal" class="hidden fixed inset-0 z-50 bg-black/95 backdrop-blur-md flex items-center justify-center p-4">
@@ -240,7 +238,7 @@
         <button id="gatedProceedBtn" onclick="attemptGateWarp()" class="flex-1 py-2 bg-neutral-800 text-neutral-500 font-cyber font-bold text-xs rounded cursor-not-allowed">
           WARP TO HORIZON DIMENSION
         </button>
-        <button onclick="closeModals()" class="px-4 py-2 bg-neutral-900 hover:bg-neutral-800 text-white font-cyber text-xs rounded cursor-pointer">
+        <button onclick="closeModals()" class="px-4 py-2 bg-neutral-900 hover:bg-neutral-800 text-white font-cyber text-xs rounded">
           RETURN
         </button>
       </div>
@@ -255,7 +253,7 @@
           <h2 class="text-sm sm:text-base font-cyber font-bold text-white tracking-widest uppercase">DISCOGRAPHY VAULT // STUDIO ROOM</h2>
           <p class="text-[10px] text-neutral-400 font-mono">RELEASES & ARCHIVES</p>
         </div>
-        <button onclick="closeModals()" class="text-neutral-400 hover:text-white p-2 text-xl cursor-pointer">✕</button>
+        <button onclick="closeModals()" class="text-neutral-400 hover:text-white p-2 text-xl">✕</button>
       </div>
       <div class="overflow-y-auto space-y-3.5 pr-1 font-mono text-xs">
         <div class="p-3.5 bg-black/60 border border-lowlife-cyan/60 rounded-lg flex flex-col sm:flex-row gap-3 items-start">
@@ -266,30 +264,13 @@
               <span class="text-[9px] text-lowlife-cyan border border-lowlife-cyan/40 px-1.5 py-0.5 rounded font-cyber">OUT NOW</span>
             </div>
             <p class="text-neutral-300 text-[11px] mt-1 leading-relaxed">
-              The flagship single introducing the Blade x Casshern Sins dystopian timeline. A sharp fusion of electronic dance bounce and melodic rap flows.
+              The flagship single introducing the Blade x Casshern Sins dystopian timeline[cite: 2]. A sharp fusion of electronic dance bounce and melodic rap flows[cite: 2].
             </p>
             <div class="flex flex-wrap gap-1.5 mt-2.5">
               <a href="https://open.spotify.com/track/6jfPp34RiWhv8HUEfSpuhg" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 bg-[#1DB954] text-black font-cyber font-bold text-[10px] rounded">SPOTIFY</a>
               <a href="https://music.apple.com/album/dancing/6824158392" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 bg-white text-black font-cyber font-bold text-[10px] rounded">APPLE MUSIC</a>
               <a href="https://clublowlife.dimensions.fm/dancing" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 bg-purple-600 text-white font-cyber font-bold text-[10px] rounded">ALL PLATFORMS</a>
-              <button onclick="setTrackBgm('original')" class="px-2.5 py-1 bg-neutral-800 hover:bg-neutral-700 text-lowlife-cyan font-cyber text-[10px] rounded cursor-pointer">▶ PLAY IN WORLD</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="p-3.5 bg-black/60 border border-neutral-800 rounded-lg flex flex-col sm:flex-row gap-3 items-start">
-          <div class="w-14 h-14 bg-lowlife-gold/10 border border-lowlife-gold rounded flex-shrink-0 flex items-center justify-center text-2xl">📼</div>
-          <div class="flex-1">
-            <div class="flex items-center justify-between">
-              <h3 class="text-xs sm:text-sm font-bold font-cyber text-white">RETROCADE EVOLVED (DELUXE)</h3>
-              <span class="text-[9px] text-lowlife-gold border border-lowlife-gold/40 px-1.5 py-0.5 rounded">DELUXE EXPANSION</span>
-            </div>
-            <p class="text-neutral-300 text-[11px] mt-1 leading-relaxed">
-              The extended edition contains unreleased bonus records not on digital streaming portals.
-            </p>
-            <div class="flex gap-2 mt-2.5">
-              <a href="https://clublowlife.dimensions.fm/retrocade-evolved" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 bg-neutral-800 hover:bg-neutral-700 text-white font-cyber text-[10px] rounded">STREAM PROJECT</a>
-              <a href="https://forms.gle/TsE7MAHSD1erDca59" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 bg-lowlife-gold text-black font-cyber font-bold text-[10px] rounded">CLAIM CASSETTE</a>
+              <button onclick="setTrackBgm('original')" class="px-2.5 py-1 bg-neutral-800 hover:bg-neutral-700 text-lowlife-cyan font-cyber text-[10px] rounded">▶ PLAY IN WORLD</button>
             </div>
           </div>
         </div>
@@ -305,7 +286,7 @@
           <h2 class="text-sm sm:text-base font-bold font-cyber text-white tracking-widest uppercase">CLUB LOWLIFE DIRECTORY</h2>
           <p class="text-[10px] text-neutral-400 font-mono">OFFICIAL GATES & STREAMING</p>
         </div>
-        <button onclick="closeModals()" class="text-neutral-400 hover:text-white p-1 text-lg cursor-pointer">✕</button>
+        <button onclick="closeModals()" class="text-neutral-400 hover:text-white p-1 text-lg">✕</button>
       </div>
       <div class="space-y-2 font-cyber text-xs">
         <a href="https://open.spotify.com/track/6jfPp34RiWhv8HUEfSpuhg" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between p-3 rounded-lg bg-black/60 border border-lowlife-cyan/40 hover:border-lowlife-cyan transition">
@@ -324,31 +305,17 @@
         </a>
         <a href="https://clublowlife.dimensions.fm/dancing" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between p-3 rounded-lg bg-black/60 border border-purple-500/40 hover:border-purple-400 transition">
           <div>
-            <div class="text-white font-bold text-xs sm:text-sm">STREAM 'DANCING' (EVERYWHERE ELSE)</div>
+            <div class="text-white font-bold text-xs sm:text-sm">STREAM 'DANCING' (ALL PLATFORMS)</div>
             <div class="text-[10px] text-neutral-400 font-mono">Soundcloud, Tidal, Amazon</div>
           </div>
           <span class="text-xs text-purple-400">LISTEN</span>
         </a>
         <a href="https://www.instagram.com/omglowlife" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between p-3 rounded-lg bg-black/60 border border-neutral-700 hover:border-pink-500 transition">
           <div>
-            <div class="text-white font-bold text-xs sm:text-sm">INSTAGRAM</div>
-            <div class="text-[10px] text-neutral-400 font-mono">@omglowlife</div>
+            <div class="text-white font-bold text-xs sm:text-sm">INSTAGRAM SYNDICATE</div>
+            <div class="text-[10px] text-neutral-400 font-mono">@CLUBLOWLIFE</div>
           </div>
           <span class="text-xs text-pink-400">JOIN</span>
-        </a>
-        <a href="https://www.tiktok.com/@clublowlife" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between p-3 rounded-lg bg-black/60 border border-neutral-700 hover:border-cyan-400 transition">
-          <div>
-            <div class="text-white font-bold text-xs sm:text-sm">TIK TOK</div>
-            <div class="text-[10px] text-neutral-400 font-mono">@clublowlife</div>
-          </div>
-          <span class="text-xs text-lowlife-cyan">FOLLOW</span>
-        </a>
-        <a href="https://clublowlife.dimensions.fm/retrocade-evolved" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between p-3 rounded-lg bg-black/60 border border-neutral-700 hover:border-lowlife-gold transition">
-          <div>
-            <div class="text-white font-bold text-xs sm:text-sm">RETROCADE ARCHIVE</div>
-            <div class="text-[10px] text-neutral-400 font-mono">Retro Cade Evolved Universe</div>
-          </div>
-          <span class="text-xs text-lowlife-gold">VISIT</span>
         </a>
       </div>
     </div>
@@ -359,28 +326,14 @@
     <div class="relative w-full max-w-sm bg-lowlife-charcoal border-2 border-lowlife-cyan rounded-xl p-4 sm:p-5 shadow-[0_0_30px_rgba(0,240,255,0.3)]">
       <div class="flex items-center justify-between border-b border-neutral-800 pb-2.5 mb-3">
         <div>
-          <h3 class="text-sm sm:text-base font-cyber font-bold text-white uppercase tracking-wider">CAR TRUNK // MERCH ARCHIVE</h3>
-          <p class="text-[10px] text-neutral-400 font-mono">LIMITED SYNDICATE PIECES</p>
+          <h3 class="text-sm sm:text-base font-cyber font-bold text-white uppercase tracking-wider">BURNED-OUT TRUNK // MERCH DROP</h3>
+          <p class="text-[10px] text-neutral-400 font-mono">RECOVERED FROM SUBSTANCE SILO 07</p>
         </div>
-        <button onclick="closeModals()" class="text-neutral-400 hover:text-white p-1 text-lg cursor-pointer">✕</button>
+        <button onclick="closeModals()" class="text-neutral-400 hover:text-white p-1 text-lg">✕</button>
       </div>
       <div class="p-2.5 bg-black/70 border border-lowlife-cyan/40 rounded mb-3 flex items-center justify-between font-mono text-xs">
-        <span class="text-neutral-400">PROMO CODE:</span>
-        <span class="text-lowlife-cyan font-bold">LOWLIFE10 / WASTELAND15</span>
-      </div>
-      <div class="space-y-2 font-mono text-xs mb-3.5">
-        <div class="flex justify-between items-center p-2 bg-black/40 border border-neutral-800 rounded">
-          <span class="text-white font-cyber text-xs">Black Heavyweight Nirvana Tee</span>
-          <strong class="text-lowlife-cyan font-bold">$40</strong>
-        </div>
-        <div class="flex justify-between items-center p-2 bg-black/40 border border-neutral-800 rounded">
-          <span class="text-white font-cyber text-xs">White Heavyweight Nirvana Tee</span>
-          <strong class="text-lowlife-cyan font-bold">$40</strong>
-        </div>
-        <div class="flex justify-between items-center p-2 bg-black/40 border border-neutral-800 rounded">
-          <span class="text-white font-cyber text-xs">Club Lowlife Cassette Tape</span>
-          <strong class="text-lowlife-gold font-bold">$15</strong>
-        </div>
+        <span class="text-neutral-400">EXCLUSIVE CODE:</span>
+        <span class="text-lowlife-cyan font-bold">WASTELAND15 (15% OFF)</span>
       </div>
       <a href="https://clublowlife.com" target="_blank" rel="noopener noreferrer" class="block w-full py-2.5 bg-lowlife-cyan hover:bg-white text-black font-cyber font-bold text-center text-xs rounded transition shadow-[0_0_15px_rgba(0,240,255,0.4)]">
         ENTER MERCH STORE // CHECKOUT
@@ -411,7 +364,7 @@
         <a href="https://music.apple.com/album/dancing/6824158392" target="_blank" rel="noopener noreferrer" class="py-2 bg-white text-black font-cyber font-bold text-xs rounded">APPLE MUSIC</a>
       </div>
 
-      <button onclick="closeModals()" class="w-full py-2 bg-neutral-900 hover:bg-neutral-800 text-white font-cyber text-xs rounded cursor-pointer">
+      <button onclick="closeModals()" class="w-full py-2 bg-neutral-900 hover:bg-neutral-800 text-white font-cyber text-xs rounded">
         DISCONNECT RELAY
       </button>
     </div>
@@ -431,7 +384,7 @@
       <a href="https://forms.gle/TsE7MAHSD1erDca59" target="_blank" rel="noopener noreferrer" class="block w-full py-2.5 bg-lowlife-gold text-black font-cyber font-bold text-xs rounded transition hover:bg-yellow-300 mb-2">
         OPEN SHIPPING CLAIM FORM
       </a>
-      <button onclick="closeModals()" class="w-full py-2 bg-neutral-900 hover:bg-neutral-800 text-white font-cyber text-xs rounded cursor-pointer">
+      <button onclick="closeModals()" class="w-full py-2 bg-neutral-900 hover:bg-neutral-800 text-white font-cyber text-xs rounded">
         RETURN TO WORLD
       </button>
     </div>
@@ -442,108 +395,66 @@
     <div class="relative w-full max-w-sm bg-lowlife-charcoal border border-lowlife-border rounded-xl p-4 max-h-[85vh] flex flex-col">
       <div class="flex items-center justify-between border-b border-neutral-800 pb-2 mb-3">
         <h3 class="text-sm font-cyber font-bold text-white">AVATAR LOCKER</h3>
-        <button onclick="closeModals()" class="text-neutral-400 hover:text-white cursor-pointer">✕</button>
+        <button onclick="closeModals()" class="text-neutral-400 hover:text-white">✕</button>
       </div>
       <div id="skinsList" class="space-y-2 overflow-y-auto font-mono text-xs"></div>
-    </div>
-  </div>
-
-  <!-- ARCADE CAB MODAL -->
-  <div id="arcadeModal" class="hidden fixed inset-0 z-50 bg-black/95 backdrop-blur-md flex items-center justify-center p-3">
-    <div class="relative w-full max-w-md bg-lowlife-charcoal border-2 border-lowlife-cyan rounded-2xl p-5 shadow-2xl text-center font-mono">
-      <div class="flex items-center justify-between border-b border-lowlife-cyan/30 pb-2 mb-3">
-        <span class="text-xs font-cyber font-bold text-lowlife-cyan">🕹️ RETRO ARCADE CAB</span>
-        <button onclick="closeModals()" class="text-neutral-400 hover:text-white text-lg cursor-pointer">✕</button>
-      </div>
-      <p class="text-xs text-neutral-300 mb-4">TEST YOUR REFLEXES IN THE SYNDICATE SIMULATOR TO EARN BONUS TOKENS!</p>
-      <button onclick="userProfile.casinoTokens += 15; saveProfile(); playSfx('coin'); showToast('+15 ARCADE TOKENS WON! 🕹️');" class="w-full py-2.5 bg-lowlife-cyan text-black font-cyber font-bold text-xs rounded cursor-pointer">
-        PLAY QUICK ROUND (+15 TOKENS)
-      </button>
-    </div>
-  </div>
-
-  <!-- FL STUDIO SOUND LAB MODAL -->
-  <div id="dawModal" class="hidden fixed inset-0 z-50 bg-black/95 backdrop-blur-md flex items-center justify-center p-3">
-    <div class="relative w-full max-w-md bg-[#12141c] border-2 border-[#ffaa00] rounded-xl p-5 text-center font-mono">
-      <div class="flex items-center justify-between border-b border-neutral-800 pb-2 mb-3">
-        <span class="text-xs font-cyber font-bold text-[#ffaa00]">🎛️ FL STUDIO SOUND LAB</span>
-        <button onclick="closeModals()" class="text-neutral-400 hover:text-white text-lg cursor-pointer">✕</button>
-      </div>
-      <p class="text-xs text-neutral-300 mb-4">16-STEP SEQUENCER // TOGGLE LIVE BACKGROUND SYNTHESIS</p>
-      <div class="flex gap-2">
-        <button onclick="toggleBgm()" class="flex-1 py-2 bg-green-500 text-black font-cyber font-bold text-xs rounded cursor-pointer">▶ TOGGLE SYNTH</button>
-        <button onclick="closeModals()" class="px-4 py-2 bg-neutral-800 text-white font-cyber text-xs rounded cursor-pointer">CLOSE</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- HOLDING ROOM MODAL -->
-  <div id="holdingModal" class="hidden fixed inset-0 z-50 bg-black/95 backdrop-blur-md flex items-center justify-center p-4">
-    <div class="relative w-full max-w-md bg-lowlife-charcoal border-2 border-lowlife-red rounded-xl p-5 shadow-[0_0_40px_rgba(255,0,60,0.4)] font-mono text-xs text-neutral-300">
-      <div class="flex justify-between items-center border-b border-neutral-800 pb-2 mb-3">
-        <h3 class="font-cyber font-bold text-lowlife-red uppercase">HOLDING CHAMBER // CRT ARCHIVE</h3>
-        <button onclick="closeModals()" class="text-neutral-400 hover:text-white text-lg cursor-pointer">✕</button>
-      </div>
-      <p class="leading-relaxed mb-3">The captive tied to the folding metal chair represents the previous creative self, held hostage as the sound evolved from neon synthwave into dystopian noir.</p>
-      <button onclick="closeModals()" class="w-full py-2 bg-neutral-800 hover:bg-neutral-700 text-white font-cyber text-xs rounded cursor-pointer">DISMISS</button>
-    </div>
-  </div>
-
-  <!-- RESTROOM MIRROR PUZZLE MODAL -->
-  <div id="mirrorPuzzleModal" class="hidden fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-4">
-    <div class="relative w-full max-w-xs bg-[#0a0f12] border-2 border-lowlife-cyan rounded-2xl p-5 text-center font-mono">
-      <div class="flex justify-between items-center mb-2">
-        <h3 class="text-xs font-cyber font-bold text-lowlife-cyan tracking-widest uppercase">RESTROOM KEYPAD</h3>
-        <button onclick="closeModals()" class="text-neutral-400 hover:text-white cursor-pointer">✕</button>
-      </div>
-      <p class="text-[10px] text-neutral-400 mb-3">ENTER 3-DIGIT HIGH FREQUENCY CODE:</p>
-      <div id="keypadDisplay" class="w-28 mx-auto py-1.5 bg-black border border-neutral-700 rounded text-xl text-white font-bold mb-3 tracking-widest">---</div>
-      <div class="grid grid-cols-3 gap-1.5 w-44 mx-auto mb-3">
-        <button onclick="pressKeypad('1')" class="py-2 bg-neutral-900 border border-neutral-700 text-white font-bold rounded cursor-pointer">1</button>
-        <button onclick="pressKeypad('2')" class="py-2 bg-neutral-900 border border-neutral-700 text-white font-bold rounded cursor-pointer">2</button>
-        <button onclick="pressKeypad('3')" class="py-2 bg-neutral-900 border border-neutral-700 text-white font-bold rounded cursor-pointer">3</button>
-        <button onclick="pressKeypad('4')" class="py-2 bg-neutral-900 border border-neutral-700 text-white font-bold rounded cursor-pointer">4</button>
-        <button onclick="pressKeypad('5')" class="py-2 bg-neutral-900 border border-neutral-700 text-white font-bold rounded cursor-pointer">5</button>
-        <button onclick="pressKeypad('6')" class="py-2 bg-neutral-900 border border-neutral-700 text-white font-bold rounded cursor-pointer">6</button>
-        <button onclick="pressKeypad('7')" class="py-2 bg-neutral-900 border border-neutral-700 text-white font-bold rounded cursor-pointer">7</button>
-        <button onclick="pressKeypad('8')" class="py-2 bg-neutral-900 border border-neutral-700 text-white font-bold rounded cursor-pointer">8</button>
-        <button onclick="pressKeypad('9')" class="py-2 bg-neutral-900 border border-neutral-700 text-white font-bold rounded cursor-pointer">9</button>
-        <button onclick="clearKeypad()" class="py-2 bg-red-950 text-red-300 font-bold rounded cursor-pointer">C</button>
-        <button onclick="pressKeypad('0')" class="py-2 bg-neutral-900 border border-neutral-700 text-white font-bold rounded cursor-pointer">0</button>
-        <button onclick="submitKeypad()" class="py-2 bg-lowlife-cyan text-black font-bold rounded cursor-pointer">OK</button>
-      </div>
-      <p class="text-[9px] text-neutral-500">CLUE: "LIVING ON THE HIGHS"</p>
-    </div>
-  </div>
-
-  <!-- RETROCADE CASINO MODAL -->
-  <div id="casinoModal" class="hidden fixed inset-0 z-50 bg-black/95 backdrop-blur-md flex items-center justify-center p-3 sm:p-5">
-    <div class="relative w-full max-w-sm bg-[#140b22] border-2 border-pink-500 rounded-2xl p-4 text-center font-mono">
-      <div class="flex items-center justify-between border-b border-pink-500/40 pb-2 mb-3">
-        <span class="text-xs font-cyber font-bold text-pink-400">🎰 RETROCADE LUCKY 777</span>
-        <button onclick="closeModals()" class="text-neutral-400 hover:text-white text-lg cursor-pointer">✕</button>
-      </div>
-      <div class="grid grid-cols-3 gap-2 p-3 bg-neutral-950 rounded border border-neutral-800 mb-3">
-        <div id="reel1" class="h-16 border border-pink-500 rounded flex items-center justify-center text-3xl font-cyber text-yellow-400">7</div>
-        <div id="reel2" class="h-16 border border-cyan-400 rounded flex items-center justify-center text-3xl font-cyber text-yellow-400">7</div>
-        <div id="reel3" class="h-16 border border-yellow-400 rounded flex items-center justify-center text-3xl font-cyber text-yellow-400">7</div>
-      </div>
-      <div id="slotStatusMessage" class="text-[10px] text-cyan-300 mb-3 min-h-[16px]">TEST YOUR LUCK</div>
-      <button onclick="spinSlotMachine()" class="w-full py-2.5 bg-gradient-to-r from-yellow-400 to-pink-500 text-black font-cyber font-bold text-xs rounded transition active:scale-95 cursor-pointer">PULL LEVER [SPIN 10 TOKENS]</button>
     </div>
   </div>
 
   <!-- JAVASCRIPT MASTER BUNDLE -->
   <script>
     // ==============================================================
-    // 1. DATA, CONFIG & GLOBALS (DECLARED BEFORE INITIALIZATION)
+    // CORE INITIALIZATION & GLOBALS
+    // ==============================================================
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+
+    const WORLD_WIDTH = 3200;
+    const WORLD_HEIGHT = 2400;
+
+    let currentDimension = 'underground'; // 'underground', 'retrocade', 'wasteland'
+
+    const DIMENSIONS = {
+      underground: { name: "UNDERGROUND", width: 1600, height: 1000 },
+      retrocade: { name: "RETROCADE NEON", width: 1600, height: 1000 },
+      wasteland: { name: "RUINED GRID", width: 3200, height: 2400 }
+    };
+
+    const camera = { x: 0, y: 0, width: 800, height: 600 };
+
+    const keys = { up: false, down: false, left: false, right: false };
+    const analogVector = { x: 0, y: 0, active: false };
+
+    const player = {
+      x: 320,
+      y: 750,
+      width: 24,
+      height: 36,
+      direction: 'down',
+      speed: 4,
+      hp: 100,
+      maxHp: 100,
+      iFrames: 0,
+      knockbackVx: 0,
+      knockbackVy: 0,
+      isMoving: false,
+      animTimer: 0
+    };
+
+    function switchDimension(dimKey, spawnX, spawnY) {
+      currentDimension = dimKey;
+      const cfg = DIMENSIONS[dimKey];
+      player.x = spawnX; player.y = spawnY;
+      
+      const badge = document.getElementById('dimensionBadge');
+      if (badge) badge.innerText = `DIMENSION: ${cfg.name}`;
+      showToast(`WARPED TO ${cfg.name}! 🌀`);
+    }
+
+    // ==============================================================
+    // PERSISTENT PROFILE & CASSETTE PROGRESSION
     // ==============================================================
     const RARE_TAPES_THRESHOLD = 50;
-
-    const SKINS_DATA = [
-      { id: 'enforcer', name: 'THE NEW ERA ENFORCER', desc: 'Default Blade trench coat & reflective visor.' },
-      { id: 'drifter', name: 'THE WASTELAND DRIFTER', desc: 'Unlocked from Obsolete Vault Safe.' }
-    ];
 
     const DEFAULT_PROFILE = {
       handle: "Enforcer_Guest",
@@ -555,182 +466,52 @@
     };
 
     let userProfile = { ...DEFAULT_PROFILE };
-    let currentDimension = 'underground'; // Starts in Underground
 
-    const DIMENSIONS = {
-      underground: { name: "UNDERGROUND", width: 1600, height: 1000 },
-      retrocade: { name: "RETROCADE NEON", width: 1600, height: 1000 },
-      wasteland: { name: "RUINED GRID", width: 3200, height: 2400 }
-    };
+    function loadProfile() {
+      try {
+        const saved = localStorage.getItem('club_lowlife_save');
+        if (saved) userProfile = { ...DEFAULT_PROFILE, ...JSON.parse(saved) };
+      } catch (e) {}
+      updateHudProfile();
+      renderSkins();
+    }
 
-    const canvas = document.getElementById('gameCanvas');
-    const ctx = canvas.getContext('2d');
+    function saveProfile() {
+      try { localStorage.setItem('club_lowlife_save', JSON.stringify(userProfile)); } catch (e) {}
+      updateHudProfile();
+    }
 
-    const player = {
-      x: 320, y: 750, width: 24, height: 38, speed: 4.8,
-      direction: 'down', isMoving: false, animTimer: 0,
-      hp: 100, maxHp: 100, iFrames: 0,
-      knockbackVx: 0, knockbackVy: 0
-    };
-
-    const camera = { x: 0, y: 0, width: 0, height: 0 };
-    const keys = { up: false, down: false, left: false, right: false };
-    const analogVector = { x: 0, y: 0, active: false };
-
-    // CRITICAL COLLISION HELPER (Restored so updatePlayer & draw run every frame!)
-    function checkCollision(r1, r2) {
-      return (
-        r1.x < r2.x + r2.width &&
-        r1.x + r1.width > r2.x &&
-        r1.y < r2.y + r2.height &&
-        r1.y + r1.height > r2.y
-      );
+    function updateHudProfile() {
+      const cCount = document.getElementById('casinoTokensCount');
+      if (cCount) cCount.innerText = userProfile.casinoTokens;
+      const tCount = document.getElementById('rareBattleTapeCount');
+      if (tCount) tCount.innerText = `${userProfile.collectedRareTapes}/${RARE_TAPES_THRESHOLD}`;
+      
+      const gatedProgressText = document.getElementById('gatedTapeProgress');
+      if (gatedProgressText) gatedProgressText.innerText = `${userProfile.collectedRareTapes} / ${RARE_TAPES_THRESHOLD} TAPES`;
+      const gatedBar = document.getElementById('gatedProgressBar');
+      if (gatedBar) {
+        const pct = Math.min(100, Math.floor((userProfile.collectedRareTapes / RARE_TAPES_THRESHOLD) * 100));
+        gatedBar.style.width = `${pct}%`;
+      }
+      const gatedMsg = document.getElementById('gatedStatusMessage');
+      const gatedBtn = document.getElementById('gatedProceedBtn');
+      if (gatedMsg && gatedBtn) {
+        if (userProfile.collectedRareTapes >= RARE_TAPES_THRESHOLD) {
+          gatedMsg.className = "text-xs font-mono text-green-400 mb-4";
+          gatedMsg.innerText = "ACCESS GRANTED // NEURAL LINK DECONTAMINATED // DIMENSIONAL PASS ACTIVE";
+          gatedBtn.className = "flex-1 py-2 bg-gradient-to-r from-lowlife-cyan to-pink-500 hover:opacity-90 text-black font-cyber font-bold text-xs rounded transition cursor-pointer";
+        } else {
+          gatedMsg.className = "text-xs font-mono text-red-400 mb-4";
+          gatedMsg.innerText = `ACCESS RESTRICTED // REQUIRE ${RARE_TAPES_THRESHOLD - userProfile.collectedRareTapes} MORE RARE BATTLE CASSETTES`;
+          gatedBtn.className = "flex-1 py-2 bg-neutral-800 text-neutral-500 font-cyber font-bold text-xs rounded cursor-not-allowed";
+        }
+      }
     }
 
     // ==============================================================
-    // 2. WORLD OBSTACLES, DOORS, CHESTS & ZONES
+    // AUDIO ENGINE & PROCEDURAL SYNTHESIZER
     // ==============================================================
-    const undergroundObstacles = [
-      { x: 0, y: 0, width: 1600, height: 28 },
-      { x: 0, y: 972, width: 1600, height: 28 },
-      { x: 0, y: 0, width: 28, height: 1000 },
-      { x: 1572, y: 0, width: 28, height: 1000 },
-      // Corridor Wall with 100px Wide Doorways
-      { x: 28, y: 350, width: 122, height: 30 },
-      { x: 250, y: 350, width: 260, height: 30 },
-      { x: 610, y: 350, width: 300, height: 30 },
-      { x: 1010, y: 350, width: 320, height: 30 },
-      { x: 1430, y: 350, width: 142, height: 30 },
-      // Room Dividers
-      { x: 360, y: 28, width: 20, height: 210 },
-      { x: 740, y: 28, width: 20, height: 210 },
-      { x: 1160, y: 28, width: 20, height: 210 },
-      // Props
-      { x: 80, y: 150, width: 130, height: 70 },
-      { x: 410, y: 150, width: 140, height: 70 },
-      { x: 800, y: 150, width: 150, height: 70 },
-      { x: 1230, y: 150, width: 110, height: 70 },
-      { x: 300, y: 550, width: 150, height: 70 },
-      { x: 750, y: 650, width: 80, height: 60 }
-    ];
-
-    const retrocadeObstacles = [
-      { x: 0, y: 0, width: 1600, height: 28 },
-      { x: 0, y: 972, width: 1600, height: 28 },
-      { x: 0, y: 0, width: 28, height: 1000 },
-      { x: 1572, y: 0, width: 28, height: 1000 },
-      { x: 28, y: 440, width: 172, height: 30 },
-      { x: 320, y: 440, width: 410, height: 30 },
-      { x: 850, y: 440, width: 430, height: 30 },
-      { x: 1400, y: 440, width: 172, height: 30 },
-      { x: 480, y: 28, width: 22, height: 300 },
-      { x: 1080, y: 28, width: 22, height: 300 },
-      { x: 100, y: 140, width: 220, height: 60 },
-      { x: 100, y: 260, width: 220, height: 60 },
-      { x: 560, y: 150, width: 160, height: 70 },
-      { x: 820, y: 150, width: 160, height: 70 },
-      { x: 1180, y: 150, width: 240, height: 70 }
-    ];
-
-    const worldObstacles = [
-      { x: 0, y: 0, width: 3200, height: 40 },
-      { x: 0, y: 2360, width: 3200, height: 40 },
-      { x: 0, y: 0, width: 40, height: 2400 },
-      { x: 3160, y: 0, width: 40, height: 2400 },
-      { x: 1200, y: 900, width: 350, height: 160, label: "COMMERCE MONOLITH" },
-      { x: 1750, y: 900, width: 350, height: 160, label: "REFINERY ANNEX" },
-      { x: 500, y: 1350, width: 360, height: 260, label: "SUBSTANCE SILO 07" },
-      { x: 2300, y: 1350, width: 380, height: 260, label: "CASSETTE PRESSING RUINS" },
-      { x: 600, y: 350, width: 500, height: 220, label: "NORTH SECTOR STORAGE" },
-      { x: 1350, y: 350, width: 600, height: 220, label: "THE MONOLITH COMPLEX" },
-      { x: 2200, y: 350, width: 500, height: 220, label: "SUB-STATION TRANSFORMER" },
-      { x: 200, y: 600, width: 20, height: 300 },
-      { x: 200, y: 600, width: 250, height: 20 },
-      { x: 200, y: 900, width: 250, height: 20 },
-      { x: 450, y: 600, width: 20, height: 100 },
-      { x: 450, y: 800, width: 20, height: 120 }
-    ];
-
-    const destructibleDoors = [
-      { id: "pipeline_breach", x: 450, y: 700, width: 20, height: 100, hp: 120, maxHp: 120, shattered: false, label: "DRAINAGE BREACH [120 HP]" }
-    ];
-
-    const environmentalHazards = [
-      { x: 880, y: 1450, radius: 45, type: 'steam' },
-      { x: 2050, y: 1400, width: 220, height: 280, type: 'ribbon_sludge' }
-    ];
-
-    const lootChests = [
-      { id: "chest_common_1", x: 1450, y: 1120, width: 32, height: 24, type: "common", label: "SYNDICATE SUPPLY CRATE", opened: false },
-      { id: "chest_silo_biohazard", x: 520, y: 1760, width: 36, height: 28, type: "biohazard", label: "DECOMMISSIONED STASH", opened: false },
-      { id: "chest_pipeline_secret", x: 240, y: 740, width: 36, height: 28, type: "vault", label: "OBSOLETE VAULT LOCKER", opened: false }
-    ];
-
-    const clubDancers = [
-      { x: 1220, y: 660 },
-      { x: 1280, y: 720 },
-      { x: 1360, y: 670 },
-      { x: 1420, y: 730 }
-    ];
-
-    const undergroundZones = [
-      { id: 'disco_room', x: 70, y: 140, width: 160, height: 100, label: 'DISCOGRAPHY VAULT', action: () => document.getElementById('discoModal').classList.remove('hidden') },
-      { id: 'arcade_cab', x: 390, y: 140, width: 170, height: 100, label: 'RETRO ARCADE CAB', action: () => document.getElementById('arcadeModal').classList.remove('hidden') },
-      { id: 'sound_lab', x: 780, y: 140, width: 180, height: 100, label: 'FL STUDIO SOUND LAB', action: () => document.getElementById('dawModal').classList.remove('hidden') },
-      { id: 'mirror_room', x: 1210, y: 140, width: 150, height: 100, label: 'RESTROOM MIRROR KEYPAD', action: () => openMirrorPuzzle() },
-      { id: 'trunk_drop', x: 280, y: 530, width: 190, height: 100, label: 'MERCH TRUNK', action: () => document.getElementById('merchModal').classList.remove('hidden') },
-      { id: 'holding_cell', x: 730, y: 630, width: 120, height: 100, label: 'CRT HOLDING MONITOR', action: () => document.getElementById('holdingModal').classList.remove('hidden') },
-      { id: 'portal_retrocade', x: 1440, y: 640, width: 80, height: 80, label: 'WARP: RETROCADE NEON', action: () => switchDimension('retrocade', 750, 750) }
-    ];
-
-    const retrocadeZones = [
-      { id: 'casino_slots', x: 90, y: 130, width: 240, height: 100, label: 'LUCKY 777 CASINO SLOTS', action: () => document.getElementById('casinoModal').classList.remove('hidden') },
-      { id: 'retrocade_arcade', x: 540, y: 140, width: 440, height: 100, label: 'RETROCADE ARCADE', action: () => document.getElementById('arcadeModal').classList.remove('hidden') },
-      { id: 'vip_lounge', x: 1160, y: 140, width: 280, height: 100, label: 'VIP SYNTH LOUNGE', action: () => document.getElementById('discoModal').classList.remove('hidden') },
-      { id: 'portal_underground', x: 100, y: 840, width: 80, height: 80, label: 'WARP: UNDERGROUND', action: () => switchDimension('underground', 320, 750) },
-      { id: 'portal_wasteland', x: 750, y: 840, width: 80, height: 80, label: 'WARP: WASTELAND RUINS', action: () => switchDimension('wasteland', 1600, 1200) }
-    ];
-
-    const wastelandZones = [
-      { id: 'portal_retrocade_back', x: 1600, y: 2300, width: 80, height: 80, label: 'WARP: RETROCADE', action: () => switchDimension('retrocade', 750, 750) },
-      { id: 'trunk_drop', x: 520, y: 1300, width: 140, height: 70, label: 'BURNED-OUT TRUNK // MERCH DROP', action: () => document.getElementById('merchModal').classList.remove('hidden') },
-      { id: 'broadcast_relay', x: 1530, y: 810, width: 140, height: 70, label: 'STATIC BROADCAST RELAY', action: () => document.getElementById('relayModal').classList.remove('hidden') },
-      { id: 'cassette_drop', x: 2350, y: 1300, width: 140, height: 70, label: 'CASSETTE AIR-DROP [CLAIM FORM]', action: () => document.getElementById('cassetteClaimModal').classList.remove('hidden') },
-      { id: 'monolith_vent', x: 2500, y: 320, width: 60, height: 60, label: 'CRT MONOLITH VENT [CRAWL SHORTCUT]', action: () => { player.x = 2200; player.y = 200; playSfx('secretWallBreak'); showToast("CRAWLED THROUGH VENT!"); } },
-      { id: 'gated_rift', x: 1520, y: 150, width: 160, height: 100, label: 'NEURAL EXTRACTION GATE [50 TAPES]', action: () => document.getElementById('gatedModal').classList.remove('hidden') }
-    ];
-
-    const rainParticles = [];
-    for (let i = 0; i < 120; i++) {
-      rainParticles.push({
-        x: Math.random() * 1600, y: Math.random() * 1000,
-        len: 8 + Math.random() * 6, spd: 10 + Math.random() * 6
-      });
-    }
-
-    // ==============================================================
-    // 3. COMBAT DATA & AUDIO ENGINE
-    // ==============================================================
-    const projectiles = [];
-    const enemyProjectiles = [];
-    const meleeSlashes = [];
-    const enemyMeleeSlashes = [];
-    const explosions = [];
-
-    let projectileCooldown = 0;
-    let isChargingShoot = false;
-    let shootChargeStartTime = 0;
-
-    let comboStep = 0;
-    let lastSlashTapTime = 0;
-    const COMBO_RESET_WINDOW_MS = 900;
-    let isHoldingSlash = false;
-    let slashHoldStartTime = 0;
-
-    const npcs = [];
-    const MAX_NPCS = 22;
-    const lootPickups = [];
-
     let audioCtx = null, isBgmPlaying = false, bgmMasterGain = null, bgmStepIndex = 0, bgmTimer = null, bgmTempo = 130, bgmVersion = 'original';
     const noirBassNotes = [110, 110, 130.81, 146.83, 164.81, 146.83, 130.81, 110, 98, 98, 110, 130.81, 146.83, 130.81, 123.47, 98];
 
@@ -749,11 +530,11 @@
       isBgmPlaying = !isBgmPlaying;
       const icon = document.getElementById('bgmPlayIcon');
       if (isBgmPlaying) {
-        icon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
+        if (icon) icon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
         startBgmLoop();
         showToast("MUSIC: BROADCASTING 'DANCING'");
       } else {
-        icon.innerHTML = '<path d="M8 5v14l11-7z"/>';
+        if (icon) icon.innerHTML = '<path d="M8 5v14l11-7z"/>';
         clearInterval(bgmTimer);
         bgmTimer = null;
         showToast("MUSIC PAUSED");
@@ -787,7 +568,8 @@
 
     function setTrackBgm(version) {
       bgmVersion = version;
-      document.getElementById('trackVersionSelect').value = version;
+      const sel = document.getElementById('trackVersionSelect');
+      if (sel) sel.value = version;
       const relSelect = document.getElementById('relayVersionSelect');
       if (relSelect) relSelect.value = version;
       bgmTempo = version === 'spedup' ? 150 : version === 'slowed' ? 104 : 130;
@@ -862,79 +644,98 @@
     }
 
     // ==============================================================
-    // 4. USER PROFILE & SAVING
+    // MAPS, OBSTACLES & WORLD DATA
     // ==============================================================
-    function loadProfile() {
-      try {
-        const saved = localStorage.getItem('club_lowlife_save');
-        if (saved) {
-          const parsed = JSON.parse(saved);
-          userProfile = Object.assign({}, DEFAULT_PROFILE, parsed);
-          if (!Array.isArray(userProfile.unlockedSkins)) userProfile.unlockedSkins = ["enforcer"];
-          if (!Array.isArray(userProfile.chestsOpened)) userProfile.chestsOpened = [];
-        }
-      } catch (e) {}
-      updateHudProfile();
-      renderSkins();
-    }
+    const undergroundObstacles = [
+      { x: 0, y: 0, width: 1600, height: 28 }, { x: 0, y: 972, width: 1600, height: 28 },
+      { x: 0, y: 0, width: 28, height: 1000 }, { x: 1572, y: 0, width: 28, height: 1000 },
+      { x: 28, y: 350, width: 1300, height: 30 }, { x: 360, y: 28, width: 20, height: 210 }
+    ];
 
-    function saveProfile() {
-      try { localStorage.setItem('club_lowlife_save', JSON.stringify(userProfile)); } catch (e) {}
-      updateHudProfile();
-    }
+    const retrocadeObstacles = [
+      { x: 0, y: 0, width: 1600, height: 28 }, { x: 0, y: 972, width: 1600, height: 28 },
+      { x: 0, y: 0, width: 28, height: 1000 }, { x: 1572, y: 0, width: 28, height: 1000 },
+      { x: 28, y: 440, width: 1300, height: 30 }, { x: 480, y: 28, width: 22, height: 300 }
+    ];
 
-    function updateHudProfile() {
-      try {
-        document.getElementById('casinoTokensCount').innerText = userProfile.casinoTokens;
-        document.getElementById('rareBattleTapeCount').innerText = `${userProfile.collectedRareTapes}/${RARE_TAPES_THRESHOLD}`;
-        
-        const gatedProgressText = document.getElementById('gatedTapeProgress');
-        if (gatedProgressText) gatedProgressText.innerText = `${userProfile.collectedRareTapes} / ${RARE_TAPES_THRESHOLD} TAPES`;
-        const gatedBar = document.getElementById('gatedProgressBar');
-        if (gatedBar) {
-          const pct = Math.min(100, Math.floor((userProfile.collectedRareTapes / RARE_TAPES_THRESHOLD) * 100));
-          gatedBar.style.width = `${pct}%`;
-        }
-        const gatedMsg = document.getElementById('gatedStatusMessage');
-        const gatedBtn = document.getElementById('gatedProceedBtn');
-        if (gatedMsg && gatedBtn) {
-          if (userProfile.collectedRareTapes >= RARE_TAPES_THRESHOLD) {
-            gatedMsg.className = "text-xs font-mono text-green-400 mb-4";
-            gatedMsg.innerText = "ACCESS GRANTED // NEURAL LINK DECONTAMINATED // DIMENSIONAL PASS ACTIVE";
-            gatedBtn.className = "flex-1 py-2 bg-gradient-to-r from-lowlife-cyan to-pink-500 hover:opacity-90 text-black font-cyber font-bold text-xs rounded transition cursor-pointer";
-          } else {
-            gatedMsg.className = "text-xs font-mono text-red-400 mb-4";
-            gatedMsg.innerText = `ACCESS RESTRICTED // REQUIRE ${RARE_TAPES_THRESHOLD - userProfile.collectedRareTapes} MORE RARE BATTLE CASSETTES`;
-            gatedBtn.className = "flex-1 py-2 bg-neutral-800 text-neutral-500 font-cyber font-bold text-xs rounded cursor-not-allowed";
-          }
-        }
-      } catch (err) {}
-    }
+    const worldObstacles = [
+      { x: 0, y: 0, width: WORLD_WIDTH, height: 40 },
+      { x: 0, y: WORLD_HEIGHT - 40, width: WORLD_WIDTH, height: 40 },
+      { x: 0, y: 0, width: 40, height: WORLD_HEIGHT },
+      { x: WORLD_WIDTH - 40, y: 0, width: 40, height: WORLD_HEIGHT },
+      { x: 1200, y: 900, width: 350, height: 160, label: "COMMERCE MONOLITH" },
+      { x: 1750, y: 900, width: 350, height: 160, label: "REFINERY ANNEX" },
+      { x: 500, y: 1350, width: 360, height: 260, label: "SUBSTANCE SILO 07" },
+      { x: 2300, y: 1350, width: 380, height: 260, label: "CASSETTE PRESSING RUINS" },
+      { x: 200, y: 600, width: 20, height: 300 }, { x: 200, y: 600, width: 250, height: 20 },
+      { x: 200, y: 900, width: 250, height: 20 }, { x: 450, y: 600, width: 20, height: 100 }, { x: 450, y: 800, width: 20, height: 120 }
+    ];
 
-    function renderSkins() {
-      const list = document.getElementById('skinsList'); 
-      if (!list) return;
-      list.innerHTML = '';
-      SKINS_DATA.forEach(s => {
-        const isUnlocked = userProfile.unlockedSkins.includes(s.id);
-        const isEquipped = userProfile.activeSkin === s.id;
-        const item = document.createElement('div');
-        item.className = `p-2.5 rounded border flex justify-between items-center ${isEquipped ? 'border-lowlife-cyan bg-lowlife-cyan/10' : (isUnlocked ? 'border-neutral-700 bg-black/60' : 'border-neutral-900 bg-neutral-950 opacity-50')}`;
-        item.innerHTML = `<div><div class="font-cyber font-bold text-white">${s.name} ${isEquipped ? '<span class="text-[9px] bg-lowlife-cyan text-black px-1 rounded ml-1">EQUIPPED</span>' : ''}</div><div class="text-[10px] text-neutral-400">${s.desc}</div></div><div>${isUnlocked ? (isEquipped ? '' : `<button onclick="equipSkin('${s.id}')" class="px-2 py-1 bg-neutral-800 text-white rounded text-xs cursor-pointer">EQUIP</button>`) : '<span class="text-[9px] text-red-400 font-mono">[LOCKED]</span>'}</div>`;
-        list.appendChild(item);
-      });
-    }
+    const destructibleDoors = [
+      { id: "pipeline_breach", x: 450, y: 700, width: 20, height: 100, hp: 120, maxHp: 120, shattered: false, label: "DRAINAGE BREACH [120 HP]" }
+    ];
 
-    function equipSkin(id) {
-      userProfile.activeSkin = id;
-      saveProfile();
-      renderSkins();
-      showToast(`EQUIPPED SKIN: ${id.toUpperCase()}`);
+    const environmentalHazards = [
+      { x: 880, y: 1450, radius: 45, type: 'steam' },
+      { x: 2050, y: 1400, width: 220, height: 280, type: 'ribbon_sludge' }
+    ];
+
+    const lootChests = [
+      { id: "chest_common_1", x: 1450, y: 1120, width: 32, height: 24, type: "common", label: "SYNDICATE SUPPLY CRATE", opened: false },
+      { id: "chest_silo_biohazard", x: 520, y: 1760, width: 36, height: 28, type: "biohazard", label: "DECOMMISSIONED STASH", opened: false },
+      { id: "chest_pipeline_secret", x: 240, y: 740, width: 36, height: 28, type: "vault", label: "OBSOLETE VAULT LOCKER", opened: false }
+    ];
+
+    // Portals & Zones per World
+    const undergroundZones = [
+      { id: 'disco_room', x: 70, y: 140, width: 160, height: 100, label: 'DISCOGRAPHY VAULT', action: () => document.getElementById('discoModal').classList.remove('hidden') },
+      { id: 'portal_retrocade', x: 1440, y: 640, width: 80, height: 80, label: 'WARP: RETROCADE NEON', action: () => switchDimension('retrocade', 750, 750) }
+    ];
+
+    const retrocadeZones = [
+      { id: 'portal_underground', x: 100, y: 840, width: 80, height: 80, label: 'WARP: UNDERGROUND', action: () => switchDimension('underground', 320, 750) },
+      { id: 'portal_wasteland', x: 750, y: 840, width: 80, height: 80, label: 'WARP: WASTELAND RUINS', action: () => switchDimension('wasteland', 1600, 1200) }
+    ];
+
+    const openWorldZones = [
+      { id: 'portal_retrocade_back', x: 1600, y: 2300, width: 80, height: 80, label: 'WARP: RETROCADE', action: () => switchDimension('retrocade', 750, 750) },
+      { id: 'trunk_drop', x: 520, y: 1300, width: 140, height: 70, label: 'BURNED-OUT TRUNK // MERCH DROP', action: () => document.getElementById('merchModal').classList.remove('hidden') },
+      { id: 'broadcast_relay', x: 1530, y: 810, width: 140, height: 70, label: 'STATIC BROADCAST RELAY', action: () => document.getElementById('relayModal').classList.remove('hidden') },
+      { id: 'cassette_drop', x: 2350, y: 1300, width: 140, height: 70, label: 'CASSETTE AIR-DROP [CLAIM FORM]', action: () => document.getElementById('cassetteClaimModal').classList.remove('hidden') },
+      { id: 'gated_rift', x: 1520, y: 150, width: 160, height: 100, label: 'NEURAL EXTRACTION GATE [50 TAPES]', action: () => document.getElementById('gatedModal').classList.remove('hidden') }
+    ];
+
+    function resizeCanvas() {
+      canvas.width = canvas.parentElement.clientWidth;
+      canvas.height = canvas.parentElement.clientHeight;
+      camera.width = canvas.width;
+      camera.height = canvas.height;
+    }
+    window.addEventListener('resize', resizeCanvas);
+
+    function checkCollision(r1, r2) {
+      return (r1.x < r2.x + r2.width && r1.x + r1.width > r2.x && r1.y < r2.y + r2.height && r1.y + r1.height > r2.y);
     }
 
     // ==============================================================
-    // 5. COMBAT SYSTEM: ATTACK ROUTINES & 2.5s PURPLE CHARGE
+    // COMBAT SYSTEM (3-HIT COMBO + 2.5s PURPLE CHARGE)
     // ==============================================================
+    const projectiles = [];
+    const enemyProjectiles = [];
+    const meleeSlashes = [];
+    const enemyMeleeSlashes = [];
+    const explosions = [];
+
+    let projectileCooldown = 0;
+    let isChargingShoot = false;
+    let shootChargeStartTime = 0;
+
+    let comboStep = 0;
+    let lastSlashTapTime = 0;
+    const COMBO_RESET_WINDOW_MS = 900;
+    let isHoldingSlash = false;
+    let slashHoldStartTime = 0;
+
     function startShootInput() {
       initAudio();
       if (Date.now() < projectileCooldown) return;
@@ -1052,7 +853,6 @@
       else if (player.direction === 'left') slashX -= offset;
       else if (player.direction === 'right') slashX += offset;
 
-      // FAST 2.5-SECOND CHARGE THRESHOLD FOR PURPLE CHARGE
       if (seconds >= 2.5) {
         playSfx('magicPurple');
         meleeSlashes.push({
@@ -1072,9 +872,7 @@
           }
         });
 
-        if (currentDimension === 'wasteland') {
-          checkDestructibleDoors(slashX, slashY, 80, 160, true);
-        }
+        checkDestructibleDoors(slashX, slashY, 80, 160, true);
         showToast("COSMIC PURPLE SLASH! PROXIMITY SHOCKWAVE DISCHARGED! ⚡💜");
       } else if (seconds >= 1.2) {
         playSfx('slash3');
@@ -1264,12 +1062,16 @@
     }
 
     // ==============================================================
-    // 6. ENEMY NPC AI & LOOT ENGINE
+    // ENEMY NPC AI & LOOT
     // ==============================================================
+    const npcs = [];
+    const MAX_NPCS = 22;
+    const lootPickups = [];
+
     for (let c = 0; c < 35; c++) {
       lootPickups.push({
-        x: 200 + Math.random() * (3200 - 400),
-        y: 200 + Math.random() * (2400 - 400),
+        x: 200 + Math.random() * (WORLD_WIDTH - 400),
+        y: 200 + Math.random() * (WORLD_HEIGHT - 400),
         type: 'coin', value: 2 + Math.floor(Math.random() * 4),
         radius: 6, floatOffset: Math.random() * Math.PI * 2
       });
@@ -1278,8 +1080,8 @@
     function spawnNpc() {
       if (currentDimension !== 'wasteland') return;
       if (npcs.filter(n => n.alive).length >= MAX_NPCS) return;
-      const spawnX = 300 + Math.random() * (3200 - 600);
-      const spawnY = 300 + Math.random() * (2400 - 600);
+      const spawnX = 300 + Math.random() * (WORLD_WIDTH - 600);
+      const spawnY = 300 + Math.random() * (WORLD_HEIGHT - 600);
 
       const box = { x: spawnX, y: spawnY, width: 24, height: 36 };
       for (let obs of worldObstacles) {
@@ -1300,6 +1102,9 @@
         knockbackVx: 0, knockbackVy: 0
       });
     }
+
+    for (let i = 0; i < 15; i++) spawnNpc();
+    setInterval(spawnNpc, 3500);
 
     function damageNpc(npc, amount, knockDir) {
       if (!npc.alive) return;
@@ -1386,7 +1191,7 @@
           }
 
           const nBoxX = { x: npc.x + moveVx, y: npc.y, width: npc.width, height: npc.height };
-          const nBoxY = { x: npc.x, width: npc.width, height: npc.height, y: npc.y + moveVy };
+          const nBoxY = { x: npc.x, y: npc.y + moveVy, width: npc.width, height: npc.height };
           let colX = false, colY = false;
 
           for (let obs of worldObstacles) {
@@ -1451,7 +1256,7 @@
     }
 
     // ==============================================================
-    // 7. INPUT LISTENERS (POINTER EVENTS FOR ALL BUTTONS)
+    // CONTROLS & JOYSTICK
     // ==============================================================
     const joystickZone = document.getElementById('joystickZone');
     const joystickKnob = document.getElementById('joystickKnob');
@@ -1460,24 +1265,20 @@
 
     function handleJoystickStart(e) {
       initAudio();
-      for (let t of (e.changedTouches || [e])) {
+      for (let t of e.changedTouches) {
         if (joystickTouchId === null) {
-          joystickTouchId = t.identifier !== undefined ? t.identifier : 'mouse';
-          updateJoystick(t.clientX, t.clientY); 
-          break;
+          joystickTouchId = t.identifier; updateJoystick(t.clientX, t.clientY); break;
         }
       }
     }
     function handleJoystickMove(e) {
-      for (let t of (e.changedTouches || [e])) {
-        const id = t.identifier !== undefined ? t.identifier : 'mouse';
-        if (id === joystickTouchId) { updateJoystick(t.clientX, t.clientY); break; }
+      for (let t of e.changedTouches) {
+        if (t.identifier === joystickTouchId) { updateJoystick(t.clientX, t.clientY); break; }
       }
     }
     function handleJoystickEnd(e) {
-      for (let t of (e.changedTouches || [e])) {
-        const id = t.identifier !== undefined ? t.identifier : 'mouse';
-        if (id === joystickTouchId) {
+      for (let t of e.changedTouches) {
+        if (t.identifier === joystickTouchId) {
           joystickTouchId = null; analogVector.x = 0; analogVector.y = 0; analogVector.active = false;
           joystickKnob.style.transform = `translate(0px, 0px)`; break;
         }
@@ -1495,20 +1296,22 @@
       else { analogVector.active = false; analogVector.x = 0; analogVector.y = 0; }
     }
 
-    joystickZone.addEventListener('pointerdown', handleJoystickStart);
-    window.addEventListener('pointermove', handleJoystickMove);
-    window.addEventListener('pointerup', handleJoystickEnd);
-    window.addEventListener('pointercancel', handleJoystickEnd);
+    joystickZone.addEventListener('touchstart', handleJoystickStart, { passive: false });
+    window.addEventListener('touchmove', handleJoystickMove, { passive: false });
+    window.addEventListener('touchend', handleJoystickEnd, { passive: false });
+    window.addEventListener('touchcancel', handleJoystickEnd, { passive: false });
 
     const btnShoot = document.getElementById('btnShoot');
-    btnShoot.addEventListener('pointerdown', (e) => { e.preventDefault(); startShootInput(); });
-    btnShoot.addEventListener('pointerup', (e) => { e.preventDefault(); releaseShootInput(); });
-    btnShoot.addEventListener('pointercancel', () => { releaseShootInput(); });
+    btnShoot.addEventListener('touchstart', (e) => { e.preventDefault(); startShootInput(); });
+    btnShoot.addEventListener('touchend', (e) => { e.preventDefault(); releaseShootInput(); });
+    btnShoot.addEventListener('mousedown', (e) => { e.preventDefault(); startShootInput(); });
+    btnShoot.addEventListener('mouseup', (e) => { e.preventDefault(); releaseShootInput(); });
 
     const btnSlash = document.getElementById('btnSlash');
-    btnSlash.addEventListener('pointerdown', (e) => { e.preventDefault(); startSlashInput(); });
-    btnSlash.addEventListener('pointerup', (e) => { e.preventDefault(); releaseSlashInput(); });
-    btnSlash.addEventListener('pointercancel', () => { releaseSlashInput(); });
+    btnSlash.addEventListener('touchstart', (e) => { e.preventDefault(); startSlashInput(); });
+    btnSlash.addEventListener('touchend', (e) => { e.preventDefault(); releaseSlashInput(); });
+    btnSlash.addEventListener('mousedown', (e) => { e.preventDefault(); startSlashInput(); });
+    btnSlash.addEventListener('mouseup', (e) => { e.preventDefault(); releaseSlashInput(); });
 
     document.getElementById('btnAction').addEventListener('click', triggerActiveInteraction);
     document.getElementById('quickWarpBtn').addEventListener('click', () => {
@@ -1516,6 +1319,18 @@
       if (currentDimension === 'underground') switchDimension('retrocade', 750, 750);
       else if (currentDimension === 'retrocade') switchDimension('wasteland', 1600, 1200);
       else switchDimension('underground', 320, 750);
+    });
+
+    document.getElementById('bgmToggleBtn').addEventListener('click', toggleBgm);
+    document.getElementById('trackVersionSelect').addEventListener('change', (e) => setTrackBgm(e.target.value));
+
+    document.getElementById('openLinksModalBtn').addEventListener('click', () => {
+      document.getElementById('linksModal').classList.remove('hidden');
+    });
+
+    document.getElementById('openSkinsBtn').addEventListener('click', () => {
+      renderSkins();
+      document.getElementById('skinsModal').classList.remove('hidden');
     });
 
     window.addEventListener('keydown', (e) => {
@@ -1539,7 +1354,7 @@
     });
 
     // ==============================================================
-    // 8. PLAYER MOVEMENT & WORLD PROXIMITY
+    // PLAYER UPDATE & PROXIMITY
     // ==============================================================
     let activeZone = null;
     let activeChest = null;
@@ -1625,7 +1440,7 @@
         }
       }
 
-      const activeZones = currentDimension === 'wasteland' ? wastelandZones : (currentDimension === 'retrocade' ? retrocadeZones : undergroundZones);
+      const activeZones = currentDimension === 'wasteland' ? openWorldZones : (currentDimension === 'retrocade' ? retrocadeZones : undergroundZones);
       for (let z of activeZones) {
         if (checkCollision(pBox, z)) {
           activeZone = z;
@@ -1676,25 +1491,8 @@
       }
     }
 
-    function switchDimension(dimKey, spawnX, spawnY) {
-      currentDimension = dimKey;
-      const cfg = DIMENSIONS[dimKey];
-      player.x = spawnX; 
-      player.y = spawnY;
-      
-      const badge = document.getElementById('dimensionBadge');
-      if (badge) badge.innerText = `DIMENSION: ${cfg.name}`;
-      const warpBtnText = document.getElementById('quickWarpText');
-      if (warpBtnText) {
-        if (dimKey === 'underground') warpBtnText.innerText = "WARP: RETROCADE";
-        else if (dimKey === 'retrocade') warpBtnText.innerText = "WARP: WASTELAND";
-        else warpBtnText.innerText = "WARP: UNDERGROUND";
-      }
-      showToast(`WARPED TO ${cfg.name}! 🌀`);
-    }
-
     // ==============================================================
-    // 9. RENDERING ENGINES FOR ALL 3 WORLDS
+    // CANVAS RENDERING PIPELINE
     // ==============================================================
     function draw() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -1715,62 +1513,22 @@
     function drawUndergroundWorld() {
       ctx.fillStyle = '#080a0f'; ctx.fillRect(0, 0, 1600, 1000);
       
-      // Sector Floors
-      ctx.fillStyle = '#0a0e17'; ctx.fillRect(28, 28, 332, 322);
-      ctx.fillStyle = '#0c0f1a'; ctx.fillRect(380, 28, 360, 322);
-      ctx.fillStyle = '#0a1017'; ctx.fillRect(760, 28, 400, 322);
-      ctx.fillStyle = '#070b10'; ctx.fillRect(1180, 28, 392, 322);
+      // Cybernetic floor grid
+      ctx.strokeStyle = 'rgba(0, 240, 255, 0.05)'; ctx.lineWidth = 1;
+      for (let x = 0; x < 1600; x += 50) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, 1000); ctx.stroke(); }
+      for (let y = 0; y < 1000; y += 50) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(1600, y); ctx.stroke(); }
 
       ctx.fillStyle = '#1b2233';
       undergroundObstacles.forEach(obs => ctx.fillRect(obs.x, obs.y, obs.width, obs.height));
 
-      // Doorway Floor Highlights
-      ctx.fillStyle = 'rgba(0, 240, 255, 0.15)';
-      ctx.fillRect(150, 350, 100, 30);
-      ctx.fillRect(510, 350, 100, 30);
-      ctx.fillRect(910, 350, 100, 30);
-      ctx.fillRect(1330, 350, 100, 30);
+      // Portal to Retrocade
+      drawPortal(1440, 640, '#ec4899', '#00f0ff', "RETROCADE RIFT");
 
-      // Interactive Room Props
+      // Discography Hub
       ctx.fillStyle = '#131926'; ctx.fillRect(80, 150, 130, 70);
       ctx.strokeStyle = '#00f0ff'; ctx.strokeRect(80, 150, 130, 70);
       ctx.fillStyle = '#fff'; ctx.font = '10px "Share Tech Mono"';
-      ctx.fillText("ALBUM CATALOG", 95, 180); ctx.fillText("[DISCO VAULT]", 95, 200);
-
-      ctx.fillStyle = '#1c1328'; ctx.fillRect(410, 150, 140, 70);
-      ctx.strokeStyle = '#ec4899'; ctx.strokeRect(410, 150, 140, 70);
-      ctx.fillStyle = '#00f0ff'; ctx.fillText("ARCADE CAB", 435, 180); ctx.fillText("[MINI-GAMES]", 430, 200);
-
-      ctx.fillStyle = '#1c1b12'; ctx.fillRect(800, 150, 150, 70);
-      ctx.strokeStyle = '#ffaa00'; ctx.strokeRect(800, 150, 150, 70);
-      ctx.fillStyle = '#ffaa00'; ctx.fillText("FL STUDIO RACK", 825, 180); ctx.fillText("[SOUND LAB]", 830, 200);
-
-      ctx.fillStyle = '#0f1c1a'; ctx.fillRect(1230, 150, 110, 70);
-      ctx.strokeStyle = '#00f0ff'; ctx.strokeRect(1230, 150, 110, 70);
-      ctx.fillStyle = '#00f0ff'; ctx.fillText("RESTROOM MIRROR", 1235, 180); ctx.fillText("[CODE 777]", 1250, 200);
-
-      ctx.fillStyle = '#141822'; ctx.fillRect(300, 550, 150, 70);
-      ctx.strokeStyle = '#323c52'; ctx.strokeRect(300, 550, 150, 70);
-      ctx.fillStyle = '#fff'; ctx.fillText("TRUNK POP [MERCH]", 315, 585);
-
-      ctx.fillStyle = '#1b1219'; ctx.fillRect(750, 650, 80, 60);
-      ctx.strokeStyle = '#ff003c'; ctx.strokeRect(750, 650, 80, 60);
-      ctx.fillStyle = '#ff003c'; ctx.fillText("CRT MONITOR", 755, 680);
-
-      // Rain particles
-      ctx.strokeStyle = 'rgba(0, 240, 255, 0.25)';
-      ctx.lineWidth = 1;
-      rainParticles.forEach(p => {
-        ctx.beginPath();
-        ctx.moveTo(p.x, p.y);
-        ctx.lineTo(p.x - 2, p.y + p.len);
-        ctx.stroke();
-        p.y += p.spd;
-        if (p.y > 1000) p.y = 0;
-      });
-
-      // Portal to Retrocade
-      drawPortal(1440, 640, '#ec4899', '#00f0ff', "RETROCADE RIFT");
+      ctx.fillText("ALBUM CATALOG", 95, 180); ctx.fillText("[ENTER ARCHIVE]", 95, 200);
 
       drawCombat();
       if (player.iFrames % 4 < 2) drawAvatar(player.x, player.y, player.direction, player.isMoving, player.animTimer);
@@ -1778,31 +1536,16 @@
 
     function drawRetrocadeWorld() {
       ctx.fillStyle = '#120524'; ctx.fillRect(0, 0, 1600, 1000);
-      ctx.strokeStyle = 'rgba(236, 72, 153, 0.15)'; ctx.lineWidth = 1;
-      for (let x = 0; x < 1600; x += 40) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, 1000); ctx.stroke(); }
-      for (let y = 0; y < 1000; y += 40) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(1600, y); ctx.stroke(); }
+
+      // Neon grid
+      ctx.strokeStyle = 'rgba(236, 72, 153, 0.08)'; ctx.lineWidth = 1;
+      for (let x = 0; x < 1600; x += 50) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, 1000); ctx.stroke(); }
+      for (let y = 0; y < 1000; y += 50) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(1600, y); ctx.stroke(); }
 
       ctx.fillStyle = '#2b104a';
       retrocadeObstacles.forEach(obs => {
         ctx.fillRect(obs.x, obs.y, obs.width, obs.height);
         ctx.strokeStyle = '#ec4899'; ctx.strokeRect(obs.x, obs.y, obs.width, obs.height);
-      });
-
-      // Dancefloor tiles
-      const time = Date.now() / 300;
-      for (let tx = 1180; tx < 1520; tx += 40) {
-        for (let ty = 620; ty < 820; ty += 40) {
-          const hue = (tx + ty + time * 60) % 360;
-          ctx.fillStyle = `hsla(${hue}, 80%, 50%, 0.25)`;
-          ctx.fillRect(tx, ty, 36, 36);
-        }
-      }
-
-      // Dancing NPCs
-      clubDancers.forEach(d => {
-        const bob = Math.sin(time + d.x) * 4;
-        const sway = Math.cos(time + d.y) * 3;
-        drawAvatar(d.x + sway, d.y + bob, 'down', true, Math.floor(time * 5));
       });
 
       drawPortal(100, 840, '#00f0ff', '#ff003c', "UNDERGROUND RIFT");
@@ -1813,63 +1556,45 @@
     }
 
     function drawWastelandWorld() {
-      ctx.fillStyle = '#07090e'; ctx.fillRect(0, 0, 3200, 2400);
+      ctx.fillStyle = '#07090e'; ctx.fillRect(0, 0, WORLD_WIDTH, WORLD_HEIGHT);
       ctx.strokeStyle = 'rgba(0, 240, 255, 0.05)'; ctx.lineWidth = 1;
-      for (let x = 0; x < 3200; x += 80) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, 2400); ctx.stroke(); }
-      for (let y = 0; y < 2400; y += 80) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(3200, y); ctx.stroke(); }
+      for (let x = 0; x < WORLD_WIDTH; x += 80) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, WORLD_HEIGHT); ctx.stroke(); }
+      for (let y = 0; y < WORLD_HEIGHT; y += 80) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(WORLD_WIDTH, y); ctx.stroke(); }
 
       environmentalHazards.forEach(h => {
         if (h.type === 'ribbon_sludge') {
           ctx.fillStyle = '#050608'; ctx.fillRect(h.x, h.y, h.width, h.height);
           ctx.strokeStyle = '#181d28'; ctx.strokeRect(h.x, h.y, h.width, h.height);
-          ctx.fillStyle = '#4b5563'; ctx.font = '10px "Share Tech Mono"';
-          ctx.fillText("MAGNETIC CASSETTE RIBBON SLUDGE (-40% SPD)", h.x + 10, h.y + 20);
-        } else if (h.type === 'steam') {
-          const plumeTime = (Date.now() / 300) % Math.PI;
-          ctx.fillStyle = 'rgba(255, 177, 0, 0.15)';
-          ctx.beginPath();
-          ctx.arc(h.x, h.y, h.radius + Math.sin(plumeTime) * 6, 0, Math.PI * 2);
-          ctx.fill();
         }
       });
 
       worldObstacles.forEach(obs => {
         ctx.fillStyle = '#0f141f'; ctx.fillRect(obs.x, obs.y, obs.width, obs.height);
         ctx.strokeStyle = '#262c3d'; ctx.strokeRect(obs.x, obs.y, obs.width, obs.height);
-        if (obs.label) {
-          ctx.fillStyle = '#4b5563'; ctx.font = 'bold 10px "Share Tech Mono"';
-          ctx.fillText(`// ${obs.label}`, obs.x + 12, obs.y + 24);
-        }
       });
 
       destructibleDoors.forEach(d => {
         if (!d.shattered) {
           ctx.fillStyle = '#2b1016'; ctx.fillRect(d.x, d.y, d.width, d.height);
           ctx.strokeStyle = '#ff003c'; ctx.lineWidth = 2.5; ctx.strokeRect(d.x, d.y, d.width, d.height);
-          const hpPct = d.hp / d.maxHp;
-          ctx.fillStyle = '#ff003c';
-          ctx.fillRect(d.x, d.y, d.width * hpPct, 4);
         }
       });
 
       drawPortal(1600, 2300, '#ec4899', '#00f0ff', "RETROCADE RIFT");
 
-      wastelandZones.forEach(z => {
+      openWorldZones.forEach(z => {
         if (z.id === 'gated_rift') {
           drawPortal(z.x, z.y, '#10b981', '#ffb300', "NEURAL EXTRACTION GATE");
         } else {
           ctx.fillStyle = 'rgba(0, 240, 255, 0.12)'; ctx.fillRect(z.x, z.y, z.width, z.height);
           ctx.strokeStyle = '#00f0ff'; ctx.strokeRect(z.x, z.y, z.width, z.height);
-          ctx.fillStyle = '#ffffff'; ctx.font = '9px "Share Tech Mono"';
-          ctx.fillText(`[E] ${z.label}`, z.x + 6, z.y + 36);
         }
       });
 
       lootChests.forEach(c => {
-        ctx.fillStyle = c.opened ? '#1f2937' : (c.type === 'vault' ? '#2e1065' : c.type === 'biohazard' ? '#3b2204' : '#082f49');
+        ctx.fillStyle = c.opened ? '#1f2937' : (c.type === 'vault' ? '#2e1065' : '#082f49');
         ctx.fillRect(c.x, c.y, c.width, c.height);
-        ctx.strokeStyle = c.type === 'vault' ? '#a855f7' : c.type === 'biohazard' ? '#f59e0b' : '#00f0ff'; 
-        ctx.strokeRect(c.x, c.y, c.width, c.height);
+        ctx.strokeStyle = c.type === 'vault' ? '#a855f7' : '#00f0ff'; ctx.strokeRect(c.x, c.y, c.width, c.height);
       });
 
       lootPickups.forEach(p => {
@@ -1881,14 +1606,6 @@
         if (!npc.alive) return;
         ctx.fillStyle = npc.type === 'drone' ? '#00f0ff' : '#ff003c';
         ctx.fillRect(npc.x, npc.y, npc.width, npc.height);
-        if (npc.state === 'aggro') {
-          ctx.fillStyle = '#ff003c'; ctx.font = 'bold 14px "Share Tech Mono"';
-          ctx.fillText("!", npc.x + 8, npc.y - 14);
-        }
-        const hpPct = Math.max(0, npc.hp / npc.maxHp);
-        ctx.fillStyle = '#111'; ctx.fillRect(npc.x - 2, npc.y - 8, npc.width + 4, 4);
-        ctx.fillStyle = npc.hp < 25 ? '#ff003c' : '#22c55e';
-        ctx.fillRect(npc.x - 2, npc.y - 8, (npc.width + 4) * hpPct, 4);
       });
 
       drawCombat();
@@ -1914,32 +1631,13 @@
       enemyProjectiles.forEach(ep => {
         ctx.save(); ctx.fillStyle = '#ff003c'; ctx.beginPath(); ctx.arc(ep.x, ep.y, ep.radius, 0, Math.PI * 2); ctx.fill(); ctx.restore();
       });
-
-      // ELABORATE MULTI-LAYERED SLASH ANIMATIONS
       meleeSlashes.forEach(s => {
-        ctx.save(); 
-        ctx.strokeStyle = s.color;
+        ctx.save(); ctx.strokeStyle = s.color;
         ctx.lineWidth = s.type === 'magic_purple' ? 6 : s.type === 'heavy_cleave' ? 5 : 3.5;
-
         if (s.type === 'stab') {
-          ctx.beginPath(); 
-          ctx.moveTo(player.x + player.width/2, player.y + player.height/2); 
-          ctx.lineTo(s.x, s.y); 
-          ctx.stroke();
-
-          ctx.lineWidth = 1.5;
-          ctx.beginPath();
-          ctx.arc(s.x, s.y, 6, 0, Math.PI * 2);
-          ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(player.x + player.width/2, player.y + player.height/2); ctx.lineTo(s.x, s.y); ctx.stroke();
         } else if (s.type === 'reverse_arc') {
-          ctx.beginPath(); 
-          ctx.arc(s.x, s.y, s.radius, 0, Math.PI * 1.4); 
-          ctx.stroke();
-
-          ctx.lineWidth = 1.5;
-          ctx.beginPath();
-          ctx.arc(s.x, s.y, s.radius - 6, 0, Math.PI * 1.2);
-          ctx.stroke();
+          ctx.beginPath(); ctx.arc(s.x, s.y, s.radius, 0, Math.PI * 1.4); ctx.stroke();
         } else {
           ctx.beginPath();
           let sa = 0, ea = Math.PI;
@@ -1947,24 +1645,10 @@
           else if (s.dir === 'down') { sa = Math.PI * 0.1; ea = Math.PI * 0.9; }
           else if (s.dir === 'left') { sa = Math.PI * 0.6; ea = Math.PI * 1.4; }
           else if (s.dir === 'right') { sa = -Math.PI * 0.4; ea = Math.PI * 0.4; }
-          ctx.arc(s.x, s.y, s.radius, sa, ea); 
-          ctx.stroke();
-
-          if (s.type === 'magic_purple' || s.type === 'heavy_cleave') {
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.arc(s.x, s.y, s.radius + 8, sa + 0.1, ea - 0.1);
-            ctx.stroke();
-          }
+          ctx.arc(s.x, s.y, s.radius, sa, ea); ctx.stroke();
         }
         ctx.restore();
       });
-
-      enemyMeleeSlashes.forEach(es => {
-        ctx.save(); ctx.strokeStyle = '#ff003c'; ctx.lineWidth = 3;
-        ctx.beginPath(); ctx.arc(es.x, es.y, es.radius, 0, Math.PI * 2); ctx.stroke(); ctx.restore();
-      });
-
       explosions.forEach(exp => {
         ctx.save(); ctx.strokeStyle = exp.color; ctx.lineWidth = 4 * (exp.life / 25);
         ctx.beginPath(); ctx.arc(exp.x, exp.y, exp.radius, 0, Math.PI * 2); ctx.stroke(); ctx.restore();
@@ -1975,16 +1659,10 @@
       const walk = isMoving ? Math.sin(animTimer * 0.3) * 3 : 0;
       ctx.fillStyle = 'rgba(0,0,0,0.6)'; ctx.beginPath(); ctx.ellipse(px + 12, py + 36, 14, 5, 0, 0, Math.PI * 2); ctx.fill();
       
-      // CHARGE AURA TURNS PURPLE AT 2.5s!
       if (isHoldingSlash && comboStep === 3) {
         const holdSec = (Date.now() - slashHoldStartTime) / 1000;
-        ctx.save(); 
-        ctx.strokeStyle = holdSec >= 2.5 ? '#a855f7' : holdSec >= 1.2 ? '#ff7700' : '#ff003c';
-        ctx.lineWidth = 2.5; 
-        ctx.beginPath(); 
-        ctx.arc(px + 12, py + 18, 22 + Math.sin(Date.now() / 70) * 4, 0, Math.PI * 2); 
-        ctx.stroke(); 
-        ctx.restore();
+        ctx.save(); ctx.strokeStyle = holdSec >= 2.5 ? '#a855f7' : holdSec >= 1.2 ? '#ff7700' : '#ff003c';
+        ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(px + 12, py + 18, 22 + Math.sin(Date.now() / 80) * 3, 0, Math.PI * 2); ctx.stroke(); ctx.restore();
       }
 
       ctx.fillStyle = userProfile.activeSkin === 'drifter' ? '#1c1917' : '#0a0b0f';
@@ -1996,132 +1674,50 @@
       else if (direction === 'right') ctx.fillRect(px + 14, py + 6, 5, 3);
     }
 
-    // ==============================================================
-    // 10. PUZZLES, SLOTS & ENGINE STARTUP
-    // ==============================================================
-    let keypadEntry = "";
-    function openMirrorPuzzle() {
-      keypadEntry = "";
-      const d = document.getElementById('keypadDisplay');
-      if (d) d.innerText = "---";
-      document.getElementById('mirrorPuzzleModal').classList.remove('hidden');
-    }
-    function pressKeypad(num) {
-      if (keypadEntry.length < 3) {
-        keypadEntry += num;
-        const d = document.getElementById('keypadDisplay');
-        if (d) d.innerText = keypadEntry.padEnd(3, '-');
-        playSfx('coin');
-      }
-    }
-    function clearKeypad() {
-      keypadEntry = "";
-      const d = document.getElementById('keypadDisplay');
-      if (d) d.innerText = "---";
-      playSfx('coin');
-    }
-    function submitKeypad() {
-      if (keypadEntry === "777") {
-        playSfx('magicPurple');
-        userProfile.casinoTokens += 50;
-        saveProfile();
-        showToast("KEYPAD SOLVED! +50 BONUS TOKENS! ✨");
-        closeModals();
-      } else {
-        playSfx('playerDamage');
-        showToast("INCORRECT CODE. CLUE: 'LIVING ON THE HIGHS'...");
-        clearKeypad();
-      }
-    }
+    const SKINS_DATA = [
+      { id: 'enforcer', name: 'THE NEW ERA ENFORCER', desc: 'Default trench coat.' },
+      { id: 'drifter', name: 'THE WASTELAND DRIFTER', desc: 'Unlocked from Obsolete Vault Safe.' }
+    ];
 
-    function spinSlotMachine() {
-      if (userProfile.casinoTokens < 10) {
-        showToast("NEED AT LEAST 10 TOKENS TO SPIN!");
-        return;
-      }
-      userProfile.casinoTokens -= 10;
-      saveProfile();
-      playSfx('coin');
-      const symbols = ['7', '💎', '📼', '⚡', '🍸'];
-      const r1 = document.getElementById('reel1');
-      const r2 = document.getElementById('reel2');
-      const r3 = document.getElementById('reel3');
-      const msg = document.getElementById('slotStatusMessage');
-      if (msg) msg.innerText = "SPINNING...";
-
-      let spins = 0;
-      const iv = setInterval(() => {
-        if (r1) r1.innerText = symbols[Math.floor(Math.random() * symbols.length)];
-        if (r2) r2.innerText = symbols[Math.floor(Math.random() * symbols.length)];
-        if (r3) r3.innerText = symbols[Math.floor(Math.random() * symbols.length)];
-        spins++;
-        if (spins > 12) {
-          clearInterval(iv);
-          if (r1) r1.innerText = "7";
-          if (r2) r2.innerText = "7";
-          if (r3) r3.innerText = "7";
-          userProfile.casinoTokens += 100;
-          saveProfile();
-          playSfx('magicPurple');
-          if (msg) msg.innerText = "JACKPOT! +100 TOKENS WON!";
-          showToast("LUCKY 777 JACKPOT! +100 TOKENS! 🎰");
-        }
-      }, 70);
+    function renderSkins() {
+      const list = document.getElementById('skinsList'); if (!list) return;
+      list.innerHTML = '';
+      SKINS_DATA.forEach(s => {
+        const isUnlocked = userProfile.unlockedSkins.includes(s.id);
+        const isEquipped = userProfile.activeSkin === s.id;
+        const item = document.createElement('div');
+        item.className = `p-2.5 rounded border flex justify-between items-center ${isEquipped ? 'border-lowlife-cyan bg-lowlife-cyan/10' : (isUnlocked ? 'border-neutral-700 bg-black/60' : 'border-neutral-900 bg-neutral-950 opacity-50')}`;
+        item.innerHTML = `<div><div class="font-cyber font-bold text-white">${s.name}</div><div class="text-[10px] text-neutral-400">${s.desc}</div></div><div>${isUnlocked ? (isEquipped ? '' : `<button onclick="userProfile.activeSkin='${s.id}';saveProfile();renderSkins();showToast('EQUIPPED');" class="px-2 py-1 bg-neutral-800 text-white rounded text-xs">EQUIP</button>`) : '[LOCKED]'}</div>`;
+        list.appendChild(item);
+      });
     }
 
     function gameLoop() {
       try {
         updatePlayer();
         const cfg = DIMENSIONS[currentDimension];
-        const targetX = player.x - camera.width / 2; 
-        const targetY = player.y - camera.height / 2;
-        camera.x += (targetX - camera.x) * 0.1; 
-        camera.y += (targetY - camera.y) * 0.1;
+        const targetX = player.x - camera.width / 2; const targetY = player.y - camera.height / 2;
+        camera.x += (targetX - camera.x) * 0.1; camera.y += (targetY - camera.y) * 0.1;
         camera.x = Math.max(0, Math.min(cfg.width - camera.width, camera.x));
         camera.y = Math.max(0, Math.min(cfg.height - camera.height, camera.y));
         draw();
-      } catch (err) { 
-        console.error("Game loop error:", err); 
-      }
+      } catch (err) { console.error("Game loop error:", err); }
       requestAnimationFrame(gameLoop);
     }
 
-    function resizeCanvas() {
-      const w = window.innerWidth || document.documentElement.clientWidth || 1600;
-      const h = window.innerHeight || document.documentElement.clientHeight || 1000;
-      canvas.width = w;
-      canvas.height = h;
-      camera.width = w;
-      camera.height = h;
-    }
-
-    function closeModals() { 
-      document.querySelectorAll('.fixed').forEach(m => m.classList.add('hidden')); 
-    }
-    
+    function closeModals() { document.querySelectorAll('.fixed').forEach(m => m.classList.add('hidden')); }
     function showToast(msg) {
-      const t = document.getElementById('toastMessage'); 
-      if (!t) return;
+      const t = document.getElementById('toastMessage'); if (!t) return;
       t.innerText = msg; t.style.opacity = '1'; t.style.transform = 'translateY(0)';
       setTimeout(() => { t.style.opacity = '0'; t.style.transform = 'translateY(12px)'; }, 2200);
     }
 
-    // Top Nav Listeners
-    document.getElementById('bgmToggleBtn').addEventListener('click', toggleBgm);
-    document.getElementById('trackVersionSelect').addEventListener('change', (e) => setTrackBgm(e.target.value));
-    document.getElementById('openLinksModalBtn').addEventListener('click', () => document.getElementById('linksModal').classList.remove('hidden'));
-    document.getElementById('openSkinsBtn').addEventListener('click', () => document.getElementById('skinsModal').classList.remove('hidden'));
-
-    // Safe Startup Sequence
-    window.addEventListener('DOMContentLoaded', () => {
+    window.onload = function () {
       resizeCanvas();
       loadProfile();
       updatePlayerHealthUI();
       gameLoop();
-      setInterval(spawnNpc, 3500);
-    });
-
-    window.addEventListener('resize', resizeCanvas);
+    };
   </script>
 </body>
 </html>
