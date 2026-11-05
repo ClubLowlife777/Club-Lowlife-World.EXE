@@ -3,695 +3,2478 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Club Lowlife // The Underground Universe</title>
+  <title>CLUB LOWLIFE // THE UNDERGROUND UNIVERSE</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            lowlife: {
+              black: '#07080b',
+              charcoal: '#0e1117',
+              concrete: '#161922',
+              card: '#12151e',
+              border: '#262c3d',
+              cyan: '#00f0ff',
+              red: '#ff003c',
+              gold: '#ffb300',
+              pink: '#ec4899',
+              green: '#10b981',
+              neonPurple: '#a855f7',
+              neonYellow: '#facc15'
+            }
+          },
+          fontFamily: {
+            mono: ['"Share Tech Mono"', 'monospace'],
+            cyber: ['"Chakra Petch"', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Courier New', Courier, monospace; user-select: none; }
-    body { background: #000; color: #fff; overflow: hidden; height: 100vh; display: flex; align-items: center; justify-content: center; }
-    #gameContainer { position: relative; width: 100vw; height: 100vh; max-width: 1600px; max-height: 960px; background: #050505; overflow: hidden; }
-    #gameCanvas { display: block; width: 100%; height: 100%; image-rendering: pixelated; }
-    .scanline { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.45) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 255, 0, 0.03)); background-size: 100% 4px, 6px 100%; z-index: 10; }
-    #topHud { position: absolute; top: 0; left: 0; right: 0; padding: 10px 14px; display: flex; justify-content: space-between; align-items: center; background: rgba(5, 5, 5, 0.88); border-bottom: 2px solid #222; z-index: 20; }
-    #hudLeft, #hudRight { display: flex; align-items: center; gap: 8px; }
-    .hud-tag { background: #111; border: 1px solid #333; color: #00ffcc; padding: 4px 8px; font-size: 11px; font-weight: bold; letter-spacing: 1px; }
-    .hud-btn { background: #111; border: 1px solid #444; color: #eee; padding: 5px 10px; font-size: 11px; font-weight: bold; cursor: pointer; transition: all 0.2s; }
-    .hud-btn:hover { background: #222; border-color: #00ffcc; color: #00ffcc; }
-    .hud-btn.highlight { background: #00ffcc; color: #000; border-color: #00ffcc; }
-    #musicControls { display: flex; align-items: center; gap: 6px; background: #161616; border: 1px solid #333; padding: 2px 6px; }
-    #musicControls select, #musicControls input { background: #000; color: #00ffcc; border: 1px solid #333; font-size: 10px; padding: 2px 4px; }
-    #interactionToast { position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%); background: rgba(0, 0, 0, 0.9); border: 2px solid #00ffcc; color: #00ffcc; padding: 10px 20px; font-size: 13px; font-weight: bold; letter-spacing: 1px; display: none; z-index: 30; box-shadow: 0 0 15px rgba(0, 255, 204, 0.3); }
-    .modal-backdrop { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); display: none; align-items: center; justify-content: center; z-index: 100; }
-    .terminal-modal { width: 90%; max-width: 600px; background: #0a0a0a; border: 2px solid #00ffcc; padding: 20px; max-height: 85vh; overflow-y: auto; box-shadow: 0 0 25px rgba(0, 255, 204, 0.2); }
-    .terminal-modal.large-modal { max-width: 800px; }
-    .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #222; padding-bottom: 10px; margin-bottom: 16px; }
-    .modal-header h2 { font-size: 14px; color: #00ffcc; letter-spacing: 1px; }
-    .close-btn { background: none; border: none; color: #888; font-size: 18px; cursor: pointer; }
-    .close-btn:hover { color: #fff; }
-    .modal-body { display: flex; flex-direction: column; gap: 12px; }
-    .action-btn { background: #111; border: 1px solid #00ffcc; color: #00ffcc; padding: 10px; font-size: 12px; font-weight: bold; cursor: pointer; text-align: center; text-decoration: none; transition: all 0.2s; }
-    .action-btn:hover { background: #00ffcc; color: #000; }
-    .tape-tabs { display: flex; gap: 8px; margin-bottom: 12px; }
-    .tab-btn { flex: 1; background: #111; border: 1px solid #333; color: #888; padding: 8px; font-size: 11px; cursor: pointer; }
-    .tab-btn.active { border-color: #00ffcc; color: #00ffcc; background: #161616; }
-    .arcade-hud-bar { display: flex; justify-content: space-between; background: #111; padding: 8px 12px; border: 1px solid #333; margin-bottom: 8px; color: #00ffcc; font-size: 12px; }
-    #arcadeCanvas { display: block; margin: 0 auto; background: #000; border: 2px solid #222; }
-    .daw-transport { display: flex; gap: 10px; align-items: center; background: #181818; padding: 10px; border: 1px solid #333; }
-    .daw-btn { background: #252525; border: 1px solid #444; color: #fff; padding: 6px 12px; font-size: 11px; cursor: pointer; }
-    .daw-btn:hover { background: #00ffcc; color: #000; }
-    .slot-machine { display: flex; justify-content: center; gap: 15px; margin: 20px 0; }
-    .slot-reel { width: 70px; height: 90px; background: #111; border: 3px solid #ff007f; display: flex; align-items: center; justify-content: center; font-size: 38px; color: #ff007f; font-weight: bold; }
+    * {
+      box-sizing: border-box;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-touch-callout: none;
+    }
+    body, html {
+      margin: 0; padding: 0; width: 100%; height: 100%;
+      overflow: hidden; background-color: #050608;
+      font-family: 'Share Tech Mono', monospace; color: #e2e8f0;
+    }
+    .crt-overlay {
+      pointer-events: none; position: absolute; inset: 0; z-index: 40;
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.45) 50%), 
+                  linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+      background-size: 100% 3px, 6px 100%;
+    }
+    .crt-vignette {
+      pointer-events: none; position: absolute; inset: 0; z-index: 41;
+      box-shadow: inset 0 0 110px rgba(0,0,0,0.85);
+    }
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: #080a0f; }
+    ::-webkit-scrollbar-thumb { background: #00f0ff; border-radius: 4px; }
+    @keyframes pulse-glow {
+      0%, 100% { opacity: 0.9; text-shadow: 0 0 10px #00f0ff; }
+      50% { opacity: 0.4; text-shadow: none; }
+    }
+    .prompt-pulse { animation: pulse-glow 1.3s infinite ease-in-out; }
   </style>
 </head>
-<body>
-  <div id="gameContainer">
-    <canvas id="gameCanvas" width="1600" height="960"></canvas>
-    <div id="crtOverlay" class="scanline"></div>
+<body class="bg-lowlife-black text-white antialiased flex flex-col justify-between select-none">
 
-    <div id="topHud">
-      <div id="hudLeft">
-        <span class="hud-tag" id="hudUniverseTag">UNIVERSE: THE UNDERGROUND</span>
-        <span class="hud-tag" id="hudCoords">POS: 750, 750</span>
-        <span class="hud-tag" id="hudTokens">TOKENS: 10</span>
-        <span class="hud-tag" id="hudTapesCount">TAPES: 0/12</span>
-      </div>
-      <div id="hudRight">
-        <div id="musicControls">
-          <button class="hud-btn" id="audioToggleBtn" onclick="toggleAudioEngine()">[START AUDIO]</button>
-          <select id="trackSelect" onchange="switchTrackMode(this.value)">
-            <option value="orig">DANCING (ORIGINAL)</option>
-            <option value="sped">DANCING (SPED-UP)</option>
-            <option value="slow">DANCING (SLOWED+VERB)</option>
-          </select>
-          <input type="range" id="volSlider" min="0" max="1" step="0.05" value="0.5" oninput="setWorldVolume(this.value)">
+  <!-- CRT Scanlines & Screen Vignette -->
+  <div id="crtOverlay" class="crt-overlay"></div>
+  <div class="crt-vignette"></div>
+
+  <!-- PERSISTENT TOP HUD & MUSIC PLAYER BAR -->
+  <header class="absolute top-0 left-0 right-0 z-30 px-3 py-2 sm:px-5 sm:py-2.5 flex flex-wrap items-center justify-between bg-black/90 border-b border-lowlife-border/60 backdrop-blur-md gap-2">
+    <!-- Brand, Current Dimension & Handle -->
+    <div class="flex items-center gap-3">
+      <div id="dimensionStatusDot" class="w-2.5 h-2.5 rounded-full bg-lowlife-cyan animate-ping"></div>
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="font-cyber font-bold tracking-widest text-xs sm:text-sm text-white">CLUB LOWLIFE</span>
+          <span id="dimensionBadge" class="text-[10px] bg-lowlife-concrete border border-lowlife-cyan/40 text-lowlife-cyan px-2 py-0.5 rounded font-cyber">DIMENSION: UNDERGROUND</span>
+          <span id="playerHandleBadge" class="text-[10px] bg-black/80 border border-neutral-700 text-neutral-300 px-1.5 py-0.5 rounded font-mono hidden sm:inline">@ENFORCER_GUEST</span>
         </div>
-        <button class="hud-btn" id="crtToggleBtn" onclick="toggleCrtScanlines()">📺 CRT: ON</button>
-        <button class="hud-btn" onclick="triggerDimensionalWarp()">🌀 WARP REALM</button>
-        <button class="hud-btn" onclick="openProfileHub()">👤 SYNDICATE ID</button>
-        <button class="hud-btn" onclick="openSkinsLocker()">🧥 SKINS</button>
-        <button class="hud-btn" onclick="openTapesModal()">📼 TAPES</button>
-        <button class="hud-btn highlight" onclick="openQuickLinks()">🔗 ALL LINKS</button>
+        <p id="dimensionSubText" class="text-[9px] text-neutral-400 font-mono tracking-wider hidden sm:block">ERA II // CASSHERN SINS × BLADE PROTOCOL</p>
       </div>
     </div>
 
-    <div id="interactionToast"></div>
-  </div>
-
-  <!-- MODALS -->
-  <div id="quickLinksModal" class="modal-backdrop">
-    <div class="terminal-modal">
-      <div class="modal-header">
-        <h2>CLUB LOWLIFE // SYNDICATE LINKS</h2>
-        <button class="close-btn" onclick="closeModals()">✕</button>
+    <!-- Active Audio Player HUD Bar -->
+    <div class="flex items-center gap-2 bg-lowlife-charcoal/90 px-2.5 py-1 rounded-lg border border-lowlife-border text-xs">
+      <button id="bgmToggleBtn" class="p-1 text-lowlife-cyan hover:text-white transition" title="Play / Pause Audio">
+        <svg id="bgmPlayIcon" class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+      </button>
+      <div class="flex flex-col">
+        <span class="text-[9px] text-neutral-400 font-mono uppercase leading-tight">BROADCASTING:</span>
+        <span id="activeTrackName" class="text-[11px] font-bold text-white leading-tight">"DANCING" (UNDERGROUND NOIR)</span>
       </div>
-      <div class="modal-body" id="quickLinksContainer"></div>
+      <!-- Track Speed/Pitch Selector -->
+      <select id="trackVersionSelect" class="bg-black text-[10px] text-lowlife-cyan border border-neutral-700 rounded px-1 py-0.5 font-mono focus:outline-none">
+        <option value="original">ORIGINAL</option>
+        <option value="spedup">SPED-UP (+15%)</option>
+        <option value="slowed">SLOWED+VERB (-15%)</option>
+      </select>
+      <!-- Volume Slider -->
+      <div class="hidden md:flex items-center gap-1.5 pl-2 border-l border-neutral-800">
+        <span class="text-[10px] text-neutral-400">VOL</span>
+        <input id="bgmVolumeSlider" type="range" min="0" max="1" step="0.05" value="0.5" class="w-16 accent-lowlife-cyan cursor-pointer">
+      </div>
     </div>
-  </div>
 
-  <div id="discoModal" class="modal-backdrop">
-    <div class="terminal-modal large-modal">
-      <div class="modal-header">
-        <h2>DISCOGRAPHY VAULT // MASTER ARCHIVES</h2>
-        <button class="close-btn" onclick="closeModals()">✕</button>
+    <!-- Top Right Nav Buttons: Quick Warp, CRT, Cassettes, Locker, Profile, Links -->
+    <div class="flex items-center gap-1.5 sm:gap-2">
+      <!-- Quick Dimension Warp Button -->
+      <button id="quickWarpBtn" class="px-2 py-1 bg-gradient-to-r from-pink-600 to-cyan-500 hover:from-pink-500 hover:to-cyan-400 text-black font-cyber font-bold text-xs rounded transition flex items-center gap-1 shadow-[0_0_12px_rgba(236,72,153,0.4)]">
+        <span>🌀</span>
+        <span id="quickWarpText" class="hidden sm:inline">WARP: RETROCADE</span>
+      </button>
+
+      <!-- Token / Credits Badge -->
+      <div class="px-2 py-1 bg-black/70 border border-yellow-500/50 rounded text-xs text-yellow-400 font-mono flex items-center gap-1">
+        <span>🪙</span>
+        <b id="casinoTokensCount">100</b>
       </div>
-      <div class="modal-body" id="discoContainer"></div>
+
+      <!-- CRT Scanline Toggle Button -->
+      <button id="toggleCrtBtn" title="Toggle CRT scanline overlay [Key: C]" class="px-2 py-1 bg-black/70 hover:bg-neutral-800 border border-lowlife-cyan/50 text-lowlife-cyan font-mono text-xs rounded transition flex items-center gap-1">
+        <span>📺</span>
+        <span id="crtStatusText" class="font-cyber font-bold text-[11px]">CRT: ON</span>
+      </button>
+
+      <!-- Cassettes Badge -->
+      <button id="openTapesBtn" class="flex items-center gap-1.5 px-2 py-1 bg-black/60 border border-neutral-700 hover:border-lowlife-gold rounded text-xs transition">
+        <span class="text-lowlife-cyan text-[11px]">📼 <b id="loreCount">0/6</b></span>
+        <span class="text-lowlife-gold text-[11px] ml-1">✨ <b id="goldCount">0/6</b></span>
+      </button>
+
+      <!-- Skins Locker -->
+      <button id="openSkinsBtn" class="px-2 py-1 bg-lowlife-charcoal hover:bg-neutral-800 border border-lowlife-border rounded text-xs text-white flex items-center gap-1">
+        <span>🧥</span>
+        <span class="hidden sm:inline font-cyber">LOCKER</span>
+      </button>
+
+      <!-- Profile & Save Button -->
+      <button id="openProfileBtn" class="px-2 py-1 bg-lowlife-charcoal hover:bg-neutral-800 border border-lowlife-border rounded text-xs text-lowlife-cyan flex items-center gap-1">
+        <span>💾</span>
+        <span class="hidden sm:inline font-cyber">PROFILE</span>
+      </button>
+
+      <!-- Quick All-Links Button -->
+      <button id="openLinksModalBtn" class="px-2.5 py-1 bg-lowlife-cyan hover:bg-white text-black font-cyber font-bold text-xs rounded transition shadow-[0_0_10px_rgba(0,240,255,0.3)]">
+        ALL LINKS
+      </button>
     </div>
-  </div>
+  </header>
 
-  <div id="merchModal" class="modal-backdrop">
-    <div class="terminal-modal">
-      <div class="modal-header">
-        <h2 id="merchModalTitle">TRUNK DROP // ARCHIVE CLEARANCE</h2>
-        <button class="close-btn" onclick="closeModals()">✕</button>
-      </div>
-      <div class="modal-body" id="merchContainer"></div>
+  <!-- GAME CANVAS CONTAINER -->
+  <main class="relative w-full h-full flex items-center justify-center bg-black overflow-hidden">
+    <canvas id="gameCanvas" class="w-full h-full block cursor-crosshair"></canvas>
+
+    <!-- IN-WORLD PROXIMITY INTERACTION BANNER -->
+    <div id="interactionPrompt" class="hidden pointer-events-auto absolute bottom-24 sm:bottom-12 z-30 px-5 py-2.5 bg-black/90 border border-lowlife-cyan text-lowlife-cyan rounded-md shadow-[0_0_20px_rgba(0,240,255,0.4)] flex items-center gap-3 font-mono text-xs sm:text-sm backdrop-blur">
+      <span class="w-2.5 h-2.5 rounded-full bg-lowlife-cyan prompt-pulse"></span>
+      <span id="promptText" class="font-bold">PRESS [E] OR TAP TO INTERACT</span>
+      <button id="promptTapBtn" class="sm:hidden px-2.5 py-0.5 bg-lowlife-cyan text-black font-bold rounded text-xs ml-1">TAP</button>
     </div>
+
+    <!-- TOAST NOTIFICATION -->
+    <div id="toastMessage" class="pointer-events-none transition-all duration-300 opacity-0 transform translate-y-3 absolute top-16 z-30 px-4 py-2 bg-black/95 border border-lowlife-cyan rounded text-xs text-white font-mono shadow-[0_0_15px_rgba(0,240,255,0.3)] max-w-sm text-center">
+      Notification Alert
+    </div>
+  </main>
+
+  <!-- MOBILE ON-SCREEN TOUCH CONTROLS -->
+  <div id="touchControls" class="sm:hidden pointer-events-none absolute bottom-4 left-0 right-0 z-30 px-4 flex items-end justify-between">
+    <div class="pointer-events-auto grid grid-cols-3 gap-1.5 w-36 h-36 bg-black/70 p-1.5 rounded-2xl border border-white/10 backdrop-blur-sm">
+      <div></div>
+      <button id="btnUp" class="bg-neutral-800/90 active:bg-lowlife-cyan active:text-black rounded-lg flex items-center justify-center text-white text-lg font-bold">▲</button>
+      <div></div>
+      <button id="btnLeft" class="bg-neutral-800/90 active:bg-lowlife-cyan active:text-black rounded-lg flex items-center justify-center text-white text-lg font-bold">◀</button>
+      <div class="flex items-center justify-center text-[9px] text-neutral-500 font-mono">MOVE</div>
+      <button id="btnRight" class="bg-neutral-800/90 active:bg-lowlife-cyan active:text-black rounded-lg flex items-center justify-center text-white text-lg font-bold">▶</button>
+      <div></div>
+      <button id="btnDown" class="bg-neutral-800/90 active:bg-lowlife-cyan active:text-black rounded-lg flex items-center justify-center text-white text-lg font-bold">▼</button>
+      <div></div>
+    </div>
+    <button id="btnAction" class="pointer-events-auto w-16 h-16 rounded-full bg-lowlife-cyan/20 active:bg-lowlife-cyan border-2 border-lowlife-cyan text-lowlife-cyan active:text-black font-cyber font-bold text-xs flex flex-col items-center justify-center shadow-[0_0_15px_rgba(0,240,255,0.3)] backdrop-blur">
+      <span>INTERACT</span>
+      <span class="text-[9px] font-mono">[E]</span>
+    </button>
   </div>
 
-  <div id="tapesModal" class="modal-backdrop">
-    <div class="terminal-modal large-modal">
-      <div class="modal-header">
-        <h2>CASSETTE ARCHIVE // LORE & STEM VAULT</h2>
-        <button class="close-btn" onclick="closeModals()">✕</button>
-      </div>
-      <div class="modal-body">
-        <div class="tape-tabs">
-          <button class="tab-btn active" id="tabLore" onclick="switchTapeTab('lore')">LORE CASSETTES (STORY)</button>
-          <button class="tab-btn" id="tabVip" onclick="switchTapeTab('vip')">VIP GOLD STEM TAPES (UNRELEASED)</button>
+  <!-- ============================================================== -->
+  <!-- MODALS: DISCOGRAPHY, ARCADE, DAW, LOCKER, CASSETTES, PROFILE -->
+  <!-- ============================================================== -->
+
+  <!-- 1. DISCOGRAPHY STUDIO ROOM MODAL -->
+  <div id="discoModal" class="hidden fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-3 sm:p-5">
+    <div class="relative w-full max-w-3xl bg-lowlife-charcoal border border-lowlife-border rounded-xl p-5 max-h-[90vh] flex flex-col">
+      <div class="flex items-center justify-between border-b border-neutral-800 pb-3 mb-4">
+        <div>
+          <h2 class="text-base sm:text-lg font-cyber font-bold text-white tracking-widest uppercase">DISCOGRAPHY ARCHIVE // STUDIO ROOM</h2>
+          <p class="text-xs text-neutral-400 font-mono">DISCOVER RELEASES, LORE & SONIC EVOLUTION</p>
         </div>
-        <div id="tapesListContainer"></div>
-        <div id="vaultBonusBox" style="margin-top:10px;"></div>
+        <button onclick="closeModals()" class="text-neutral-400 hover:text-white p-1 text-lg">✕</button>
       </div>
-    </div>
-  </div>
 
-  <div id="skinsModal" class="modal-backdrop">
-    <div class="terminal-modal">
-      <div class="modal-header">
-        <h2>SYNDICATE LOCKER // AVATAR CUSTOMIZATION</h2>
-        <button class="close-btn" onclick="closeModals()">✕</button>
-      </div>
-      <div class="modal-body" id="skinsContainer"></div>
-    </div>
-  </div>
-
-  <div id="profileModal" class="modal-backdrop">
-    <div class="terminal-modal">
-      <div class="modal-header">
-        <h2>SYNDICATE PROFILE // CREDENTIALS</h2>
-        <button class="close-btn" onclick="closeModals()">✕</button>
-      </div>
-      <div class="modal-body">
-        <label style="font-size:11px;color:#00ffcc;">HANDLE:</label>
-        <input type="text" id="profileHandleInput" style="background:#000;color:#00ffcc;border:1px solid #333;padding:8px;" placeholder="@username">
-        <label style="font-size:11px;color:#00ffcc;">SECURITY PIN:</label>
-        <input type="password" id="profilePinInput" maxlength="4" style="background:#000;color:#00ffcc;border:1px solid #333;padding:8px;" placeholder="••••">
-        <button class="action-btn" onclick="saveUserProfile()">SAVE PROFILE</button>
-      </div>
-    </div>
-  </div>
-
-  <div id="arcadeModal" class="modal-backdrop">
-    <div class="terminal-modal large-modal">
-      <div class="modal-header">
-        <h2 id="arcadeGameTitle">UNDERGROUND ARCADE</h2>
-        <button class="close-btn" onclick="closeModals()">✕</button>
-      </div>
-      <div class="modal-body">
-        <div class="arcade-hud-bar">
-          <span>SCORE: <strong id="arcadeScore">0</strong></span>
-          <span>LIVES: <strong id="arcadeLives">3</strong></span>
-          <span>HIGH: <strong id="arcadeHigh">0</strong></span>
+      <div class="overflow-y-auto space-y-4 pr-1 font-mono text-xs">
+        <div class="p-4 bg-black/60 border border-lowlife-cyan/60 rounded-lg flex flex-col sm:flex-row gap-4 items-start">
+          <div class="w-20 h-20 bg-lowlife-cyan/10 border border-lowlife-cyan rounded flex-shrink-0 flex items-center justify-center text-3xl">💿</div>
+          <div class="flex-1">
+            <div class="flex items-center justify-between">
+              <h3 class="text-sm font-bold font-cyber text-white">"DANCING" (SINGLE)</h3>
+              <span class="text-[10px] text-lowlife-cyan border border-lowlife-cyan/40 px-2 py-0.5 rounded font-cyber">ERA II DEBUT</span>
+            </div>
+            <p class="text-neutral-300 mt-1 leading-relaxed">
+              The flagship single introducing the Blade x Casshern Sins era. A sharp fusion of electronic dance bounce and melodic rap flows, moving away from hyper-colored trap into sleek, late-night industrial energy.
+            </p>
+            <div class="flex gap-2 mt-3">
+              <a href="https://open.spotify.com" target="_blank" class="px-3 py-1 bg-[#1DB954] text-black font-cyber font-bold text-[11px] rounded">SPOTIFY</a>
+              <a href="https://music.apple.com" target="_blank" class="px-3 py-1 bg-white text-black font-cyber font-bold text-[11px] rounded">APPLE MUSIC</a>
+              <button onclick="setTrackBgm('original')" class="px-3 py-1 bg-neutral-800 hover:bg-neutral-700 text-lowlife-cyan font-cyber text-[11px] rounded">▶ PLAY IN WORLD</button>
+            </div>
+          </div>
         </div>
-        <canvas id="arcadeCanvas" width="640" height="480"></canvas>
+
+        <div class="p-4 bg-black/60 border border-neutral-800 rounded-lg flex flex-col sm:flex-row gap-4 items-start">
+          <div class="w-20 h-20 bg-lowlife-gold/10 border border-lowlife-gold rounded flex-shrink-0 flex items-center justify-center text-3xl">📼</div>
+          <div class="flex-1">
+            <div class="flex items-center justify-between">
+              <h3 class="text-sm font-bold font-cyber text-white">RETRO CADE EVOLVED (ALBUM)</h3>
+              <span class="text-[10px] text-lowlife-gold border border-lowlife-gold/40 px-2 py-0.5 rounded">DELUXE EXPANSION</span>
+            </div>
+            <p class="text-neutral-300 mt-1 leading-relaxed">
+              The extended edition containing exclusive bonus records not found on streaming portals. Bridges the gap between early experimental sound design and high-octane electronic bangers.
+            </p>
+            <div class="flex gap-2 mt-3">
+              <a href="https://open.spotify.com" target="_blank" class="px-3 py-1 bg-neutral-800 hover:bg-neutral-700 text-white font-cyber text-[11px] rounded">STREAM PROJECT</a>
+              <a href="https://forms.gle/TsE7MAHSD1erDca59" target="_blank" class="px-3 py-1 bg-lowlife-gold text-black font-cyber font-bold text-[11px] rounded">CLAIM CASSETTE</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="p-4 bg-black/60 border border-neutral-800 rounded-lg flex flex-col sm:flex-row gap-4 items-start">
+          <div class="w-20 h-20 bg-pink-500/10 border border-pink-500 rounded flex-shrink-0 flex items-center justify-center text-3xl">🕹️</div>
+          <div class="flex-1">
+            <h3 class="text-sm font-bold font-cyber text-white">RETROCADE (ORIGINAL ALBUM)</h3>
+            <p class="text-neutral-300 mt-1 leading-relaxed">
+              The foundational project characterized by bright, neon 16-bit synths, colorful vintage video-game samples, and high-frequency trap percussion. The era now held captive in the narrative lore.
+            </p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+          <div class="p-3 bg-neutral-900/60 border border-neutral-800 rounded">
+            <h4 class="font-cyber font-bold text-white text-xs">777 // LIVING ON THE HIGHS</h4>
+            <p class="text-[11px] text-neutral-400 mt-1">High-stakes lyricism over pulsing electronic chords. Anthem of the underground creative link-up.</p>
+          </div>
+          <div class="p-3 bg-neutral-900/60 border border-neutral-800 rounded">
+            <h4 class="font-cyber font-bold text-white text-xs">LOUD!</h4>
+            <p class="text-[11px] text-neutral-400 mt-1">Distorted 808s and aggressive vocal delivery designed for live warehouse pits and car sound systems.</p>
+          </div>
+          <div class="p-3 bg-neutral-900/60 border border-neutral-800 rounded">
+            <h4 class="font-cyber font-bold text-white text-xs">MARTIAN UNIVERSITY</h4>
+            <p class="text-[11px] text-neutral-400 mt-1">Futuristic atmospheric padscapes and off-kilter drum grooves capturing out-of-this-world bounce.</p>
+          </div>
+          <div class="p-3 bg-neutral-900/60 border border-neutral-800 rounded">
+            <h4 class="font-cyber font-bold text-white text-xs">HOLD ME DOWN & XX IT</h4>
+            <p class="text-[11px] text-neutral-400 mt-1">Dark melodic rap explorations diving deep into loyalty, identity detachment, and night-drive reflections.</p>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 
-  <div id="dawModal" class="modal-backdrop">
-    <div class="terminal-modal large-modal">
-      <div class="modal-header">
-        <h2>IMAGE-LINE // FL STUDIO MINI (CHANNEL RACK)</h2>
-        <button class="close-btn" onclick="closeModals()">✕</button>
-      </div>
-      <div class="modal-body">
-        <div class="daw-transport">
-          <button id="dawPlayBtn" class="daw-btn" onclick="toggleDawPlayback()">▶ PLAY</button>
-          <button class="daw-btn" onclick="stopDawPlayback()">■ STOP</button>
-          <span style="font-size:11px;color:#00ffcc;">BPM: <strong id="dawBpmVal">130</strong></span>
+  <!-- 2. ARCADE ROOM MODAL (GALAGA, PAC-MAN, SUPER MARIO PLATFORMER) -->
+  <div id="arcadeModal" class="hidden fixed inset-0 z-50 bg-black/95 backdrop-blur-md flex items-center justify-center p-3 sm:p-5">
+    <div class="relative w-full max-w-2xl bg-lowlife-charcoal border-2 border-lowlife-cyan rounded-2xl p-4 sm:p-6 shadow-[0_0_40px_rgba(0,240,255,0.3)] flex flex-col">
+      <div class="flex items-center justify-between border-b border-lowlife-cyan/30 pb-3 mb-3">
+        <div class="flex items-center gap-2">
+          <span class="text-xl">🕹️</span>
+          <div>
+            <h3 class="text-sm sm:text-base font-cyber font-bold text-lowlife-cyan uppercase tracking-wider">UNDERGROUND ARCADE CAB</h3>
+            <p class="text-[10px] text-neutral-400 font-mono">COMPLETE OBJECTIVES TO UNLOCK REPUTATION & SKINS</p>
+          </div>
         </div>
-        <div id="dawStepSequencer" style="display:flex;flex-direction:column;gap:6px;margin:12px 0;"></div>
+        <button onclick="closeModals()" class="text-neutral-400 hover:text-white p-1 text-lg">✕</button>
+      </div>
+
+      <!-- Arcade Game Switcher Tabs -->
+      <div class="flex gap-2 mb-3">
+        <button id="tabInvaders" onclick="switchArcadeGame('invaders')" class="flex-1 py-1.5 bg-lowlife-cyan text-black font-cyber font-bold text-xs rounded transition">
+          1. LOWLIFE INVADERS (GALAGA)
+        </button>
+        <button id="tabPac" onclick="switchArcadeGame('pac')" class="flex-1 py-1.5 bg-neutral-900 text-neutral-300 font-cyber font-bold text-xs rounded hover:bg-neutral-800 transition">
+          2. PAC-ENFORCER (MAZE)
+        </button>
+        <button id="tabRunner" onclick="switchArcadeGame('runner')" class="flex-1 py-1.5 bg-neutral-900 text-neutral-300 font-cyber font-bold text-xs rounded hover:bg-neutral-800 transition">
+          3. DYSTOPIAN RUN (MARIO)
+        </button>
+      </div>
+
+      <!-- Mini-Game Canvas Screen -->
+      <div class="relative w-full h-80 sm:h-96 bg-black rounded-lg border border-neutral-700 overflow-hidden flex items-center justify-center">
+        <canvas id="miniGameCanvas" width="560" height="360" class="w-full h-full block"></canvas>
+      </div>
+
+      <!-- Arcade Footer & Key Instructions -->
+      <div class="mt-3 flex items-center justify-between text-[11px] font-mono text-neutral-400">
+        <span id="miniGameControlsHint">CONTROLS: [A/D or ◀/▶] Move | [SPACE] Action / Jump / Shoot</span>
+        <span class="text-lowlife-gold font-bold">HIGH SCORE: <b id="arcadeHighScore">0</b></span>
       </div>
     </div>
   </div>
 
-  <div id="casinoModal" class="modal-backdrop">
-    <div class="terminal-modal">
-      <div class="modal-header">
-        <h2>LUCKY 777 // RETROCADE HIGH-ROLLER SLOTS</h2>
-        <button class="close-btn" onclick="closeModals()">✕</button>
+  <!-- 3. SOUND LAB / PLAYABLE MINI FL STUDIO DAW MODAL -->
+  <div id="dawModal" class="hidden fixed inset-0 z-50 bg-black/95 backdrop-blur-md flex items-center justify-center p-3 sm:p-5">
+    <div class="relative w-full max-w-3xl bg-[#12141c] border-2 border-[#ffaa00] rounded-2xl p-4 sm:p-6 shadow-[0_0_40px_rgba(255,170,0,0.3)] flex flex-col">
+      <div class="flex items-center justify-between border-b border-neutral-800 pb-3 mb-4">
+        <div class="flex items-center gap-3">
+          <span class="text-2xl">🎛️</span>
+          <div>
+            <h3 class="text-base font-cyber font-bold text-[#ffaa00] uppercase tracking-wider">FL STUDIO // MINI SOUND LAB RACK</h3>
+            <p class="text-xs text-neutral-400 font-mono">16-STEP CHANNEL SEQUENCER & MIXING VAULT</p>
+          </div>
+        </div>
+        <button onclick="closeModals()" class="text-neutral-400 hover:text-white p-1 text-lg">✕</button>
       </div>
-      <div class="modal-body" style="text-align:center;">
-        <div class="slot-machine">
-          <div class="slot-reel" id="reel1">7</div>
-          <div class="slot-reel" id="reel2">7</div>
-          <div class="slot-reel" id="reel3">7</div>
+
+      <!-- DAW Control Toolbar: Play, Stop, BPM, Clear -->
+      <div class="flex flex-wrap items-center justify-between gap-3 p-3 bg-black/70 rounded-lg border border-neutral-800 mb-4">
+        <div class="flex items-center gap-2">
+          <button id="dawPlayBtn" onclick="toggleDawPlayback()" class="px-4 py-1.5 bg-[#22c55e] hover:bg-green-600 text-black font-cyber font-bold text-xs rounded transition flex items-center gap-1">
+            <span>▶ PLAY</span>
+          </button>
+          <button onclick="stopDawPlayback()" class="px-3 py-1.5 bg-neutral-800 hover:bg-neutral-700 text-white font-cyber text-xs rounded">
+            ■ STOP
+          </button>
+          <button onclick="clearDawGrid()" class="px-3 py-1.5 bg-neutral-800 hover:bg-neutral-700 text-red-400 font-cyber text-xs rounded">
+            CLEAR
+          </button>
         </div>
-        <div style="display:flex;gap:10px;justify-content:center;">
-          <button class="action-btn" onclick="spinSlot(1)">SPIN (1 TOKEN)</button>
-          <button class="action-btn" onclick="spinSlot(5)">MAX (5 TOKENS)</button>
+
+        <div class="flex items-center gap-3 text-xs font-mono">
+          <span class="text-neutral-400">TEMPO:</span>
+          <span id="bpmDisplay" class="text-[#ffaa00] font-bold">130 BPM</span>
+          <input id="bpmSlider" type="range" min="100" max="160" value="130" class="w-24 accent-[#ffaa00] cursor-pointer" oninput="updateDawBpm(this.value)">
         </div>
-        <div id="casinoPayoutText" style="margin-top:10px;color:#ff007f;font-size:12px;">MATCH THREE 7s FOR 100 TOKENS JACKPOT</div>
+
+        <button onclick="openFlTipsModal()" class="px-3 py-1 bg-neutral-800 border border-lowlife-cyan/40 text-lowlife-cyan text-xs font-cyber rounded hover:bg-neutral-700">
+          SHORTCUTS [CTRL+L]
+        </button>
+      </div>
+
+      <!-- 16-Step Channel Rack Grid -->
+      <div class="space-y-2.5 overflow-x-auto pb-2">
+        <div class="flex items-center gap-2 min-w-[500px]">
+          <div class="w-28 text-xs font-cyber font-bold text-red-400 flex items-center justify-between px-2 py-1.5 bg-neutral-900 rounded border border-neutral-800">
+            <span>808 KICK</span>
+            <span class="text-[9px] text-neutral-500">TR-01</span>
+          </div>
+          <div id="stepRow0" class="flex-1 grid grid-cols-16 gap-1"></div>
+        </div>
+        <div class="flex items-center gap-2 min-w-[500px]">
+          <div class="w-28 text-xs font-cyber font-bold text-blue-400 flex items-center justify-between px-2 py-1.5 bg-neutral-900 rounded border border-neutral-800">
+            <span>SNARE/CLAP</span>
+            <span class="text-[9px] text-neutral-500">TR-02</span>
+          </div>
+          <div id="stepRow1" class="flex-1 grid grid-cols-16 gap-1"></div>
+        </div>
+        <div class="flex items-center gap-2 min-w-[500px]">
+          <div class="w-28 text-xs font-cyber font-bold text-yellow-400 flex items-center justify-between px-2 py-1.5 bg-neutral-900 rounded border border-neutral-800">
+            <span>HI-HAT</span>
+            <span class="text-[9px] text-neutral-500">TR-03</span>
+          </div>
+          <div id="stepRow2" class="flex-1 grid grid-cols-16 gap-1"></div>
+        </div>
+        <div class="flex items-center gap-2 min-w-[500px]">
+          <div class="w-28 text-xs font-cyber font-bold text-lowlife-cyan flex items-center justify-between px-2 py-1.5 bg-neutral-900 rounded border border-neutral-800">
+            <span>SYNTH STAB</span>
+            <span class="text-[9px] text-neutral-500">TR-04</span>
+          </div>
+          <div id="stepRow3" class="flex-1 grid grid-cols-16 gap-1"></div>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- LOAD MASTER CONFIG -->
-  <script src="config.js"></script>
+  <!-- 4. FL STUDIO TIPS & SHORTCUTS POPUP -->
+  <div id="flTipsModal" class="hidden fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="w-full max-w-lg bg-lowlife-charcoal border border-lowlife-cyan/70 rounded-xl p-5 shadow-2xl font-mono text-xs">
+      <div class="flex justify-between items-center border-b border-neutral-800 pb-2 mb-3">
+        <h4 class="font-cyber font-bold text-lowlife-cyan uppercase">FL STUDIO & MIXING CHEAT CODES</h4>
+        <button onclick="document.getElementById('flTipsModal').classList.add('hidden')" class="text-neutral-400 hover:text-white text-lg">✕</button>
+      </div>
+      <div class="space-y-2.5 text-neutral-300">
+        <div><b class="text-white">Auto-Route to Mixer (Ctrl + L):</b> Highlight rack instruments, click starting mixer slot, hit Ctrl + L to cascade names & colors instantly.</div>
+        <div><b class="text-white">Ghost Notes (Alt + V):</b> Turn on ghost channels; double right-click any ghost note in piano roll to jump to that instrument immediately.</div>
+        <div><b class="text-white">The Limit/Scale Tool (Alt + K):</b> Snap rogue MIDI chords in the piano roll instantly to your selected minor/major key.</div>
+        <div><b class="text-white">Middle-Click Solo:</b> Click your mouse scroll-wheel on any mixer track's green mute LED to instant-solo that track.</div>
+        <div><b class="text-white">Patcher Multi-Band Saturation:</b> Split frequencies with Fruity Frequency Splitter to saturate only mids/highs while keeping sub frequencies 100% clean below 100 Hz.</div>
+      </div>
+    </div>
+  </div>
 
-  <!-- BULLETPROOF ENGINE SCRIPT -->
+  <!-- 5. CASSETTE TAPES VAULT MODAL (LORE & UNRELEASED) -->
+  <div id="tapesModal" class="hidden fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="relative w-full max-w-2xl bg-lowlife-charcoal border border-neutral-700 rounded-xl p-5 max-h-[90vh] flex flex-col">
+      <div class="flex items-center justify-between border-b border-neutral-800 pb-3 mb-4">
+        <div>
+          <h3 class="text-base font-cyber font-bold text-white uppercase tracking-wider">CASSETTE VAULT ARCHIVE</h3>
+          <p class="text-xs text-neutral-400 font-mono">12 TOTAL TAPES: 6 STORY ARCHIVES + 6 UNRELEASED VIP STEMS</p>
+        </div>
+        <button onclick="closeModals()" class="text-neutral-400 hover:text-white p-1 text-lg">✕</button>
+      </div>
+
+      <div class="overflow-y-auto space-y-4 pr-1 font-mono text-xs">
+        <div>
+          <div class="flex items-center gap-2 text-lowlife-cyan font-cyber font-bold text-sm mb-2">
+            <span>📼</span> LORE CASSETTES (CHRONOLOGICAL STORYLINE)
+          </div>
+          <div id="loreTapesContainer" class="space-y-2"></div>
+        </div>
+
+        <div class="pt-2 border-t border-neutral-800">
+          <div class="flex items-center gap-2 text-lowlife-gold font-cyber font-bold text-sm mb-2">
+            <span>✨</span> UNRELEASED VIP TAPES (SECRET AUDIO STEMS)
+          </div>
+          <div id="goldTapesContainer" class="space-y-2"></div>
+        </div>
+      </div>
+
+      <div class="mt-4 pt-3 border-t border-neutral-800 flex flex-col sm:flex-row items-center justify-between gap-2">
+        <span class="text-[11px] text-neutral-400 font-mono">COLLECT ALL 6 GOLD TAPES TO QUALIFY FOR PHYSICAL COPIES</span>
+        <a id="claimTapesBtn" href="https://forms.gle/TsE7MAHSD1erDca59" target="_blank" class="px-4 py-2 bg-lowlife-gold text-black font-cyber font-bold text-xs rounded transition hover:bg-yellow-300">
+          CLAIM CASSETTE FORM
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6. SKINS LOCKER MODAL -->
+  <div id="skinsModal" class="hidden fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="relative w-full max-w-xl bg-lowlife-charcoal border-2 border-lowlife-border rounded-xl p-5 max-h-[90vh] flex flex-col">
+      <div class="flex items-center justify-between border-b border-neutral-800 pb-3 mb-4">
+        <div>
+          <h3 class="text-base font-cyber font-bold text-white uppercase tracking-wider">ENFORCER LOCKER // AVATAR SKINS</h3>
+          <p class="text-xs text-neutral-400 font-mono">COMPLETE IN-WORLD OBJECTIVES TO UNLOCK NEW SKINS</p>
+        </div>
+        <button onclick="closeModals()" class="text-neutral-400 hover:text-white p-1 text-lg">✕</button>
+      </div>
+
+      <div id="skinsList" class="space-y-3 overflow-y-auto pr-1 font-mono text-xs"></div>
+    </div>
+  </div>
+
+  <!-- 7. PROFILE & SAVE MODAL (SYNDICATE ID) -->
+  <div id="profileModal" class="hidden fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="relative w-full max-w-md bg-lowlife-charcoal border border-lowlife-cyan rounded-xl p-5 shadow-2xl">
+      <div class="flex items-center justify-between border-b border-neutral-800 pb-3 mb-4">
+        <div>
+          <h3 class="text-base font-cyber font-bold text-white uppercase tracking-wider">SYNDICATE ID // SAVE PROFILE</h3>
+          <p class="text-xs text-neutral-400 font-mono">PERSISTENT CLOUD & LOCAL STORAGE</p>
+        </div>
+        <button onclick="closeModals()" class="text-neutral-400 hover:text-white p-1 text-lg">✕</button>
+      </div>
+
+      <div class="space-y-3 font-mono text-xs">
+        <div>
+          <label class="block text-neutral-400 mb-1">SYNDICATE HANDLE:</label>
+          <input id="profileHandleInput" type="text" maxlength="16" placeholder="e.g. Enforcer_09" class="w-full bg-black border border-neutral-700 rounded p-2 text-white font-mono focus:border-lowlife-cyan focus:outline-none">
+        </div>
+        <div>
+          <label class="block text-neutral-400 mb-1">SECRET PIN (4-DIGIT):</label>
+          <input id="profilePinInput" type="password" maxlength="4" placeholder="••••" class="w-full bg-black border border-neutral-700 rounded p-2 text-white font-mono focus:border-lowlife-cyan focus:outline-none">
+        </div>
+
+        <div class="flex gap-2 pt-2">
+          <button onclick="saveUserProfile()" class="flex-1 py-2 bg-lowlife-cyan text-black font-cyber font-bold text-xs rounded hover:bg-white transition">
+            SAVE PROFILE
+          </button>
+          <button onclick="logoutUserProfile()" class="px-3 py-2 bg-neutral-800 text-neutral-300 font-cyber text-xs rounded hover:bg-neutral-700 transition">
+            LOGOUT
+          </button>
+        </div>
+
+        <div class="pt-3 border-t border-neutral-800">
+          <div class="flex justify-between items-center mb-1">
+            <span class="text-[10px] text-neutral-400">TRANSFER SAVE DATA STRING:</span>
+            <button onclick="copySaveString()" class="text-[10px] text-lowlife-cyan hover:underline">COPY SAVE</button>
+          </div>
+          <input id="saveStringInput" type="text" placeholder="Paste save string here to import..." class="w-full bg-black border border-neutral-800 rounded p-1.5 text-[10px] text-neutral-400 font-mono">
+          <button onclick="importSaveString()" class="w-full mt-1 py-1 bg-neutral-800 hover:bg-neutral-700 text-neutral-300 font-cyber text-[10px] rounded">
+            IMPORT SAVE STRING
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 8. SECRET RESTROOM MIRROR CODE PUZZLE MODAL -->
+  <div id="mirrorPuzzleModal" class="hidden fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="relative w-full max-w-sm bg-[#0a0f12] border-2 border-lowlife-cyan rounded-2xl p-5 shadow-[0_0_40px_rgba(0,240,255,0.3)] text-center font-mono">
+      <h3 class="text-sm font-cyber font-bold text-lowlife-cyan tracking-widest uppercase mb-1">RESTROOM KEYPAD // REVEAL</h3>
+      <p class="text-[11px] text-neutral-400 mb-3">ENTER THE 3-DIGIT HIGH FREQUENCY CODE:</p>
+
+      <div class="w-32 mx-auto py-2 bg-black border border-neutral-700 rounded text-xl text-white tracking-widest font-bold mb-4" id="keypadDisplay">
+        ---
+      </div>
+
+      <div class="grid grid-cols-3 gap-2 w-48 mx-auto mb-4">
+        <button onclick="pressKeypad('1')" class="py-2 bg-neutral-900 border border-neutral-700 text-white font-bold rounded hover:bg-neutral-800">1</button>
+        <button onclick="pressKeypad('2')" class="py-2 bg-neutral-900 border border-neutral-700 text-white font-bold rounded hover:bg-neutral-800">2</button>
+        <button onclick="pressKeypad('3')" class="py-2 bg-neutral-900 border border-neutral-700 text-white font-bold rounded hover:bg-neutral-800">3</button>
+        <button onclick="pressKeypad('4')" class="py-2 bg-neutral-900 border border-neutral-700 text-white font-bold rounded hover:bg-neutral-800">4</button>
+        <button onclick="pressKeypad('5')" class="py-2 bg-neutral-900 border border-neutral-700 text-white font-bold rounded hover:bg-neutral-800">5</button>
+        <button onclick="pressKeypad('6')" class="py-2 bg-neutral-900 border border-neutral-700 text-white font-bold rounded hover:bg-neutral-800">6</button>
+        <button onclick="pressKeypad('7')" class="py-2 bg-neutral-900 border border-neutral-700 text-white font-bold rounded hover:bg-neutral-800">7</button>
+        <button onclick="pressKeypad('8')" class="py-2 bg-neutral-900 border border-neutral-700 text-white font-bold rounded hover:bg-neutral-800">8</button>
+        <button onclick="pressKeypad('9')" class="py-2 bg-neutral-900 border border-neutral-700 text-white font-bold rounded hover:bg-neutral-800">9</button>
+        <button onclick="clearKeypad()" class="py-2 bg-red-950 text-red-300 font-bold rounded hover:bg-red-900">C</button>
+        <button onclick="pressKeypad('0')" class="py-2 bg-neutral-900 border border-neutral-700 text-white font-bold rounded hover:bg-neutral-800">0</button>
+        <button onclick="submitKeypad()" class="py-2 bg-lowlife-cyan text-black font-bold rounded hover:bg-white">OK</button>
+      </div>
+
+      <p class="text-[10px] text-neutral-500">CLUE: "LIVING ON THE HIGHS"</p>
+    </div>
+  </div>
+
+  <!-- 9. DIRECT LINKTREE STYLE MODAL (ALL LINKS) -->
+  <div id="linksModal" class="hidden fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="relative w-full max-w-md bg-lowlife-charcoal border border-neutral-700 rounded-xl p-5 shadow-2xl max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between border-b border-neutral-800 pb-3 mb-4">
+        <div>
+          <h2 class="text-base font-bold font-cyber text-white tracking-widest uppercase">CLUB LOWLIFE DIRECTORY</h2>
+          <p class="text-xs text-neutral-400 font-mono">OFFICIAL LINKS // THE NEW ERA</p>
+        </div>
+        <button onclick="closeModals()" class="text-neutral-400 hover:text-white p-1 text-lg">✕</button>
+      </div>
+
+      <div class="space-y-2.5 font-cyber text-sm">
+        <a href="https://open.spotify.com" target="_blank" class="flex items-center justify-between p-3.5 rounded-lg bg-black/60 border border-lowlife-cyan/40 hover:border-lowlife-cyan transition">
+          <div>
+            <div class="text-white font-bold">STREAM NEW SINGLE "DANCING"</div>
+            <div class="text-[11px] text-neutral-400 font-mono">Original + Slowed/Verb + Sped-Up</div>
+          </div>
+          <span class="text-xs text-lowlife-cyan">LISTEN</span>
+        </a>
+        <a href="https://forms.gle/TsE7MAHSD1erDca59" target="_blank" class="flex items-center justify-between p-3.5 rounded-lg bg-black/60 border border-lowlife-gold/40 hover:border-lowlife-gold transition">
+          <div>
+            <div class="text-lowlife-gold font-bold">PHYSICAL CASSETTE GIVEAWAY</div>
+            <div class="text-[11px] text-neutral-400 font-mono">Claim address form for the 6 lucky winners</div>
+          </div>
+          <span class="text-xs text-lowlife-gold">CLAIM</span>
+        </a>
+        <a href="https://instagram.com" target="_blank" class="flex items-center justify-between p-3.5 rounded-lg bg-black/60 border border-neutral-700 hover:border-pink-500 transition">
+          <div>
+            <div class="text-white font-bold">INSTAGRAM SYNDICATE CHANNEL</div>
+            <div class="text-[11px] text-neutral-400 font-mono">Exclusive unreleased fits, VIP links, studio cuts</div>
+          </div>
+          <span class="text-xs text-pink-400">JOIN</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 10. HOLDING CHAMBER LORE CUTSCENE MODAL -->
+  <div id="holdingModal" class="hidden fixed inset-0 z-50 bg-black/95 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="relative w-full max-w-xl bg-lowlife-charcoal border-2 border-lowlife-red rounded-xl p-5 shadow-[0_0_40px_rgba(255,0,60,0.4)]">
+      <div class="flex items-center justify-between border-b border-neutral-800 pb-3 mb-4">
+        <div>
+          <h3 class="text-base font-cyber font-bold text-lowlife-red uppercase tracking-wider">THE HOLDING CHAMBER // SECTOR 02</h3>
+          <p class="text-xs text-neutral-400 font-mono">INTERROGATION SCENE // THE OLD RETROCADE ERA</p>
+        </div>
+        <button onclick="closeModals()" class="text-neutral-400 hover:text-white p-1 text-lg">✕</button>
+      </div>
+
+      <div class="space-y-3 font-mono text-xs text-neutral-300 leading-relaxed">
+        <p><b class="text-white">STATUS:</b> The bound captive tied to the folding metal chair is the previous self. Stripped of the bright, neon, saturated electronic trap aesthetic of <i>Retrocade</i>.</p>
+        <p><b class="text-white">OBSERVATION:</b> The CRT television flickers violent static across the concrete floor. The female syndicate handler administers drops from an amber dropper bottle.</p>
+        <p class="text-lowlife-cyan"><b class="text-white">TRANSMISSION:</b> "The old era had to be taken off the grid. Reborn in cold black leather and tactical visors. Blade meets Casshern Sins."</p>
+        <div class="pt-3 border-t border-neutral-800 flex justify-end">
+          <button onclick="closeModals()" class="px-4 py-1.5 bg-neutral-800 hover:bg-neutral-700 text-white font-cyber text-xs rounded">DISMISS TRANSMISSION</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 11. RETROCADE CASINO: LUCKY 777 // LIVING ON THE HIGHS SLOT MACHINE -->
+  <div id="casinoModal" class="hidden fixed inset-0 z-50 bg-black/95 backdrop-blur-md flex items-center justify-center p-3 sm:p-5">
+    <div class="relative w-full max-w-lg bg-[#140b22] border-2 border-pink-500 rounded-2xl p-5 shadow-[0_0_50px_rgba(236,72,153,0.5)] flex flex-col text-center">
+      <div class="flex items-center justify-between border-b border-pink-500/40 pb-3 mb-4">
+        <div class="flex items-center gap-2">
+          <span class="text-2xl animate-bounce">🎰</span>
+          <div class="text-left">
+            <h3 class="text-base font-cyber font-bold text-pink-400 tracking-widest uppercase">RETROCADE CASINO // LUCKY 777</h3>
+            <p class="text-[10px] text-neutral-400 font-mono">"LIVING ON THE HIGHS" // SOUND TOKEN HIGH ROLLER</p>
+          </div>
+        </div>
+        <button onclick="closeModals()" class="text-neutral-400 hover:text-white p-1 text-lg">✕</button>
+      </div>
+
+      <div class="p-4 bg-black/80 border-2 border-yellow-500/60 rounded-xl mb-4 relative shadow-inner">
+        <div class="flex justify-between items-center text-xs font-mono text-yellow-400 mb-3 px-2">
+          <span>CREDITS: <b id="slotCreditDisplay" class="text-white text-sm">100</b></span>
+          <span>BET: <b id="slotBetDisplay" class="text-white text-sm">10</b></span>
+          <span class="text-pink-400 font-cyber">JACKPOT: 777</span>
+        </div>
+
+        <div class="grid grid-cols-3 gap-3 p-4 bg-neutral-950 rounded-lg border border-neutral-800">
+          <div id="reel1" class="h-24 bg-gradient-to-b from-neutral-900 via-neutral-800 to-neutral-900 border-2 border-pink-500 rounded flex items-center justify-center text-4xl font-bold font-cyber text-yellow-400 shadow-[0_0_15px_rgba(236,72,153,0.3)]">
+            7
+          </div>
+          <div id="reel2" class="h-24 bg-gradient-to-b from-neutral-900 via-neutral-800 to-neutral-900 border-2 border-cyan-400 rounded flex items-center justify-center text-4xl font-bold font-cyber text-yellow-400 shadow-[0_0_15px_rgba(0,240,255,0.3)]">
+            7
+          </div>
+          <div id="reel3" class="h-24 bg-gradient-to-b from-neutral-900 via-neutral-800 to-neutral-900 border-2 border-yellow-400 rounded flex items-center justify-center text-4xl font-bold font-cyber text-yellow-400 shadow-[0_0_15px_rgba(250,204,21,0.3)]">
+            7
+          </div>
+        </div>
+
+        <div id="slotStatusMessage" class="mt-3 text-xs font-mono text-cyan-300 min-h-[20px]">
+          HIT SPIN TO TEST YOUR LUCK IN RETROCADE
+        </div>
+      </div>
+
+      <div class="flex items-center justify-between gap-3">
+        <div class="flex gap-2">
+          <button onclick="adjustSlotBet(5)" class="px-3 py-2 bg-neutral-900 hover:bg-neutral-800 border border-neutral-700 text-xs font-mono text-neutral-300 rounded">
+            BET 5
+          </button>
+          <button onclick="adjustSlotBet(10)" class="px-3 py-2 bg-neutral-900 hover:bg-neutral-800 border border-neutral-700 text-xs font-mono text-neutral-300 rounded">
+            BET 10
+          </button>
+          <button onclick="adjustSlotBet(25)" class="px-3 py-2 bg-neutral-900 hover:bg-neutral-800 border border-neutral-700 text-xs font-mono text-neutral-300 rounded">
+            BET 25
+          </button>
+        </div>
+
+        <button id="slotSpinBtn" onclick="spinSlotMachine()" class="flex-1 py-3 bg-gradient-to-r from-yellow-400 to-pink-500 hover:from-yellow-300 hover:to-pink-400 text-black font-cyber font-bold text-sm tracking-widest rounded-lg shadow-[0_0_20px_rgba(250,204,21,0.5)] transition active:scale-95">
+          PULL LEVER [SPIN]
+        </button>
+      </div>
+
+      <div class="mt-3 text-[10px] text-neutral-400 font-mono">
+        MATCH THREE 7s TO HIT THE GRAND JACKPOT (+500 TOKENS & RARE RETROCADE SOUND KEY)!
+      </div>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT: ENGINE, DUAL-UNIVERSE PORTALS, 2 FULL WORLDS, CASINO & AUDIO -->
   <script>
-    // FALLBACK IF CONFIG.JS NOT LOADED
-    if (typeof WORLD_CONFIG === 'undefined') {
-      console.warn("config.js not found, loading default fallback.");
-      window.WORLD_CONFIG = {
-        music: { title: "DANCING", status: "OUT NOW", spotifyUrl: "#", appleUrl: "#" },
-        quickLinks: [{ label: "STREAM 'DANCING'", url: "https://open.spotify.com" }],
-        discography: [],
-        cassettes: []
-      };
-    }
-
-    const canvas = document.getElementById('gameCanvas');
-    const ctx = canvas.getContext('2d');
-    let currentRealm = 'underground'; // 'underground' or 'retrocade'
-    let player = { x: 750, y: 750, w: 26, h: 36, speed: 4 };
-    let keys = {};
-
-    let currentProfile = {
-      handle: "@enforcer",
-      pin: "7777",
-      tokens: 10,
+    // ==============================================================
+    // 1. DATA STATE, PROFILE & MULTIVERSE TRACKING
+    // ==============================================================
+    const DEFAULT_PROFILE = {
+      handle: "Enforcer_Guest",
+      pin: "0000",
       activeSkin: "enforcer",
       unlockedSkins: ["enforcer"],
-      collectedTapes: []
+      collectedLore: [],
+      collectedGold: [],
+      arcadeHighScore: 0,
+      solvedMirror: false,
+      casinoTokens: 100,
+      slotJackpotsWon: 0
     };
 
-    // SAVED PROFILE
-    try {
-      const s = localStorage.getItem('club_lowlife_save');
-      if (s) currentProfile = JSON.parse(s);
-    } catch(e){}
+    let userProfile = { ...DEFAULT_PROFILE };
+    let currentDimension = 'underground'; // 'underground' or 'retrocade'
 
-    function saveState() {
-      localStorage.setItem('club_lowlife_save', JSON.stringify(currentProfile));
-      document.getElementById('hudTokens').innerText = `TOKENS: ${currentProfile.tokens}`;
-      document.getElementById('hudTapesCount').innerText = `TAPES: ${currentProfile.collectedTapes.length}/12`;
+    function loadProfile() {
+      try {
+        const saved = localStorage.getItem('club_lowlife_save');
+        if (saved) {
+          userProfile = { ...DEFAULT_PROFILE, ...JSON.parse(saved) };
+        }
+      } catch (e) {
+        console.warn("Storage load error", e);
+      }
+      updateHudProfile();
     }
 
-    // AUDIO ENGINE
-    let audioCtx = null, masterGain = null, isAudioRunning = false, audioTimer = null, synthStep = 0, trackMode = 'orig';
-    function initAudioEngine() {
-      if (audioCtx) return;
-      const AudioContext = window.AudioContext || window.webkitAudioContext;
-      audioCtx = new AudioContext();
-      masterGain = audioCtx.createGain();
-      masterGain.gain.setValueAtTime(0.5, audioCtx.currentTime);
-      masterGain.connect(audioCtx.destination);
-      startAudioLoop();
+    function saveProfile() {
+      try {
+        localStorage.setItem('club_lowlife_save', JSON.stringify(userProfile));
+      } catch (e) {}
+      updateHudProfile();
     }
-    function toggleAudioEngine() {
-      if (!audioCtx) initAudioEngine();
-      if (audioCtx.state === 'suspended') audioCtx.resume();
-      isAudioRunning = !isAudioRunning;
-      document.getElementById('audioToggleBtn').innerText = isAudioRunning ? '[AUDIO: ON]' : '[AUDIO: MUTED]';
+
+    function updateHudProfile() {
+      document.getElementById('playerHandleBadge').innerText = `@${userProfile.handle.toUpperCase()}`;
+      document.getElementById('loreCount').innerText = `${userProfile.collectedLore.length}/6`;
+      document.getElementById('goldCount').innerText = `${userProfile.collectedGold.length}/6`;
+      document.getElementById('arcadeHighScore').innerText = userProfile.arcadeHighScore;
+      document.getElementById('casinoTokensCount').innerText = userProfile.casinoTokens;
+      const slotDisplay = document.getElementById('slotCreditDisplay');
+      if (slotDisplay) slotDisplay.innerText = userProfile.casinoTokens;
     }
-    function setWorldVolume(v) { if (masterGain && audioCtx) masterGain.gain.setValueAtTime(parseFloat(v), audioCtx.currentTime); }
-    function switchTrackMode(m) { trackMode = m; }
-    function startAudioLoop() {
-      const notesUnderground = [65.41, 65.41, 77.78, 65.41, 58.27, 65.41, 87.31, 77.78];
-      const notesRetrocade = [130.81, 164.81, 196.00, 261.63, 196.00, 220.00, 164.81, 196.00];
-      setInterval(() => {
-        if (!isAudioRunning || !audioCtx) return;
-        const now = audioCtx.currentTime;
-        const isU = currentRealm === 'underground';
-        const notes = isU ? notesUnderground : notesRetrocade;
+
+    // ==============================================================
+    // 2. DYNAMIC AUDIO SYNTHESIZER: DUAL-UNIVERSE SOUNDTRACK
+    // ==============================================================
+    let audioCtx = null;
+    let isBgmPlaying = false;
+    let bgmMasterGain = null;
+    let bgmStepIndex = 0;
+    let bgmTimer = null;
+    let bgmTempo = 130;
+    let bgmVersion = 'original';
+
+    const noirBassNotes = [110.00, 110.00, 130.81, 146.83, 164.81, 146.83, 130.81, 110.00, 98.00, 98.00, 110.00, 130.81, 146.83, 130.81, 123.47, 98.00];
+    const noirLeadNotes = [440.00, 0, 523.25, 587.33, 659.25, 587.33, 523.25, 440.00, 392.00, 440.00, 523.25, 659.25, 587.33, 523.25, 493.88, 392.00];
+
+    const retrocadeBassNotes = [130.81, 130.81, 164.81, 196.00, 130.81, 130.81, 164.81, 220.00, 146.83, 146.83, 174.61, 220.00, 196.00, 164.81, 146.83, 130.81];
+    const retrocadeLeadNotes = [523.25, 659.25, 783.99, 1046.50, 783.99, 659.25, 880.00, 1046.50, 587.33, 698.46, 880.00, 1174.66, 987.77, 880.00, 783.99, 659.25];
+
+    function initAudio() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        bgmMasterGain = audioCtx.createGain();
+        bgmMasterGain.gain.setValueAtTime(0.5, audioCtx.currentTime);
+        bgmMasterGain.connect(audioCtx.destination);
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+    }
+
+    function toggleBgm() {
+      initAudio();
+      isBgmPlaying = !isBgmPlaying;
+      const icon = document.getElementById('bgmPlayIcon');
+      if (isBgmPlaying) {
+        icon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
+        startBgmLoop();
+        showToast(currentDimension === 'underground' ? "MUSIC: BROADCASTING 'DANCING' (UNDERGROUND NOIR)" : "MUSIC: BROADCASTING 'RETROCADE' (NEON TRAP BOUNCE)");
+      } else {
+        icon.innerHTML = '<path d="M8 5v14l11-7z"/>';
+        clearInterval(bgmTimer);
+        bgmTimer = null;
+        showToast("MUSIC PAUSED");
+      }
+    }
+
+    function syncDimensionAudio() {
+      if (currentDimension === 'retrocade') {
+        bgmTempo = 142;
+        document.getElementById('activeTrackName').innerText = '"RETROCADE" (NEON SYNTH-TRAP)';
+      } else {
+        bgmTempo = bgmVersion === 'spedup' ? 150 : bgmVersion === 'slowed' ? 104 : 130;
+        document.getElementById('activeTrackName').innerText = bgmVersion === 'slowed' ? '"DANCING" (SLOWED + VERB)' : '"DANCING" (UNDERGROUND NOIR)';
+      }
+      if (isBgmPlaying) {
+        clearInterval(bgmTimer);
+        startBgmLoop();
+      }
+    }
+
+    function setTrackBgm(version) {
+      bgmVersion = version;
+      document.getElementById('trackVersionSelect').value = version;
+      syncDimensionAudio();
+    }
+
+    function startBgmLoop() {
+      if (!audioCtx) return;
+      const intervalMs = (60 / bgmTempo / 4) * 1000;
+      bgmTimer = setInterval(() => {
+        playBgmStep();
+        bgmStepIndex = (bgmStepIndex + 1) % 16;
+      }, intervalMs);
+    }
+
+    function playBgmStep() {
+      if (!audioCtx || !isBgmPlaying) return;
+      const now = audioCtx.currentTime;
+      const isRetrocade = currentDimension === 'retrocade';
+      const bassTable = isRetrocade ? retrocadeBassNotes : noirBassNotes;
+      const leadTable = isRetrocade ? retrocadeLeadNotes : noirLeadNotes;
+
+      const bassFreq = bassTable[bgmStepIndex];
+      if (bassFreq > 0) {
         const osc = audioCtx.createOscillator();
         const g = audioCtx.createGain();
-        const f = audioCtx.createBiquadFilter();
-        osc.type = isU ? 'sawtooth' : 'square';
-        osc.frequency.setValueAtTime(notes[synthStep % notes.length], now);
-        f.type = 'lowpass';
-        f.frequency.setValueAtTime(isU ? 550 : 2200, now);
-        g.gain.setValueAtTime(0.2, now);
-        g.gain.exponentialRampToValueAtTime(0.001, now + (trackMode === 'slow' ? 0.45 : 0.22));
-        osc.connect(f); f.connect(g); g.connect(masterGain);
-        osc.start(now); osc.stop(now + 0.45);
-        synthStep++;
-      }, 220);
+        osc.type = isRetrocade ? 'sawtooth' : (bgmVersion === 'slowed' ? 'sine' : 'sawtooth');
+        osc.frequency.setValueAtTime(bassFreq, now);
+
+        const filter = audioCtx.createBiquadFilter();
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(isRetrocade ? 1800 : (bgmVersion === 'slowed' ? 260 : 700), now);
+
+        g.gain.setValueAtTime(isRetrocade ? 0.22 : 0.18, now);
+        g.gain.exponentialRampToValueAtTime(0.001, now + (isRetrocade ? 0.25 : 0.35));
+
+        osc.connect(filter);
+        filter.connect(g);
+        g.connect(bgmMasterGain);
+        osc.start(now);
+        osc.stop(now + 0.4);
+      }
+
+      const leadFreq = leadTable[bgmStepIndex];
+      if (leadFreq > 0 && (isRetrocade || Math.random() > 0.25)) {
+        const leadOsc = audioCtx.createOscillator();
+        const leadGain = audioCtx.createGain();
+        leadOsc.type = isRetrocade ? 'square' : 'sawtooth';
+        leadOsc.frequency.setValueAtTime(leadFreq, now);
+        leadGain.gain.setValueAtTime(isRetrocade ? 0.12 : 0.08, now);
+        leadGain.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
+        leadOsc.connect(leadGain);
+        leadGain.connect(bgmMasterGain);
+        leadOsc.start(now);
+        leadOsc.stop(now + 0.2);
+      }
     }
 
-    // BOUNDS & OPEN DOORWAYS (100-120px)
-    const boundsUnderground = [
-      [0, 0, 1600, 30], [0, 930, 1600, 30], [0, 0, 30, 960], [1570, 0, 30, 960],
-      [30, 480, 220, 20], [340, 480, 420, 20], [860, 480, 420, 20], [1380, 480, 190, 20],
-      [420, 30, 20, 450], [1180, 30, 20, 450]
-    ];
-    const boundsRetrocade = [
-      [0, 0, 1600, 30], [0, 930, 1600, 30], [0, 0, 30, 960], [1570, 0, 30, 960],
-      [30, 480, 320, 20], [440, 480, 300, 20], [840, 480, 320, 20], [1260, 480, 310, 20],
-      [500, 30, 20, 450], [1100, 30, 20, 450]
+    function playSfx(type) {
+      if (!audioCtx) return;
+      try {
+        const now = audioCtx.currentTime;
+        const osc = audioCtx.createOscillator();
+        const g = audioCtx.createGain();
+        osc.connect(g);
+        g.connect(audioCtx.destination);
+
+        if (type === 'chime') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(520, now);
+          osc.frequency.exponentialRampToValueAtTime(1040, now + 0.15);
+          g.gain.setValueAtTime(0.18, now);
+          g.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+          osc.start(now); osc.stop(now + 0.25);
+        } else if (type === 'hit') {
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(120, now);
+          osc.frequency.exponentialRampToValueAtTime(30, now + 0.1);
+          g.gain.setValueAtTime(0.3, now);
+          g.gain.linearRampToValueAtTime(0.001, now + 0.1);
+          osc.start(now); osc.stop(now + 0.1);
+        } else if (type === 'warp') {
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(150, now);
+          osc.frequency.exponentialRampToValueAtTime(1200, now + 0.4);
+          g.gain.setValueAtTime(0.3, now);
+          g.gain.exponentialRampToValueAtTime(0.001, now + 0.45);
+          osc.start(now); osc.stop(now + 0.45);
+        } else if (type === 'jackpot') {
+          osc.type = 'square';
+          osc.frequency.setValueAtTime(440, now);
+          osc.frequency.setValueAtTime(554.37, now + 0.1);
+          osc.frequency.setValueAtTime(659.25, now + 0.2);
+          osc.frequency.setValueAtTime(880, now + 0.3);
+          g.gain.setValueAtTime(0.35, now);
+          g.gain.exponentialRampToValueAtTime(0.001, now + 0.6);
+          osc.start(now); osc.stop(now + 0.6);
+        } else if (type === 'powerup') {
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(220, now);
+          osc.frequency.linearRampToValueAtTime(880, now + 0.3);
+          g.gain.setValueAtTime(0.15, now);
+          g.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+          osc.start(now); osc.stop(now + 0.35);
+        } else if (type === 'jump') {
+          osc.type = 'square';
+          osc.frequency.setValueAtTime(150, now);
+          osc.frequency.exponentialRampToValueAtTime(600, now + 0.15);
+          g.gain.setValueAtTime(0.15, now);
+          g.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+          osc.start(now); osc.stop(now + 0.15);
+        }
+      } catch (err) {}
+    }
+
+    // ==============================================================
+    // 3. MULTIVERSE MAPS & BULLETPROOF DOORWAY ARCHITECTURE
+    // ==============================================================
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+
+    const WORLD_WIDTH = 1600;
+    const WORLD_HEIGHT = 1000;
+
+    const player = {
+      x: 320,
+      y: 750,
+      width: 24,
+      height: 38,
+      speed: 4.5,
+      direction: 'up',
+      isMoving: false,
+      animTimer: 0
+    };
+
+    const camera = { x: 0, y: 0, width: 0, height: 0 };
+    const keys = { up: false, down: false, left: false, right: false };
+
+    // --- WORLD A: THE DYSTOPIAN UNDERGROUND SOLID OBSTACLES (WITH WIDE DOORWAYS) ---
+    // Sector 1: Disco (x: 28-360), Doorway at y: 350-380 (x: 150-250)
+    // Sector 2: Arcade (x: 360-740), Doorway at y: 350-380 (x: 510-610)
+    // Sector 3: Sound Lab (x: 740-1160), Doorway at y: 350-380 (x: 910-1010)
+    // Sector 4: Restroom (x: 1160-1572), Doorway at y: 350-380 (x: 1330-1430)
+    const undergroundObstacles = [
+      // Outer Perimeter Walls
+      { x: 0, y: 0, width: WORLD_WIDTH, height: 28 },
+      { x: 0, y: WORLD_HEIGHT - 28, width: WORLD_WIDTH, height: 28 },
+      { x: 0, y: 0, width: 28, height: WORLD_HEIGHT },
+      { x: WORLD_WIDTH - 28, y: 0, width: 28, height: WORLD_HEIGHT },
+
+      // Main Corridor Wall with 100px Wide Doorway Openings
+      { x: 28, y: 350, width: 122, height: 30 },     // Door 1 at 150-250 (Disco Room)
+      { x: 250, y: 350, width: 260, height: 30 },    // Door 2 at 510-610 (Arcade Cab)
+      { x: 610, y: 350, width: 300, height: 30 },    // Door 3 at 910-1010 (Sound Lab)
+      { x: 1010, y: 350, width: 320, height: 30 },   // Door 4 at 1330-1430 (Restroom Mirror)
+      { x: 1430, y: 350, width: 142, height: 30 },
+
+      // Vertical Partition Walls with 100px Doorway Openings
+      { x: 360, y: 28, width: 20, height: 210 },     // Doorway at 238-350
+      { x: 740, y: 28, width: 20, height: 210 },     // Doorway at 238-350
+      { x: 1160, y: 28, width: 20, height: 210 },    // Doorway at 238-350
+
+      // Props (Walk-Around Bounding Boxes)
+      { x: 80, y: 150, width: 130, height: 70 },     // Discography Monolith
+      { x: 410, y: 150, width: 140, height: 70 },    // Arcade Machine Row
+      { x: 800, y: 150, width: 150, height: 70 },    // Mixing Console
+      { x: 1230, y: 150, width: 110, height: 70 },   // Restroom Sink/Mirror
+      { x: 300, y: 550, width: 150, height: 70 },    // Merch Vehicle
+      { x: 750, y: 650, width: 80, height: 60 }      // Holding CRT Station
     ];
 
-    window.addEventListener('keydown', e => {
-      keys[e.key.toLowerCase()] = true;
-      if (e.key.toLowerCase() === 'e') triggerInteract();
-      if (e.key.toLowerCase() === 'c') toggleCrtScanlines();
-      if (e.key === 'Escape') closeModals();
+    // --- WORLD B: THE RETROCADE UNIVERSE SOLID OBSTACLES (WITH WIDE ENTRANCES) ---
+    // Sector B1: Lucky 777 Casino (x: 28-480) with 120px entrance at 200-320
+    // Sector B2: Neon Arcade Palace (x: 480-1080) with 120px entrance at 730-850
+    // Sector B3: VIP Lounge (x: 1080-1572) with 120px entrance at 1280-1400
+    // Sector B4: Dance Club & Stage (Bottom Right, x: 1160-1540, y: 520-850) with 120px open entrance at 1160-1280
+    const retrocadeObstacles = [
+      // Outer Perimeter Walls
+      { x: 0, y: 0, width: WORLD_WIDTH, height: 28 },
+      { x: 0, y: WORLD_HEIGHT - 28, width: WORLD_WIDTH, height: 28 },
+      { x: 0, y: 0, width: 28, height: WORLD_HEIGHT },
+      { x: WORLD_WIDTH - 28, y: 0, width: 28, height: WORLD_HEIGHT },
+
+      // Boulevard Dividing Wall with 120px Wide Entrances into Every Hall
+      { x: 28, y: 440, width: 172, height: 30 },     // Casino Entrance at 200-320
+      { x: 320, y: 440, width: 410, height: 30 },    // Arcade Palace Entrance at 730-850
+      { x: 850, y: 440, width: 430, height: 30 },    // VIP Lounge Entrance at 1280-1400
+      { x: 1400, y: 440, width: 172, height: 30 },
+
+      // Partition Walls with Wide Doorways
+      { x: 480, y: 28, width: 22, height: 300 },     // Entrance at 328-440
+      { x: 1080, y: 28, width: 22, height: 300 },    // Entrance at 328-440
+
+      // Casino Slot Banks
+      { x: 100, y: 140, width: 220, height: 60 },
+      { x: 100, y: 260, width: 220, height: 60 },
+
+      // Arcade Super-Cabinets
+      { x: 560, y: 150, width: 160, height: 70 },
+      { x: 820, y: 150, width: 160, height: 70 },
+
+      // VIP Lounge Bar
+      { x: 1180, y: 150, width: 240, height: 70 },
+
+      // Promenade Planters
+      { x: 260, y: 620, width: 60, height: 60 },
+      { x: 680, y: 620, width: 60, height: 60 }
+    ];
+
+    // Dimensional Portals
+    const portalToRetrocade = {
+      x: 1440, y: 640, width: 80, height: 80,
+      label: "DIMENSIONAL RIFT // WARP TO RETROCADE",
+      action: () => warpDimension('retrocade', 750, 750)
+    };
+
+    const portalToUnderground = {
+      x: 750, y: 840, width: 80, height: 80,
+      label: "CORRUPTED RIFT // WARP TO UNDERGROUND",
+      action: () => warpDimension('underground', 750, 500)
+    };
+
+    // --- DANCING NPCS IN THE RETROCADE CLUB ---
+    const clubDancers = [
+      { id: "dj", name: "DJ LOWLIFE", x: 1350, y: 550, skin: "handler", role: "dj" },
+      { id: "d1", name: "Syndicate Dancer", x: 1220, y: 660, skin: "enforcer", role: "dancer" },
+      { id: "d2", name: "Neon Raver", x: 1280, y: 720, skin: "captive", role: "dancer" },
+      { id: "d3", name: "Cyber Rebel", x: 1360, y: 670, skin: "unmasked", role: "dancer" },
+      { id: "d4", name: "Trap Head", x: 1420, y: 730, skin: "handler", role: "dancer" },
+      { id: "d5", name: "VIP Regular", x: 1460, y: 650, skin: "enforcer", role: "dancer" }
+    ];
+
+    // --- INTERACTIVE ZONES: WORLD A (DYSTOPIAN UNDERGROUND) ---
+    const undergroundZones = [
+      { id: 'disco_room', x: 70, y: 140, width: 160, height: 100, label: 'DISCOGRAPHY VAULT [ALBUMS & SINGLES]', action: openDiscoHub },
+      { id: 'arcade_cab', x: 390, y: 140, width: 170, height: 100, label: 'RETRO ARCADE CAB [PLAY MINI-GAMES]', action: openArcadeHub },
+      { id: 'sound_lab', x: 780, y: 140, width: 180, height: 100, label: 'SOUND LAB [PLAYABLE FL STUDIO DAW]', action: openDawHub },
+      { id: 'mirror_room', x: 1210, y: 140, width: 150, height: 100, label: 'RESTROOM MIRROR [KEYPAD REVEAL]', action: openMirrorPuzzle },
+      { id: 'trunk_drop', x: 280, y: 530, width: 190, height: 100, label: 'VEHICLE TRUNK [LIMITED MERCH DROP]', action: openMerchHub },
+      { id: 'holding_cell', x: 730, y: 630, width: 120, height: 100, label: 'CRT HOLDING MONITOR [HOSTAGE SCENE]', action: openHoldingLore },
+      portalToRetrocade
+    ];
+
+    // --- INTERACTIVE ZONES: WORLD B (RETROCADE UNIVERSE) ---
+    const retrocadeZones = [
+      { id: 'casino_slots', x: 90, y: 130, width: 240, height: 100, label: 'LUCKY 777 CASINO SLOTS [BET TOKENS]', action: openCasinoSlots },
+      { id: 'retrocade_arcade', x: 540, y: 140, width: 440, height: 100, label: 'RETROCADE ARCADE PALACE [MINI-GAMES]', action: openArcadeHub },
+      { id: 'vip_lounge', x: 1160, y: 140, width: 280, height: 100, label: 'RETRO CADE EVOLVED // VIP STEM VAULT', action: openDiscoHub },
+      { id: 'retrocade_daw', x: 500, y: 600, width: 180, height: 100, label: 'RETROCADE BEAT STATION [FL STUDIO]', action: openDawHub },
+      { id: 'club_dancefloor', x: 1160, y: 520, width: 380, height: 320, label: 'CLUB LOWLIFE AFTERHOURS DANCEFLOOR [JOIN DANCERS]', action: danceInClub },
+      portalToUnderground
+    ];
+
+    // ==============================================================
+    // 4. EXPANDED 12-CASSETTE ECOSYSTEM (6 LORE + 6 VIP GOLD STEMS)
+    // ==============================================================
+    const crossUniverseCassettes = [
+      // --- WORLD A: THE DYSTOPIAN UNDERGROUND CASSETTES (3 Lore + 3 Gold) ---
+      { id: 'lore1', dimension: 'underground', type: 'lore', x: 120, y: 280, title: "LORE TAPE 01: THE ARCHIVE GENESIS", desc: "Before the dark aesthetic, Retrocade was pure high-saturation neon synthwave and raw electronic trap. The shift into the cold underground was deliberate." },
+      { id: 'lore2', dimension: 'underground', type: 'lore', x: 500, y: 280, title: "LORE TAPE 02: THE HOLDING CHAMBER", desc: "The bound captive in the metal folding chair is the previous creative self. Stripped of loud colors and held hostage in the static." },
+      { id: 'lore3', dimension: 'underground', type: 'lore', x: 900, y: 280, title: "LORE TAPE 03: CASSHERN × BLADE PROTOCOL", desc: "Dystopian cyber-noir aesthetics: the heavy floor-length black duster, combat boots, and the reflective helmet obscuring true identity." },
+      { id: 'gold1', dimension: 'underground', type: 'gold', x: 160, y: 780, title: "VIP DEMO: DANCING (ROUGH MIX VIP STEMS)", stemNote: "Contains raw uncompressed 808 subs, distorted punch kicks, and isolated vocal hook stems." },
+      { id: 'gold2', dimension: 'underground', type: 'gold', x: 620, y: 780, title: "VIP DEMO: LIVING ON THE HIGHS (CLUB STEMS)", stemNote: "Analog synth lead arpeggio runs and stripped warehouse club percussion." },
+      { id: 'gold3', dimension: 'underground', type: 'gold', x: 1100, y: 780, title: "VIP DEMO: LOUD! (SUB-BASS ISOLATION)", stemNote: "Heavyweight saturated 808 sub harmonic stems dialed specifically for high-output systems." },
+
+      // --- WORLD B: THE RETROCADE UNIVERSE CASSETTES (3 Lore + 3 Gold) ---
+      { id: 'lore4', dimension: 'retrocade', type: 'lore', x: 220, y: 220, title: "LORE TAPE 04: THE CASINO HEIST OF '777'", desc: "The original Retrocade era peaked inside neon casinos and 16-bit arcades, fueled by high stakes and uncompromised tempo." },
+      { id: 'lore5', dimension: 'retrocade', type: 'lore', x: 740, y: 220, title: "LORE TAPE 05: THE AFTERHOURS SYNDICATE", desc: "How the late-night listening community formed around the Retrocade bonfire sessions and underground DJ linkups." },
+      { id: 'lore6', dimension: 'retrocade', type: 'lore', x: 1360, y: 220, title: "LORE TAPE 06: THE DIMENSIONAL SPLIT", desc: "The portal opens between past and future. The masked enforcer steps across time to preserve both musical timelines forever." },
+      { id: 'gold4', dimension: 'retrocade', type: 'gold', x: 380, y: 380, title: "VIP DEMO: RETRO CADE EVOLVED BONUS STEMS", stemNote: "Unreleased melodic leads, game synth arpeggiators, and bonus album stems." },
+      { id: 'gold5', dimension: 'retrocade', type: 'gold', x: 920, y: 380, title: "VIP DEMO: MARTIAN UNIVERSITY (OFF-KILTER DRUMS)", stemNote: "Unfiltered drum machine groove stems and atmospheric outer-space pads." },
+      { id: 'gold6', dimension: 'retrocade', type: 'gold', x: 1220, y: 790, title: "VIP DEMO: AFTERHOURS DANCE VIP BOUNCE", stemNote: "High-tempo electronic four-on-the-floor club edit spun live by DJ Lowlife." }
+    ];
+
+    // ==============================================================
+    // 5. WARPING & PORTAL ENGINE
+    // ==============================================================
+    function warpDimension(targetDim, spawnX, spawnY) {
+      playSfx('warp');
+      currentDimension = targetDim;
+      player.x = spawnX;
+      player.y = spawnY;
+
+      const badge = document.getElementById('dimensionBadge');
+      const sub = document.getElementById('dimensionSubText');
+      const dot = document.getElementById('dimensionStatusDot');
+      const quickWarpText = document.getElementById('quickWarpText');
+
+      if (targetDim === 'retrocade') {
+        badge.className = "text-[10px] bg-pink-950 border border-pink-400 text-pink-300 px-2 py-0.5 rounded font-cyber";
+        badge.innerText = "DIMENSION: RETROCADE NEON";
+        sub.innerText = "ERA I // VIBRANT SYNTHWAVE × NEON CASINO PARADISE";
+        dot.className = "w-2.5 h-2.5 rounded-full bg-pink-500 animate-ping";
+        quickWarpText.innerText = "WARP: UNDERGROUND";
+        showToast("WARPED TO THE RETROCADE UNIVERSE! 🌴🕹️");
+      } else {
+        badge.className = "text-[10px] bg-lowlife-concrete border border-lowlife-cyan/40 text-lowlife-cyan px-2 py-0.5 rounded font-cyber";
+        badge.innerText = "DIMENSION: UNDERGROUND";
+        sub.innerText = "ERA II // CASSHERN SINS × BLADE PROTOCOL";
+        dot.className = "w-2.5 h-2.5 rounded-full bg-lowlife-cyan animate-ping";
+        quickWarpText.innerText = "WARP: RETROCADE";
+        showToast("WARPED TO THE DYSTOPIAN UNDERGROUND! ⚡🌧️");
+      }
+
+      syncDimensionAudio();
+      checkDimensionalMastery();
+    }
+
+    function checkDimensionalMastery() {
+      if (userProfile.collectedLore.length >= 6 && userProfile.collectedGold.length >= 6) {
+        if (!userProfile.unlockedSkins.includes('dimensional_master')) {
+          userProfile.unlockedSkins.push('dimensional_master');
+          saveProfile();
+          showToast("ACHIEVEMENT: DIMENSIONAL MASTER! ALL 12 TAPES COLLECTED! 🏆");
+        }
+      }
+    }
+
+    document.getElementById('quickWarpBtn').addEventListener('click', () => {
+      initAudio();
+      if (currentDimension === 'underground') {
+        warpDimension('retrocade', 750, 750);
+      } else {
+        warpDimension('underground', 750, 500);
+      }
     });
-    window.addEventListener('keyup', e => { keys[e.key.toLowerCase()] = false; });
 
-    function triggerDimensionalWarp() {
-      currentRealm = currentRealm === 'underground' ? 'retrocade' : 'underground';
-      player.x = 750; player.y = 750;
-      document.getElementById('hudUniverseTag').innerText = `UNIVERSE: ${currentRealm.toUpperCase()}`;
+    // Rain for Dystopian Alleyway
+    const rainParticles = [];
+    for (let i = 0; i < 180; i++) {
+      rainParticles.push({
+        x: Math.random() * WORLD_WIDTH,
+        y: Math.random() * WORLD_HEIGHT,
+        length: 10 + Math.random() * 8,
+        speed: 12 + Math.random() * 6
+      });
     }
 
-    function checkCollision(nx, ny) {
-      const bounds = currentRealm === 'underground' ? boundsUnderground : boundsRetrocade;
-      for (let b of bounds) {
-        if (nx < b[0] + b[2] && nx + player.w > b[0] && ny < b[1] + b[3] && ny + player.h > b[1]) return true;
-      }
-      return false;
+    function resizeCanvas() {
+      canvas.width = canvas.parentElement.clientWidth;
+      canvas.height = canvas.parentElement.clientHeight;
+      camera.width = canvas.width;
+      camera.height = canvas.height;
+    }
+    window.addEventListener('resize', resizeCanvas);
+
+    // ==============================================================
+    // 6. MOVEMENT & COLLISION DETECTION (UNIVERSE-AWARE)
+    // ==============================================================
+    window.addEventListener('keydown', (e) => {
+      initAudio();
+      if (['ArrowUp', 'KeyW'].includes(e.code)) keys.up = true;
+      if (['ArrowDown', 'KeyS'].includes(e.code)) keys.down = true;
+      if (['ArrowLeft', 'KeyA'].includes(e.code)) keys.left = true;
+      if (['ArrowRight', 'KeyD'].includes(e.code)) keys.right = true;
+      if (e.code === 'KeyC') toggleCrtScanlines();
+      if (e.code === 'KeyE') triggerActiveInteraction();
+      if (e.code === 'Escape') closeModals();
+    });
+
+    window.addEventListener('keyup', (e) => {
+      if (['ArrowUp', 'KeyW'].includes(e.code)) keys.up = false;
+      if (['ArrowDown', 'KeyS'].includes(e.code)) keys.down = false;
+      if (['ArrowLeft', 'KeyA'].includes(e.code)) keys.left = false;
+      if (['ArrowRight', 'KeyD'].includes(e.code)) keys.right = false;
+    });
+
+    function setupTouch(id, key) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.addEventListener('touchstart', (e) => { e.preventDefault(); initAudio(); keys[key] = true; });
+      el.addEventListener('touchend', (e) => { e.preventDefault(); keys[key] = false; });
+    }
+    setupTouch('btnUp', 'up');
+    setupTouch('btnDown', 'down');
+    setupTouch('btnLeft', 'left');
+    setupTouch('btnRight', 'right');
+    document.getElementById('btnAction').addEventListener('click', triggerActiveInteraction);
+    document.getElementById('promptTapBtn').addEventListener('click', triggerActiveInteraction);
+
+    function checkCollision(rect1, rect2) {
+      return (
+        rect1.x < rect2.x + rect2.width &&
+        rect1.x + rect1.width > rect2.x &&
+        rect1.y < rect2.y + rect2.height &&
+        rect1.y + rect1.height > rect2.y
+      );
     }
 
-    function update() {
+    function updatePlayer() {
       let dx = 0, dy = 0;
-      if (keys['w'] || keys['arrowup']) dy -= player.speed;
-      if (keys['s'] || keys['arrowdown']) dy += player.speed;
-      if (keys['a'] || keys['arrowleft']) dx -= player.speed;
-      if (keys['d'] || keys['arrowright']) dx += player.speed;
-      if (dx !== 0 && !checkCollision(player.x + dx, player.y)) player.x += dx;
-      if (dy !== 0 && !checkCollision(player.x, player.y + dy)) player.y += dy;
-      document.getElementById('hudCoords').innerText = `POS: ${Math.round(player.x)}, ${Math.round(player.y)}`;
-      checkProximity();
+      if (keys.up) { dy -= 1; player.direction = 'up'; }
+      if (keys.down) { dy += 1; player.direction = 'down'; }
+      if (keys.left) { dx -= 1; player.direction = 'left'; }
+      if (keys.right) { dx += 1; player.direction = 'right'; }
+
+      if (dx !== 0 && dy !== 0) { dx *= 0.7071; dy *= 0.7071; }
+
+      const activeObstacles = currentDimension === 'underground' ? undergroundObstacles : retrocadeObstacles;
+
+      if (dx !== 0 || dy !== 0) {
+        player.isMoving = true;
+        player.animTimer++;
+
+        // Sub-pixel X-axis sliding collision
+        const newX = player.x + dx * player.speed;
+        let collideX = false;
+        const playerBoxX = { x: newX, y: player.y, width: player.width, height: player.height };
+        for (let obs of activeObstacles) {
+          if (checkCollision(playerBoxX, obs)) {
+            collideX = true;
+            break;
+          }
+        }
+        if (!collideX) player.x = newX;
+
+        // Sub-pixel Y-axis sliding collision
+        const newY = player.y + dy * player.speed;
+        let collideY = false;
+        const playerBoxY = { x: player.x, y: newY, width: player.width, height: player.height };
+        for (let obs of activeObstacles) {
+          if (checkCollision(playerBoxY, obs)) {
+            collideY = true;
+            break;
+          }
+        }
+        if (!collideY) player.y = newY;
+      } else {
+        player.isMoving = false;
+      }
+
+      checkCrossUniverseCassettes();
+      checkUniverseProximity();
     }
 
-    // DRAW AVATAR (Blade / Casshern Sins Enforcer & Skin Variations)
-    function drawAvatar(x, y, skin) {
-      ctx.save();
-      if (skin === 'captive') {
-        // Retrocade Captive: Neon tee & denim
-        ctx.fillStyle = '#ff007f'; ctx.fillRect(x + 4, y + 10, 18, 14);
-        ctx.fillStyle = '#00f0ff'; ctx.fillRect(x + 6, y + 24, 14, 12);
-        ctx.fillStyle = '#ffccaa'; ctx.fillRect(x + 6, y + 2, 14, 10);
-      } else if (skin === 'handler') {
-        // Syndicate Handler: Techwear crop & boots
-        ctx.fillStyle = '#111'; ctx.fillRect(x + 4, y + 10, 18, 12);
-        ctx.fillStyle = '#222'; ctx.fillRect(x + 5, y + 22, 16, 14);
-        ctx.fillStyle = '#00ffcc'; ctx.fillRect(x + 7, y + 4, 12, 6);
-      } else {
-        // Default Enforcer: Floor-length black duster + visor
-        ctx.fillStyle = '#0a0a0a'; ctx.fillRect(x + 2, y + 8, 22, 26);
-        ctx.fillStyle = '#151515'; ctx.fillRect(x + 4, y + 2, 18, 12);
-        ctx.fillStyle = '#00ffcc'; ctx.fillRect(x + 6, y + 6, 14, 4); // Visor glow
+    function checkCrossUniverseCassettes() {
+      crossUniverseCassettes.forEach(c => {
+        if (c.dimension !== currentDimension) return;
+
+        const isCollected = c.type === 'lore'
+          ? userProfile.collectedLore.includes(c.id)
+          : userProfile.collectedGold.includes(c.id);
+
+        if (!isCollected) {
+          const dist = Math.hypot((player.x + player.width/2) - c.x, (player.y + player.height/2) - c.y);
+          if (dist < 34) {
+            playSfx('chime');
+            if (c.type === 'lore') {
+              userProfile.collectedLore.push(c.id);
+              showToast(`FOUND: ${c.title}! 📼`);
+              if (userProfile.collectedLore.length >= 3 && !userProfile.unlockedSkins.includes('captive')) {
+                userProfile.unlockedSkins.push('captive');
+                showToast("UNLOCKED: THE CAPTIVE (RETROCADE OG SKIN)!");
+              }
+            } else {
+              userProfile.collectedGold.push(c.id);
+              showToast(`FOUND GOLD VIP TAPE: ${c.title}! ✨`);
+            }
+            saveProfile();
+            renderTapes();
+            checkDimensionalMastery();
+          }
+        }
+      });
+    }
+
+    let activeZone = null;
+    function checkUniverseProximity() {
+      const promptEl = document.getElementById('interactionPrompt');
+      const promptText = document.getElementById('promptText');
+      activeZone = null;
+
+      const pBox = { x: player.x - 12, y: player.y - 12, width: player.width + 24, height: player.height + 24 };
+      const activeZones = currentDimension === 'underground' ? undergroundZones : retrocadeZones;
+
+      for (let z of activeZones) {
+        if (checkCollision(pBox, z)) {
+          activeZone = z;
+          promptText.innerText = `PRESS [E] // ${z.label}`;
+          promptEl.classList.remove('hidden');
+          return;
+        }
       }
+      promptEl.classList.add('hidden');
+    }
+
+    function triggerActiveInteraction() {
+      if (activeZone && activeZone.action) {
+        activeZone.action();
+      }
+    }
+
+    function danceInClub() {
+      playSfx('powerup');
+      userProfile.casinoTokens += 2;
+      saveProfile();
+      showToast("DANCING TO DJ LOWLIFE IN RETROCADE! +2 SOUND TOKENS 🕺🎵");
+    }
+
+    // ==============================================================
+    // 7. WORLD DRAWING PIPELINE: TWO CONTRASTING REALITIES
+    // ==============================================================
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.save();
+      ctx.translate(-Math.floor(camera.x), -Math.floor(camera.y));
+
+      if (currentDimension === 'underground') {
+        drawDystopianUnderground();
+      } else {
+        drawRetrocadeUniverse();
+      }
+
+      drawCrossUniverseCassettes();
+
+      if (currentDimension === 'retrocade') {
+        drawClubDancers();
+      }
+
+      drawAvatar(player.x, player.y, userProfile.activeSkin, player.direction, player.isMoving, player.animTimer);
+
+      if (currentDimension === 'underground') {
+        drawRain();
+      }
+
       ctx.restore();
     }
 
-    // DRAW CASSETTE
-    function drawCassette(c) {
-      ctx.save();
-      ctx.fillStyle = c.type === 'vip' ? '#ffd700' : '#00ffcc';
-      ctx.fillRect(c.x, c.y, 22, 14);
-      ctx.fillStyle = '#000';
-      ctx.fillRect(c.x + 3, c.y + 3, 16, 8);
+    function drawDystopianUnderground() {
+      ctx.fillStyle = '#080a0f';
+      ctx.fillRect(0, 0, WORLD_WIDTH, WORLD_HEIGHT);
+
+      ctx.fillStyle = '#0a0e17';
+      ctx.fillRect(28, 28, 332, 322);
+
+      ctx.fillStyle = '#0c0f1a';
+      ctx.fillRect(380, 28, 360, 322);
+
+      ctx.fillStyle = '#0a1017';
+      ctx.fillRect(760, 28, 400, 322);
+
+      ctx.fillStyle = '#070b10';
+      ctx.fillRect(1180, 28, 392, 322);
+
+      ctx.fillStyle = '#1b2233';
+      undergroundObstacles.forEach(obs => {
+        ctx.fillRect(obs.x, obs.y, obs.width, obs.height);
+      });
+
+      // Clear Green Doorway Floor Indicators
+      ctx.fillStyle = 'rgba(0, 240, 255, 0.15)';
+      ctx.fillRect(150, 350, 100, 30); // Door 1
+      ctx.fillRect(510, 350, 100, 30); // Door 2
+      ctx.fillRect(910, 350, 100, 30); // Door 3
+      ctx.fillRect(1330, 350, 100, 30); // Door 4
+
+      ctx.fillStyle = '#0b0d14';
+      ctx.fillRect(28, 400, WORLD_WIDTH - 56, 572);
+
+      ctx.strokeStyle = '#181d28';
+      ctx.lineWidth = 2;
+      for (let x = 60; x < WORLD_WIDTH; x += 140) {
+        ctx.beginPath();
+        ctx.moveTo(x, 400);
+        ctx.lineTo(x, WORLD_HEIGHT - 28);
+        ctx.stroke();
+      }
+
+      ctx.font = '10px "Share Tech Mono"';
+      ctx.fillStyle = 'rgba(0, 240, 255, 0.5)';
+      ctx.fillText("// SECTOR 01: DISCOGRAPHY VAULT", 45, 55);
+      ctx.fillText("// SECTOR 02: UNDERGROUND ARCADE CAB", 395, 55);
+      ctx.fillText("// SECTOR 03: FL STUDIO SOUND LAB", 780, 55);
+      ctx.fillText("// SECTOR 04: RESTROOM MIRROR CHAMBER", 1200, 55);
+      ctx.fillText("// SECTOR 05: EXTRACTION ALLEY & MERCH DOCK", 45, 430);
+
+      // Props: Discography Monolith
+      ctx.fillStyle = '#131926';
+      ctx.fillRect(80, 150, 130, 70);
+      ctx.strokeStyle = '#00f0ff';
+      ctx.strokeRect(80, 150, 130, 70);
       ctx.fillStyle = '#fff';
-      ctx.fillRect(c.x + 5, c.y + 5, 4, 4);
-      ctx.fillRect(c.x + 13, c.y + 5, 4, 4);
+      ctx.fillText("ALBUM CATALOG", 95, 180);
+      ctx.fillText("[ENTER ARCHIVE]", 95, 200);
+
+      // Props: Arcade Cabinets
+      ctx.fillStyle = '#1c1328';
+      ctx.fillRect(410, 150, 140, 70);
+      ctx.strokeStyle = '#ec4899';
+      ctx.strokeRect(410, 150, 140, 70);
+      ctx.fillStyle = '#00f0ff';
+      ctx.fillText("ARCADE CAB 01-03", 425, 180);
+      ctx.fillText("[PLAY MINI-GAMES]", 420, 200);
+
+      // Props: Sound Lab Console
+      ctx.fillStyle = '#1c1b12';
+      ctx.fillRect(800, 150, 150, 70);
+      ctx.strokeStyle = '#ffaa00';
+      ctx.strokeRect(800, 150, 150, 70);
+      ctx.fillStyle = '#ffaa00';
+      ctx.fillText("FL STUDIO RACK", 830, 180);
+      ctx.fillText("[STEP SEQUENCER]", 825, 200);
+
+      // Props: Restroom Mirror
+      ctx.fillStyle = '#0f1c1a';
+      ctx.fillRect(1230, 150, 110, 70);
+      ctx.strokeStyle = userProfile.solvedMirror ? '#10b981' : '#ff003c';
+      ctx.strokeRect(1230, 150, 110, 70);
+      ctx.fillStyle = userProfile.solvedMirror ? '#10b981' : '#ff003c';
+      ctx.fillText(userProfile.solvedMirror ? "UNMASKED MIRROR" : "MIRROR (CODE 777)", 1235, 180);
+      ctx.fillText("[INSPECT]", 1260, 200);
+
+      // Props: Vehicle Trunk
+      ctx.fillStyle = '#141822';
+      ctx.fillRect(300, 550, 150, 70);
+      ctx.strokeStyle = '#323c52';
+      ctx.strokeRect(300, 550, 150, 70);
+      ctx.fillStyle = 'rgba(255, 255, 220, 0.9)';
+      ctx.fillRect(445, 560, 5, 14);
+      ctx.fillRect(445, 596, 5, 14);
+      ctx.fillStyle = '#fff';
+      ctx.fillText("TRUNK POP [MERCH]", 315, 585);
+
+      // Props: Holding Chamber CRT
+      ctx.fillStyle = '#1b1219';
+      ctx.fillRect(750, 650, 80, 60);
+      ctx.strokeStyle = '#ff003c';
+      ctx.strokeRect(750, 650, 80, 60);
+      ctx.fillStyle = '#ff003c';
+      ctx.fillText("CRT MONITOR", 755, 675);
+      ctx.fillText("[HOSTAGE SCENE]", 750, 695);
+
+      drawPortal(portalToRetrocade.x, portalToRetrocade.y, '#ec4899', '#00f0ff', "RETROCADE RIFT");
+    }
+
+    function drawRetrocadeUniverse() {
+      ctx.fillStyle = '#120524';
+      ctx.fillRect(0, 0, WORLD_WIDTH, WORLD_HEIGHT);
+
+      ctx.strokeStyle = 'rgba(236, 72, 153, 0.2)';
+      ctx.lineWidth = 1;
+      for (let x = 0; x < WORLD_WIDTH; x += 40) {
+        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, WORLD_HEIGHT); ctx.stroke();
+      }
+      for (let y = 0; y < WORLD_HEIGHT; y += 40) {
+        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(WORLD_WIDTH, y); ctx.stroke();
+      }
+
+      ctx.fillStyle = '#22083b';
+      ctx.fillRect(28, 28, 452, 412);
+
+      ctx.fillStyle = '#1b0c38';
+      ctx.fillRect(502, 28, 578, 412);
+
+      ctx.fillStyle = '#280c42';
+      ctx.fillRect(1102, 28, 470, 412);
+
+      retrocadeObstacles.forEach(obs => {
+        ctx.fillStyle = '#2b104a';
+        ctx.fillRect(obs.x, obs.y, obs.width, obs.height);
+        ctx.strokeStyle = '#ec4899';
+        ctx.lineWidth = 1.5;
+        ctx.strokeRect(obs.x, obs.y, obs.width, obs.height);
+      });
+
+      // Clear Doorways Floor Markings into Retrocade Rooms
+      ctx.fillStyle = 'rgba(250, 204, 21, 0.15)';
+      ctx.fillRect(200, 440, 120, 30); // Casino entrance
+      ctx.fillRect(730, 440, 120, 30); // Arcade palace entrance
+      ctx.fillRect(1280, 440, 120, 30); // VIP lounge entrance
+
+      ctx.fillStyle = '#16082c';
+      ctx.fillRect(28, 470, WORLD_WIDTH - 56, 502);
+
+      // Club Lowlife Afterhours Dancefloor & Stage
+      const time = Date.now() / 300;
+      ctx.fillStyle = '#1e0a38';
+      ctx.fillRect(1160, 520, 380, 320);
+      ctx.strokeStyle = '#ec4899';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(1160, 520, 380, 320);
+
+      // Equalizer Dancefloor Tiles
+      for (let tx = 1180; tx < 1520; tx += 40) {
+        for (let ty = 620; ty < 820; ty += 40) {
+          const hue = (tx + ty + time * 60) % 360;
+          ctx.fillStyle = `hsla(${hue}, 80%, 50%, 0.25)`;
+          ctx.fillRect(tx, ty, 36, 36);
+        }
+      }
+
+      // DJ Booth & Stage
+      ctx.fillStyle = '#090514';
+      ctx.fillRect(1300, 530, 100, 45);
+      ctx.strokeStyle = '#facc15';
+      ctx.strokeRect(1300, 530, 100, 45);
+      ctx.fillStyle = '#facc15';
+      ctx.font = 'bold 9px "Share Tech Mono"';
+      ctx.fillText("DJ BOOTH", 1325, 550);
+      ctx.fillText("TURNTABLES", 1320, 565);
+
+      const palms = [{ x: 260, y: 620 }, { x: 680, y: 620 }];
+      palms.forEach(p => {
+        ctx.fillStyle = '#facc15';
+        ctx.beginPath(); ctx.arc(p.x + 30, p.y + 30, 16, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = '#10b981';
+        ctx.lineWidth = 4;
+        for (let angle = 0; angle < Math.PI * 2; angle += Math.PI / 3) {
+          ctx.beginPath();
+          ctx.moveTo(p.x + 30, p.y + 30);
+          ctx.lineTo(p.x + 30 + Math.cos(angle) * 32, p.y + 30 + Math.sin(angle) * 32);
+          ctx.stroke();
+        }
+      });
+
+      // Casino Slots Props
+      ctx.fillStyle = '#3a0c4f';
+      ctx.fillRect(100, 140, 220, 60);
+      ctx.fillRect(100, 260, 220, 60);
+      ctx.strokeStyle = '#facc15';
+      ctx.strokeRect(100, 140, 220, 60);
+      ctx.strokeRect(100, 260, 220, 60);
+      ctx.fillStyle = '#facc15';
+      ctx.font = 'bold 11px "Share Tech Mono"';
+      ctx.fillText("🎰 LUCKY 777 SLOTS [BANK 1]", 115, 175);
+      ctx.fillText("🎰 HIGH-ROLLER JACKPOT [BANK 2]", 110, 295);
+
+      // Arcade Super-Cab Props
+      ctx.fillStyle = '#0f2744';
+      ctx.fillRect(560, 150, 160, 70);
+      ctx.fillRect(820, 150, 160, 70);
+      ctx.strokeStyle = '#00f0ff';
+      ctx.strokeRect(560, 150, 160, 70);
+      ctx.strokeRect(820, 150, 160, 70);
+      ctx.fillStyle = '#00f0ff';
+      ctx.fillText("🕹️ PAC-ENFORCER CAB", 575, 190);
+      ctx.fillText("🕹️ LOWLIFE INVADERS", 835, 190);
+
+      // VIP Synth Lounge Prop
+      ctx.fillStyle = '#420f38';
+      ctx.fillRect(1180, 150, 240, 70);
+      ctx.strokeStyle = '#ec4899';
+      ctx.strokeRect(1180, 150, 240, 70);
+      ctx.fillStyle = '#ec4899';
+      ctx.fillText("🌴 VIP LOUNGE // RETRO CADE", 1205, 190);
+
+      ctx.font = '11px "Share Tech Mono"';
+      ctx.fillStyle = '#facc15';
+      ctx.fillText("// CASINO DISTRICT: LUCKY 777 HIGH ROLLERS", 45, 55);
+      ctx.fillStyle = '#00f0ff';
+      ctx.fillText("// RETROCADE ARCADE SUPER-CENTER", 520, 55);
+      ctx.fillStyle = '#ec4899';
+      ctx.fillText("// RETRO CADE EVOLVED: DELUXE SOUNDROOM", 1120, 55);
+      ctx.fillText("// NEON PALM BOULEVARD & AFTERHOURS DANCE", 45, 505);
+
+      drawPortal(portalToUnderground.x, portalToUnderground.y, '#00f0ff', '#ff003c', "CORRUPTED RIFT");
+    }
+
+    function drawClubDancers() {
+      const time = Date.now() / 250;
+      clubDancers.forEach(d => {
+        const bob = Math.sin(time + d.x) * 4;
+        const sway = Math.cos(time + d.y) * 3;
+        drawAvatar(d.x + sway, d.y + bob, d.skin, 'down', true, Math.floor(time * 5));
+
+        // Floating dance music notes
+        if (Math.sin(time + d.x * 2) > 0.4) {
+          ctx.fillStyle = '#facc15';
+          ctx.font = '10px "Share Tech Mono"';
+          ctx.fillText("♪", d.x + sway + 20, d.y + bob - 10);
+        }
+      });
+    }
+
+    function drawPortal(px, py, color1, color2, label) {
+      const time = Date.now() / 250;
+      ctx.save();
+      ctx.translate(px + 40, py + 40);
+
+      ctx.strokeStyle = color1;
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.arc(0, 0, 30 + Math.sin(time) * 4, 0, Math.PI * 2);
+      ctx.stroke();
+
+      ctx.strokeStyle = color2;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(0, 0, 20 + Math.cos(time) * 4, 0, Math.PI * 2);
+      ctx.stroke();
+
+      ctx.fillStyle = color1;
+      ctx.beginPath();
+      ctx.arc(0, 0, 10, 0, Math.PI * 2);
+      ctx.fill();
+
       ctx.restore();
+
+      ctx.font = 'bold 9px "Share Tech Mono"';
+      ctx.fillStyle = '#ffffff';
+      ctx.fillText(label, px - 10, py + 95);
     }
 
-    function checkProximity() {
-      const toast = document.getElementById('interactionToast');
-      let msg = null;
+    function drawCrossUniverseCassettes() {
+      crossUniverseCassettes.forEach(c => {
+        if (c.dimension !== currentDimension) return;
 
-      // Check Cassette Pickup
-      WORLD_CONFIG.cassettes.forEach(c => {
-        if (c.realm === currentRealm && !currentProfile.collectedTapes.includes(c.id)) {
-          if (Math.hypot(player.x - c.x, player.y - c.y) < 30) {
-            msg = `PRESS [E] // COLLECT ${c.title.toUpperCase()}`;
-          }
+        const isCollected = c.type === 'lore'
+          ? userProfile.collectedLore.includes(c.id)
+          : userProfile.collectedGold.includes(c.id);
+
+        if (!isCollected) {
+          const color = c.type === 'lore' ? '#00f0ff' : '#ffb300';
+          ctx.fillStyle = color;
+          ctx.fillRect(c.x - 12, c.y - 8, 24, 16);
+          ctx.strokeStyle = '#ffffff';
+          ctx.lineWidth = 1;
+          ctx.strokeRect(c.x - 12, c.y - 8, 24, 16);
+
+          ctx.fillStyle = '#000000';
+          ctx.beginPath();
+          ctx.arc(c.x - 5, c.y, 3, 0, Math.PI * 2);
+          ctx.arc(c.x + 5, c.y, 3, 0, Math.PI * 2);
+          ctx.fill();
+
+          const p = (Math.sin(Date.now() / 200) + 1) * 4;
+          ctx.strokeStyle = color;
+          ctx.beginPath();
+          ctx.arc(c.x, c.y, 14 + p, 0, Math.PI * 2);
+          ctx.stroke();
         }
       });
+    }
 
-      // Warp Portal Proximity
-      if (Math.hypot(player.x - 750, player.y - 750) < 45) {
-        msg = `PRESS [E] // WARP TO ${currentRealm === 'underground' ? 'RETROCADE' : 'THE UNDERGROUND'}`;
-      }
+    function drawAvatar(px, py, skin, direction, isMoving, animTimer) {
+      const walk = isMoving ? Math.sin(animTimer * 0.3) * 3 : 0;
 
-      // Underground Hubs
-      if (currentRealm === 'underground') {
-        if (player.x > 80 && player.x < 360 && player.y > 60 && player.y < 300) msg = "PRESS [E] // DISCOGRAPHY MASTER VAULT";
-        else if (player.x > 460 && player.x < 740 && player.y > 60 && player.y < 300) msg = "PRESS [E] // CRT HOLDING CHAMBER";
-        else if (player.x > 820 && player.x < 1120 && player.y > 60 && player.y < 300) msg = "PRESS [E] // UNDERGROUND ARCADE CAB";
-        else if (player.x > 1220 && player.x < 1520 && player.y > 60 && player.y < 300) msg = "PRESS [E] // FL STUDIO SOUND LAB";
-        else if (player.x > 100 && player.x < 300 && player.y > 600 && player.y < 850) msg = "PRESS [E] // CAR TRUNK MERCH DROP";
-      }
+      ctx.fillStyle = 'rgba(0,0,0,0.6)';
+      ctx.beginPath();
+      ctx.ellipse(px + 12, py + 36, 14, 5, 0, 0, Math.PI * 2);
+      ctx.fill();
 
-      // Retrocade Hubs
-      if (currentRealm === 'retrocade') {
-        if (player.x > 80 && player.x < 420 && player.y > 60 && player.y < 300) msg = "PRESS [E] // LUCKY 777 CASINO";
-        else if (player.x > 1160 && player.x < 1540 && player.y > 520 && player.y < 830) msg = "PRESS [E] // DANCE WITH THE SYNDICATE (+2 TOKENS)";
-      }
+      if (skin === 'captive') {
+        ctx.fillStyle = '#ec4899';
+        ctx.fillRect(px + 3, py + 11, 18, 17);
+        ctx.fillStyle = '#00f0ff';
+        ctx.fillRect(px + 7, py + 15, 10, 6);
 
-      if (msg) {
-        toast.style.display = 'block';
-        toast.innerText = msg;
+        ctx.fillStyle = '#60a5fa';
+        ctx.fillRect(px + 5, py + 28, 5, 10);
+        ctx.fillRect(px + 14, py + 28, 5, 10);
+
+        ctx.fillStyle = '#e2b397';
+        ctx.beginPath();
+        ctx.arc(px + 12, py + 7, 7, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#1e1b18';
+        ctx.fillRect(px + 6, py + 2, 12, 4);
+
+      } else if (skin === 'handler') {
+        ctx.fillStyle = '#0e1014';
+        ctx.fillRect(px + 3, py + 11, 18, 14);
+        ctx.fillStyle = '#ff003c';
+        ctx.fillRect(px + 5, py + 13, 2, 11);
+        ctx.fillRect(px + 17, py + 13, 2, 11);
+
+        ctx.fillStyle = '#171a22';
+        ctx.fillRect(px + 4, py + 25, 16, 7);
+        ctx.fillStyle = '#000';
+        ctx.fillRect(px + 5, py + 32, 4, 8);
+        ctx.fillRect(px + 15, py + 32, 4, 8);
+
+        ctx.fillStyle = '#d4a373';
+        ctx.beginPath();
+        ctx.arc(px + 12, py + 7, 6, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#111';
+        ctx.fillRect(px + 6, py + 2, 13, 4);
+
+      } else if (skin === 'unmasked') {
+        ctx.fillStyle = '#0a0b0f';
+        ctx.fillRect(px + 2, py + 11, 20, 24);
+        ctx.beginPath();
+        ctx.moveTo(px + 2, py + 20);
+        ctx.lineTo(px - 2 - walk, py + 38);
+        ctx.lineTo(px + 26 + walk, py + 38);
+        ctx.lineTo(px + 22, py + 20);
+        ctx.fill();
+
+        ctx.fillStyle = '#d4a373';
+        ctx.beginPath();
+        ctx.arc(px + 12, py + 7, 7, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#090a0d';
+        ctx.fillRect(px + 6, py + 1, 12, 5);
+
+      } else if (skin === 'dimensional_master') {
+        ctx.fillStyle = '#facc15';
+        ctx.fillRect(px + 2, py + 11, 20, 24);
+        ctx.strokeStyle = '#00f0ff';
+        ctx.strokeRect(px + 2, py + 11, 20, 24);
+
+        ctx.fillStyle = '#171922';
+        ctx.beginPath();
+        ctx.arc(px + 12, py + 7, 8, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = '#ff003c';
+        ctx.fillRect(px + 6, py + 6, 12, 3);
+
       } else {
-        toast.style.display = 'none';
+        ctx.fillStyle = '#0a0b0f';
+        ctx.fillRect(px + 2, py + 11, 20, 24);
+        ctx.beginPath();
+        ctx.moveTo(px + 2, py + 20);
+        ctx.lineTo(px - 2 - walk, py + 38);
+        ctx.lineTo(px + 26 + walk, py + 38);
+        ctx.lineTo(px + 22, py + 20);
+        ctx.fill();
+
+        ctx.fillStyle = '#171922';
+        ctx.beginPath();
+        ctx.arc(px + 12, py + 7, 8, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = '#00f0ff';
+        if (direction === 'down') ctx.fillRect(px + 7, py + 6, 10, 3);
+        else if (direction === 'left') ctx.fillRect(px + 5, py + 6, 5, 3);
+        else if (direction === 'right') ctx.fillRect(px + 14, py + 6, 5, 3);
       }
     }
 
-    function triggerInteract() {
-      // Cassette Collection
-      WORLD_CONFIG.cassettes.forEach(c => {
-        if (c.realm === currentRealm && !currentProfile.collectedTapes.includes(c.id)) {
-          if (Math.hypot(player.x - c.x, player.y - c.y) < 30) {
-            currentProfile.collectedTapes.push(c.id);
-            if (!currentProfile.unlockedSkins.includes('captive')) currentProfile.unlockedSkins.push('captive');
-            saveState();
-            alert(`COLLECTED: ${c.title}\n\n${c.log}`);
-          }
+    function drawRain() {
+      ctx.strokeStyle = 'rgba(180, 230, 255, 0.35)';
+      ctx.lineWidth = 1;
+      rainParticles.forEach(p => {
+        if (p.y > 400) {
+          ctx.beginPath();
+          ctx.moveTo(p.x, p.y);
+          ctx.lineTo(p.x - 2, p.y + p.length);
+          ctx.stroke();
+        }
+        p.y += p.speed;
+        p.x -= 1;
+        if (p.y > WORLD_HEIGHT) {
+          p.y = 400;
+          p.x = Math.random() * WORLD_WIDTH;
         }
       });
+    }
 
-      // Warp
-      if (Math.hypot(player.x - 750, player.y - 750) < 45) {
-        triggerDimensionalWarp();
+    function gameLoop() {
+      updatePlayer();
+      const targetX = player.x - camera.width / 2;
+      const targetY = player.y - camera.height / 2;
+      camera.x += (targetX - camera.x) * 0.1;
+      camera.y += (targetY - camera.y) * 0.1;
+      camera.x = Math.max(0, Math.min(WORLD_WIDTH - camera.width, camera.x));
+      camera.y = Math.max(0, Math.min(WORLD_HEIGHT - camera.height, camera.y));
+
+      draw();
+      requestAnimationFrame(gameLoop);
+    }
+
+    // ==============================================================
+    // 8. RETROCADE CASINO: "LUCKY 777" SLOT MACHINE
+    // ==============================================================
+    let currentSlotBet = 10;
+    let isSlotSpinning = false;
+    const slotSymbols = ['7', '💎', '📼', '⚡', '🍸', '🍒'];
+
+    function openCasinoSlots() {
+      document.getElementById('slotCreditDisplay').innerText = userProfile.casinoTokens;
+      document.getElementById('slotBetDisplay').innerText = currentSlotBet;
+      document.getElementById('casinoModal').classList.remove('hidden');
+    }
+
+    function adjustSlotBet(amt) {
+      if (isSlotSpinning) return;
+      currentSlotBet = amt;
+      document.getElementById('slotBetDisplay').innerText = currentSlotBet;
+      playSfx('hit');
+    }
+
+    function spinSlotMachine() {
+      if (isSlotSpinning) return;
+      if (userProfile.casinoTokens < currentSlotBet) {
+        showToast("NOT ENOUGH TOKENS! DANCE IN CLUB OR COLLECT MORE");
+        playSfx('hit');
         return;
       }
 
-      // Underground Triggers
-      if (currentRealm === 'underground') {
-        if (player.x > 80 && player.x < 360 && player.y > 60 && player.y < 300) openDiscoHub();
-        else if (player.x > 460 && player.x < 740 && player.y > 60 && player.y < 300) alert("CRT INTERROGATION MONITOR // [DANCING] STREAMING LIVE.");
-        else if (player.x > 820 && player.x < 1120 && player.y > 60 && player.y < 300) startArcadeGame('invaders');
-        else if (player.x > 1220 && player.x < 1520 && player.y > 60 && player.y < 300) openDawHub();
-        else if (player.x > 100 && player.x < 300 && player.y > 600 && player.y < 850) openMerchHub();
-      }
+      initAudio();
+      userProfile.casinoTokens -= currentSlotBet;
+      saveProfile();
+      isSlotSpinning = true;
 
-      // Retrocade Triggers
-      if (currentRealm === 'retrocade') {
-        if (player.x > 80 && player.x < 420 && player.y > 60 && player.y < 300) openCasinoHub();
-        else if (player.x > 1160 && player.x < 1540 && player.y > 520 && player.y < 830) {
-          currentProfile.tokens += 2;
-          saveState();
-          alert("DANCED TO 'DANCING' ON THE AFTERHOURS FLOOR! +2 TOKENS REWARDED.");
+      const r1 = document.getElementById('reel1');
+      const r2 = document.getElementById('reel2');
+      const r3 = document.getElementById('reel3');
+      const msg = document.getElementById('slotStatusMessage');
+      msg.innerText = "SPINNING WHEELS...";
+
+      let spins = 0;
+      const spinInterval = setInterval(() => {
+        r1.innerText = slotSymbols[Math.floor(Math.random() * slotSymbols.length)];
+        r2.innerText = slotSymbols[Math.floor(Math.random() * slotSymbols.length)];
+        r3.innerText = slotSymbols[Math.floor(Math.random() * slotSymbols.length)];
+        playSfx('hit');
+        spins++;
+
+        if (spins > 16) {
+          clearInterval(spinInterval);
+          isSlotSpinning = false;
+
+          const roll = Math.random();
+          let final1 = '7', final2 = '7', final3 = '7';
+
+          if (roll < 0.20) {
+            final1 = '7'; final2 = '7'; final3 = '7';
+          } else if (roll < 0.50) {
+            final1 = '💎'; final2 = '💎'; final3 = '⚡';
+          } else {
+            final1 = slotSymbols[Math.floor(Math.random() * slotSymbols.length)];
+            final2 = slotSymbols[Math.floor(Math.random() * slotSymbols.length)];
+            final3 = slotSymbols[Math.floor(Math.random() * slotSymbols.length)];
+          }
+
+          r1.innerText = final1;
+          r2.innerText = final2;
+          r3.innerText = final3;
+
+          if (final1 === '7' && final2 === '7' && final3 === '7') {
+            const winnings = currentSlotBet * 50;
+            userProfile.casinoTokens += winnings;
+            userProfile.slotJackpotsWon++;
+            playSfx('jackpot');
+            msg.innerHTML = `<span class="text-yellow-400 font-bold">LUCKY 777 JACKPOT! +${winnings} TOKENS WON!</span>`;
+            showToast("LUCKY 777 JACKPOT! SOUNDTOKENS MULTIPLIED!");
+          } else if (final1 === final2 || final2 === final3 || final1 === final3) {
+            const winnings = currentSlotBet * 3;
+            userProfile.casinoTokens += winnings;
+            playSfx('powerup');
+            msg.innerHTML = `<span class="text-cyan-300">PAIR MATCH! +${winnings} TOKENS!</span>`;
+          } else {
+            msg.innerHTML = `<span class="text-neutral-500">NO MATCH. PULL AGAIN!</span>`;
+          }
+          saveProfile();
         }
+      }, 70);
+    }
+
+    // ==============================================================
+    // 9. ARCADE MINI-GAMES ENGINE (GALAGA, PAC-MAN, MARIO)
+    // ==============================================================
+    let activeArcadeGame = 'invaders';
+    const miniCanvas = document.getElementById('miniGameCanvas');
+    const miniCtx = miniCanvas.getContext('2d');
+    let miniGameLoopId = null;
+
+    function openArcadeHub() {
+      document.getElementById('arcadeModal').classList.remove('hidden');
+      switchArcadeGame(activeArcadeGame);
+    }
+
+    function switchArcadeGame(game) {
+      activeArcadeGame = game;
+      ['tabInvaders', 'tabPac', 'tabRunner'].forEach(id => {
+        document.getElementById(id).className = "flex-1 py-1.5 bg-neutral-900 text-neutral-300 font-cyber font-bold text-xs rounded hover:bg-neutral-800 transition";
+      });
+      if (game === 'invaders') {
+        document.getElementById('tabInvaders').className = "flex-1 py-1.5 bg-lowlife-cyan text-black font-cyber font-bold text-xs rounded transition";
+        document.getElementById('miniGameControlsHint').innerText = "CONTROLS: [A/D or ◀/▶] Move | [SPACE] Fire Plasma";
+        initInvaders();
+      } else if (game === 'pac') {
+        document.getElementById('tabPac').className = "flex-1 py-1.5 bg-lowlife-cyan text-black font-cyber font-bold text-xs rounded transition";
+        document.getElementById('miniGameControlsHint').innerText = "CONTROLS: [W/A/S/D or Arrows] Navigate Alleyways";
+        initPacMan();
+      } else if (game === 'runner') {
+        document.getElementById('tabRunner').className = "flex-1 py-1.5 bg-lowlife-cyan text-black font-cyber font-bold text-xs rounded transition";
+        document.getElementById('miniGameControlsHint').innerText = "CONTROLS: [A/D] Run | [SPACE / W] Jump & Stomp Drones";
+        initRunner();
       }
     }
 
-    function render() {
-      ctx.fillStyle = currentRealm === 'underground' ? '#070707' : '#0a0017';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      // Draw Walls
-      const bounds = currentRealm === 'underground' ? boundsUnderground : boundsRetrocade;
-      ctx.fillStyle = currentRealm === 'underground' ? '#222' : '#ff007f';
-      for (let b of bounds) ctx.fillRect(b[0], b[1], b[2], b[3]);
-
-      // Draw Doors / Floor Indicators (Green open pathways)
-      ctx.fillStyle = '#00ffcc';
-      if (currentRealm === 'underground') {
-        ctx.fillRect(250, 480, 90, 20);
-        ctx.fillRect(760, 480, 100, 20);
-        ctx.fillRect(1280, 480, 100, 20);
-      } else {
-        ctx.fillRect(350, 480, 90, 20);
-        ctx.fillRect(740, 480, 100, 20);
-        ctx.fillRect(1160, 480, 100, 20);
+    // --- GAME 1: LOWLIFE INVADERS (GALAGA) ---
+    let invadersState = null;
+    function initInvaders() {
+      if (miniGameLoopId) cancelAnimationFrame(miniGameLoopId);
+      invadersState = {
+        shipX: 280,
+        bullets: [],
+        enemies: [],
+        wave: 1,
+        score: 0,
+        dir: 1
+      };
+      for (let r = 0; r < 3; r++) {
+        for (let c = 0; c < 8; c++) {
+          invadersState.enemies.push({
+            x: 60 + c * 55,
+            y: 40 + r * 45,
+            width: 30,
+            height: 22,
+            alive: true
+          });
+        }
       }
+      runInvadersLoop();
+    }
 
-      // Draw Dimensional Rift
-      ctx.fillStyle = '#00ffcc';
-      ctx.beginPath();
-      ctx.arc(750, 750, 28, 0, Math.PI * 2);
-      ctx.fill();
+    function runInvadersLoop() {
+      if (activeArcadeGame !== 'invaders') return;
+      miniCtx.fillStyle = '#05070a';
+      miniCtx.fillRect(0, 0, miniCanvas.width, miniCanvas.height);
 
-      // Render Active Realm Cassettes
-      WORLD_CONFIG.cassettes.forEach(c => {
-        if (c.realm === currentRealm && !currentProfile.collectedTapes.includes(c.id)) {
-          drawCassette(c);
+      if (keys.left && invadersState.shipX > 20) invadersState.shipX -= 6;
+      if (keys.right && invadersState.shipX < miniCanvas.width - 40) invadersState.shipX += 6;
+
+      // Ship
+      miniCtx.fillStyle = '#00f0ff';
+      miniCtx.fillRect(invadersState.shipX + 8, 320, 8, 20);
+      miniCtx.fillRect(invadersState.shipX, 332, 24, 8);
+
+      // Bullets
+      miniCtx.fillStyle = '#facc15';
+      invadersState.bullets.forEach((b, i) => {
+        b.y -= 8;
+        miniCtx.fillRect(b.x, b.y, 3, 10);
+        invadersState.enemies.forEach(e => {
+          if (e.alive && b.x > e.x && b.x < e.x + e.width && b.y > e.y && b.y < e.y + e.height) {
+            e.alive = false;
+            invadersState.bullets.splice(i, 1);
+            invadersState.score += 150;
+            playSfx('hit');
+            if (invadersState.score > userProfile.arcadeHighScore) {
+              userProfile.arcadeHighScore = invadersState.score;
+              saveProfile();
+            }
+          }
+        });
+      });
+
+      // Formation Sway
+      let allDead = true;
+      invadersState.enemies.forEach(e => {
+        if (e.alive) {
+          allDead = false;
+          miniCtx.fillStyle = '#ff003c';
+          miniCtx.fillRect(e.x, e.y, e.width, e.height);
+          miniCtx.fillStyle = '#fff';
+          miniCtx.fillRect(e.x + 6, e.y + 6, 4, 4);
+          miniCtx.fillRect(e.x + 20, e.y + 6, 4, 4);
         }
       });
 
-      // Render Retrocade Dancing NPCs
-      if (currentRealm === 'retrocade') {
-        ctx.fillStyle = '#111';
-        ctx.fillRect(1160, 520, 380, 310); // Dancefloor
-        ctx.fillStyle = '#ff007f';
-        ctx.fillRect(1320, 530, 80, 30); // DJ Booth
-        ctx.fillStyle = '#fff';
-        ctx.fillText("DJ LOWLIFE", 1330, 550);
-        // Animated Dancers
-        const t = Date.now() * 0.005;
-        for (let i = 0; i < 6; i++) {
-          const dx = 1220 + (i % 3) * 80 + Math.sin(t + i) * 6;
-          const dy = 620 + Math.floor(i / 3) * 70 + Math.cos(t + i) * 4;
-          drawAvatar(dx, dy, i % 2 === 0 ? 'captive' : 'handler');
+      if (allDead) {
+        invadersState.wave++;
+        initInvaders();
+      }
+
+      miniCtx.fillStyle = '#fff';
+      miniCtx.font = '11px "Share Tech Mono"';
+      miniCtx.fillText(`SCORE: ${invadersState.score}`, 15, 20);
+      miniCtx.fillText(`WAVE: ${invadersState.wave}`, 480, 20);
+
+      miniGameLoopId = requestAnimationFrame(runInvadersLoop);
+    }
+
+    // Spacebar Shoot in Invaders & Jump in Runner
+    window.addEventListener('keydown', (e) => {
+      if (e.code === 'Space') {
+        if (!document.getElementById('arcadeModal').classList.contains('hidden')) {
+          e.preventDefault();
+          if (activeArcadeGame === 'invaders' && invadersState) {
+            invadersState.bullets.push({ x: invadersState.shipX + 10, y: 320 });
+            playSfx('hit');
+          } else if (activeArcadeGame === 'runner' && runnerState && runnerState.grounded) {
+            runnerState.vy = -12;
+            runnerState.grounded = false;
+            playSfx('jump');
+          }
         }
       }
+    });
 
-      // Draw Player
-      drawAvatar(player.x, player.y, currentProfile.activeSkin);
-
-      update();
-      requestAnimationFrame(render);
-    }
-
-    // MODAL ROUTINES
-    function closeModals() {
-      document.querySelectorAll('.modal-backdrop').forEach(m => m.style.display = 'none');
-    }
-    function openQuickLinks() {
-      const c = document.getElementById('quickLinksContainer');
-      c.innerHTML = WORLD_CONFIG.quickLinks.map(l => `<a href="${l.url}" target="_blank" class="action-btn" style="display:block;margin:6px 0;">${l.label}</a>`).join('');
-      document.getElementById('quickLinksModal').style.display = 'flex';
-    }
-    function openDiscoHub() {
-      const c = document.getElementById('discoContainer');
-      c.innerHTML = WORLD_CONFIG.discography.map(d => `
-        <div style="background:#111;padding:12px;border-left:3px solid #00ffcc;margin-bottom:8px;">
-          <h3 style="color:#00ffcc;font-size:13px;">${d.title} (${d.year}) // ${d.type}</h3>
-          <p style="font-size:11px;color:#aaa;margin:6px 0;">${d.desc}</p>
-          <a href="${d.spotify}" target="_blank" class="action-btn" style="padding:4px 8px;font-size:10px;margin-right:6px;">SPOTIFY</a>
-          <a href="${d.apple}" target="_blank" class="action-btn" style="padding:4px 8px;font-size:10px;">APPLE</a>
-        </div>
-      `).join('');
-      document.getElementById('discoModal').style.display = 'flex';
-    }
-    function openMerchHub() {
-      const m = WORLD_CONFIG.merchDrop;
-      document.getElementById('merchModalTitle').innerText = m.title;
-      const c = document.getElementById('merchContainer');
-      c.innerHTML = `
-        <div style="background:#111;padding:10px;border:1px solid #333;margin-bottom:10px;">
-          <span style="color:#00ffcc;font-size:11px;">PROMO CODE: <strong>${m.discountCode}</strong> (10% OFF ARCHIVE)</span>
-        </div>
-        ${m.items.map(i => `
-          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #222;font-size:12px;">
-            <span>${i.name}</span>
-            <strong style="color:#00ffcc;">${i.price}</strong>
-          </div>
-        `).join('')}
-        <a href="${m.storeUrl}" target="_blank" class="action-btn" style="margin-top:10px;display:block;">VISIT OFFICIAL STORE</a>
-      `;
-      document.getElementById('merchModal').style.display = 'flex';
-    }
-    function openTapesModal() {
-      switchTapeTab('lore');
-      document.getElementById('tapesModal').style.display = 'flex';
-    }
-    function switchTapeTab(type) {
-      document.getElementById('tabLore').className = type === 'lore' ? 'tab-btn active' : 'tab-btn';
-      document.getElementById('tabVip').className = type === 'vip' ? 'tab-btn active' : 'tab-btn';
-      const c = document.getElementById('tapesListContainer');
-      const filtered = WORLD_CONFIG.cassettes.filter(t => t.type === type);
-      c.innerHTML = filtered.map(t => {
-        const has = currentProfile.collectedTapes.includes(t.id);
-        return `
-          <div style="background:#111;padding:10px;margin:6px 0;border-left:3px solid ${has ? '#00ffcc' : '#444'};">
-            <h4 style="color:${has ? '#00ffcc' : '#666'};font-size:12px;">${t.title} [${t.realm.toUpperCase()}] ${has ? '✓ FOUND' : '[LOCKED]'}</h4>
-            <p style="font-size:11px;color:${has ? '#aaa' : '#444'};">${has ? t.log : 'LOCATE CASSETTE TAPE IN THE WORLD TO UNLOCK AUDIO & LORE.'}</p>
-          </div>
-        `;
-      }).join('');
-
-      const box = document.getElementById('vaultBonusBox');
-      if (currentProfile.collectedTapes.length >= 12) {
-        box.innerHTML = `<a href="${WORLD_CONFIG.giveawayFormUrl}" target="_blank" class="action-btn" style="display:block;background:#ffd700;color:#000;">★ ALL 12 TAPES FOUND // CLAIM PHYSICAL CASSETTE TAPE</a>`;
-      } else {
-        box.innerHTML = `<div style="font-size:10px;color:#666;text-align:center;">FIND ALL 12 TAPES (${currentProfile.collectedTapes.length}/12) TO UNLOCK PHYSICAL TAPE GIVEAWAY</div>`;
+    // --- GAME 2: PAC-ENFORCER (MAZE) ---
+    let pacState = null;
+    function initPacMan() {
+      if (miniGameLoopId) cancelAnimationFrame(miniGameLoopId);
+      pacState = {
+        x: 280, y: 180,
+        score: 0,
+        dots: []
+      };
+      for (let x = 40; x < 520; x += 32) {
+        for (let y = 40; y < 320; y += 32) {
+          pacState.dots.push({ x, y, active: true });
+        }
       }
-    }
-    function openSkinsLocker() {
-      const c = document.getElementById('skinsContainer');
-      const skins = [
-        { id: 'enforcer', name: 'DEFAULT ENFORCER', desc: 'Floor-length black duster coat & reflective helmet visor.' },
-        { id: 'captive', name: 'RETROCADE CAPTIVE', desc: 'Oversized neon graphic tee & light-wash denim. (Unlocked via Tape 01).' },
-        { id: 'handler', name: 'SYNDICATE HANDLER', desc: 'Tactical techwear crop vest & combat boots. (Unlocked via Arcade).' }
-      ];
-      c.innerHTML = skins.map(s => {
-        const unl = currentProfile.unlockedSkins.includes(s.id);
-        return `
-          <div style="background:#111;padding:10px;margin:6px 0;border-left:3px solid ${unl ? '#00ffcc' : '#444'};">
-            <h4 style="color:${unl ? '#00ffcc' : '#666'};font-size:12px;">${s.name}</h4>
-            <p style="font-size:11px;color:#888;">${s.desc}</p>
-            ${unl ? `<button class="action-btn" style="margin-top:6px;padding:4px 8px;font-size:10px;" onclick="equipSkin('${s.id}')">${currentProfile.activeSkin === s.id ? 'EQUIPPED' : 'EQUIP'}</button>` : '<span style="font-size:10px;color:#555;">[LOCKED BY OBJECTIVE]</span>'}
-          </div>
-        `;
-      }).join('');
-      document.getElementById('skinsModal').style.display = 'flex';
-    }
-    function equipSkin(id) { currentProfile.activeSkin = id; saveState(); openSkinsLocker(); }
-    function openProfileHub() {
-      document.getElementById('profileHandleInput').value = currentProfile.handle;
-      document.getElementById('profilePinInput').value = currentProfile.pin;
-      document.getElementById('profileModal').style.display = 'flex';
-    }
-    function saveUserProfile() {
-      currentProfile.handle = document.getElementById('profileHandleInput').value || '@enforcer';
-      currentProfile.pin = document.getElementById('profilePinInput').value || '7777';
-      saveState();
-      alert("PROFILE SAVED LOCALLY.");
-      closeModals();
-    }
-    function toggleCrtScanlines() {
-      const c = document.getElementById('crtOverlay');
-      const b = document.getElementById('crtToggleBtn');
-      c.style.display = c.style.display === 'none' ? 'block' : 'none';
-      b.innerText = c.style.display === 'none' ? '📺 CRT: OFF' : '📺 CRT: ON';
+      runPacLoop();
     }
 
-    // ARCADE ENGINES
-    let arcadeLoopId = null;
-    function startArcadeGame(type) {
-      document.getElementById('arcadeGameTitle').innerText = `ARCADE // ${type.toUpperCase()}`;
-      document.getElementById('arcadeModal').style.display = 'flex';
-      const c = document.getElementById('arcadeCanvas');
-      const ac = c.getContext('2d');
-      if (arcadeLoopId) cancelAnimationFrame(arcadeLoopId);
+    function runPacLoop() {
+      if (activeArcadeGame !== 'pac') return;
+      miniCtx.fillStyle = '#05070a';
+      miniCtx.fillRect(0, 0, miniCanvas.width, miniCanvas.height);
 
-      let px = 320, drones = [{ x: 200, y: 100 }, { x: 300, y: 100 }, { x: 400, y: 100 }];
-      function loop() {
-        ac.fillStyle = '#000'; ac.fillRect(0, 0, 640, 480);
-        // Player
-        ac.fillStyle = '#00ffcc'; ac.fillRect(px - 15, 430, 30, 18);
-        // Drones
-        ac.fillStyle = '#ff007f';
-        drones.forEach(d => {
-          ac.fillRect(d.x, d.y, 24, 16);
-          d.x += Math.sin(Date.now() * 0.003) * 2;
-        });
-        ac.fillStyle = '#fff';
-        ac.fillText("ARCADE RUNNING // PRESS ESC TO RETURN TO VAULT", 20, 30);
-        arcadeLoopId = requestAnimationFrame(loop);
+      if (keys.left && pacState.x > 30) pacState.x -= 4;
+      if (keys.right && pacState.x < miniCanvas.width - 30) pacState.x += 4;
+      if (keys.up && pacState.y > 30) pacState.y -= 4;
+      if (keys.down && pacState.y < miniCanvas.height - 30) pacState.y += 4;
+
+      // Draw Dots
+      miniCtx.fillStyle = '#facc15';
+      pacState.dots.forEach(d => {
+        if (d.active) {
+          miniCtx.beginPath();
+          miniCtx.arc(d.x, d.y, 3, 0, Math.PI * 2);
+          miniCtx.fill();
+          if (Math.hypot(pacState.x - d.x, pacState.y - d.y) < 14) {
+            d.active = false;
+            pacState.score += 50;
+            playSfx('hit');
+          }
+        }
+      });
+
+      // Draw Mini Pac-Avatar
+      drawAvatar(pacState.x - 12, pacState.y - 18, userProfile.activeSkin, 'down', true, 0);
+
+      miniCtx.fillStyle = '#fff';
+      miniCtx.font = '11px "Share Tech Mono"';
+      miniCtx.fillText(`SOUND TOKENS COLLECTED: ${pacState.score}`, 15, 20);
+
+      miniGameLoopId = requestAnimationFrame(runPacLoop);
+    }
+
+    // --- GAME 3: DYSTOPIAN RUN (MARIO PLATFORMER) ---
+    let runnerState = null;
+    function initRunner() {
+      if (miniGameLoopId) cancelAnimationFrame(miniGameLoopId);
+      runnerState = {
+        x: 60, y: 260,
+        vx: 0, vy: 0,
+        grounded: true,
+        score: 0,
+        coins: [
+          { x: 180, y: 200, taken: false },
+          { x: 260, y: 160, taken: false },
+          { x: 380, y: 200, taken: false },
+          { x: 460, y: 140, taken: false }
+        ],
+        blocks: [
+          { x: 160, y: 230, w: 60, h: 20 },
+          { x: 250, y: 190, w: 60, h: 20 },
+          { x: 370, y: 230, w: 60, h: 20 },
+          { x: 450, y: 170, w: 60, h: 20 }
+        ]
+      };
+      runRunnerLoop();
+    }
+
+    function runRunnerLoop() {
+      if (activeArcadeGame !== 'runner') return;
+      miniCtx.fillStyle = '#060a12';
+      miniCtx.fillRect(0, 0, miniCanvas.width, miniCanvas.height);
+
+      if (keys.left) runnerState.vx = -4;
+      else if (keys.right) runnerState.vx = 4;
+      else runnerState.vx *= 0.8;
+
+      runnerState.vy += 0.6; // Gravity
+      runnerState.x += runnerState.vx;
+      runnerState.y += runnerState.vy;
+
+      // Floor
+      if (runnerState.y > 270) {
+        runnerState.y = 270;
+        runnerState.vy = 0;
+        runnerState.grounded = true;
       }
-      loop();
+
+      // Blocks
+      miniCtx.fillStyle = '#1b2233';
+      runnerState.blocks.forEach(b => {
+        miniCtx.fillRect(b.x, b.y, b.w, b.h);
+        miniCtx.strokeStyle = '#00f0ff';
+        miniCtx.strokeRect(b.x, b.y, b.w, b.h);
+
+        if (runnerState.x + 16 > b.x && runnerState.x < b.x + b.w && runnerState.y + 36 > b.y && runnerState.y + 36 < b.y + 12 && runnerState.vy > 0) {
+          runnerState.y = b.y - 36;
+          runnerState.vy = 0;
+          runnerState.grounded = true;
+        }
+      });
+
+      // Ground
+      miniCtx.fillStyle = '#11151f';
+      miniCtx.fillRect(0, 306, miniCanvas.width, 54);
+
+      // Coins
+      miniCtx.fillStyle = '#facc15';
+      runnerState.coins.forEach(c => {
+        if (!c.taken) {
+          miniCtx.beginPath();
+          miniCtx.arc(c.x, c.y, 6, 0, Math.PI * 2);
+          miniCtx.fill();
+          if (Math.hypot(runnerState.x + 12 - c.x, runnerState.y + 18 - c.y) < 20) {
+            c.taken = true;
+            runnerState.score += 200;
+            userProfile.casinoTokens += 5;
+            saveProfile();
+            playSfx('powerup');
+          }
+        }
+      });
+
+      drawAvatar(runnerState.x, runnerState.y, userProfile.activeSkin, 'right', Math.abs(runnerState.vx) > 0.5, 0);
+
+      miniCtx.fillStyle = '#fff';
+      miniCtx.font = '11px "Share Tech Mono"';
+      miniCtx.fillText(`STAGE: 1-1 WAREHOUSE // SCORE: ${runnerState.score}`, 15, 20);
+
+      miniGameLoopId = requestAnimationFrame(runRunnerLoop);
     }
 
-    // DAW MINI SEQUENCER
-    let dawStep = 0, isDawPlaying = false, dawTimer = null;
-    const dawPattern = { kick: [1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0], snare: [0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0], hat: [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1] };
-    function openDawHub() { renderDaw(); document.getElementById('dawModal').style.display = 'flex'; }
-    function renderDaw() {
-      const c = document.getElementById('dawStepSequencer'); c.innerHTML = '';
-      ['kick', 'snare', 'hat'].forEach(track => {
-        const row = document.createElement('div');
-        row.style.display = 'flex'; row.style.gap = '4px'; row.style.alignItems = 'center';
-        const lbl = document.createElement('span'); lbl.style.width = '60px'; lbl.style.fontSize = '10px'; lbl.style.color = '#00ffcc'; lbl.innerText = track.toUpperCase();
-        row.appendChild(lbl);
-        for (let i = 0; i < 16; i++) {
-          const btn = document.createElement('div');
-          btn.style.width = '24px'; btn.style.height = '24px';
-          btn.style.background = dawPattern[track][i] ? '#00ffcc' : (Math.floor(i/4)%2 === 0 ? '#333' : '#222');
-          btn.style.cursor = 'pointer';
-          btn.onclick = () => { dawPattern[track][i] = dawPattern[track][i] ? 0 : 1; renderDaw(); };
+    // ==============================================================
+    // 10. FL STUDIO DAW SEQUENCER LOGIC
+    // ==============================================================
+    let dawIsPlaying = false;
+    let dawStep = 0;
+    let dawInterval = null;
+    let dawBpm = 130;
+    const dawGrid = [
+      Array(16).fill(false),
+      Array(16).fill(false),
+      Array(16).fill(false),
+      Array(16).fill(false)
+    ];
+
+    // Default Club Lowlife Trap Bounce Preset
+    dawGrid[0][0] = true; dawGrid[0][8] = true;
+    dawGrid[1][4] = true; dawGrid[1][12] = true;
+    dawGrid[2][2] = true; dawGrid[2][6] = true; dawGrid[2][10] = true; dawGrid[2][14] = true;
+    dawGrid[3][0] = true; dawGrid[3][10] = true;
+
+    function openDawHub() {
+      buildDawSteps();
+      document.getElementById('dawModal').classList.remove('hidden');
+    }
+
+    function buildDawSteps() {
+      for (let ch = 0; ch < 4; ch++) {
+        const row = document.getElementById(`stepRow${ch}`);
+        row.innerHTML = '';
+        for (let s = 0; s < 16; s++) {
+          const btn = document.createElement('button');
+          btn.className = `h-8 rounded transition ${dawGrid[ch][s] ? 'bg-lowlife-cyan' : (Math.floor(s/4)%2===0 ? 'bg-neutral-800' : 'bg-neutral-700')}`;
+          btn.onclick = () => {
+            dawGrid[ch][s] = !dawGrid[ch][s];
+            btn.className = `h-8 rounded transition ${dawGrid[ch][s] ? 'bg-lowlife-cyan' : (Math.floor(s/4)%2===0 ? 'bg-neutral-800' : 'bg-neutral-700')}`;
+            playSfx('hit');
+          };
           row.appendChild(btn);
         }
-        c.appendChild(row);
+      }
+    }
+
+    function toggleDawPlayback() {
+      initAudio();
+      dawIsPlaying = !dawIsPlaying;
+      const playBtn = document.getElementById('dawPlayBtn');
+      if (dawIsPlaying) {
+        playBtn.innerHTML = '<span>❚❚ PAUSE</span>';
+        playBtn.className = "px-4 py-1.5 bg-yellow-500 hover:bg-yellow-400 text-black font-cyber font-bold text-xs rounded transition flex items-center gap-1";
+        const intervalMs = (60 / dawBpm / 4) * 1000;
+        dawInterval = setInterval(() => {
+          triggerDawStep(dawStep);
+          dawStep = (dawStep + 1) % 16;
+        }, intervalMs);
+      } else {
+        stopDawPlayback();
+      }
+    }
+
+    function stopDawPlayback() {
+      dawIsPlaying = false;
+      clearInterval(dawInterval);
+      dawInterval = null;
+      dawStep = 0;
+      const playBtn = document.getElementById('dawPlayBtn');
+      if (playBtn) {
+        playBtn.innerHTML = '<span>▶ PLAY</span>';
+        playBtn.className = "px-4 py-1.5 bg-[#22c55e] hover:bg-green-600 text-black font-cyber font-bold text-xs rounded transition flex items-center gap-1";
+      }
+    }
+
+    function triggerDawStep(step) {
+      if (!audioCtx) return;
+      const now = audioCtx.currentTime;
+
+      // Track 0: 808 Kick
+      if (dawGrid[0][step]) {
+        const osc = audioCtx.createOscillator();
+        const g = audioCtx.createGain();
+        osc.frequency.setValueAtTime(140, now);
+        osc.frequency.exponentialRampToValueAtTime(38, now + 0.15);
+        g.gain.setValueAtTime(0.4, now);
+        g.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+        osc.connect(g); g.connect(audioCtx.destination);
+        osc.start(now); osc.stop(now + 0.25);
+      }
+
+      // Track 1: Snare / Clap
+      if (dawGrid[1][step]) {
+        const osc = audioCtx.createOscillator();
+        const g = audioCtx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(260, now);
+        osc.frequency.exponentialRampToValueAtTime(80, now + 0.1);
+        g.gain.setValueAtTime(0.25, now);
+        g.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+        osc.connect(g); g.connect(audioCtx.destination);
+        osc.start(now); osc.stop(now + 0.15);
+      }
+
+      // Track 2: Hi-Hat
+      if (dawGrid[2][step]) {
+        const osc = audioCtx.createOscillator();
+        const g = audioCtx.createGain();
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(900, now);
+        g.gain.setValueAtTime(0.08, now);
+        g.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+        osc.connect(g); g.connect(audioCtx.destination);
+        osc.start(now); osc.stop(now + 0.05);
+      }
+
+      // Track 3: Synth Stab
+      if (dawGrid[3][step]) {
+        const osc = audioCtx.createOscillator();
+        const g = audioCtx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(330, now);
+        g.gain.setValueAtTime(0.18, now);
+        g.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
+        osc.connect(g); g.connect(audioCtx.destination);
+        osc.start(now); osc.stop(now + 0.2);
+      }
+    }
+
+    function clearDawGrid() {
+      for (let ch = 0; ch < 4; ch++) {
+        dawGrid[ch].fill(false);
+      }
+      buildDawSteps();
+      showToast("DAW PATTERN CLEARED");
+    }
+
+    function updateDawBpm(val) {
+      dawBpm = parseInt(val);
+      document.getElementById('bpmDisplay').innerText = `${dawBpm} BPM`;
+      if (dawIsPlaying) {
+        stopDawPlayback();
+        toggleDawPlayback();
+      }
+    }
+
+    function openFlTipsModal() {
+      document.getElementById('flTipsModal').classList.remove('hidden');
+    }
+
+    // ==============================================================
+    // 11. CASSETTES & SKINS LOCKER MODALS
+    // ==============================================================
+    function openTapesModal() {
+      renderTapes();
+      document.getElementById('tapesModal').classList.remove('hidden');
+    }
+
+    function renderTapes() {
+      const loreCont = document.getElementById('loreTapesContainer');
+      const goldCont = document.getElementById('goldTapesContainer');
+      loreCont.innerHTML = '';
+      goldCont.innerHTML = '';
+
+      crossUniverseCassettes.forEach(c => {
+        const isCollected = c.type === 'lore'
+          ? userProfile.collectedLore.includes(c.id)
+          : userProfile.collectedGold.includes(c.id);
+
+        const card = document.createElement('div');
+        card.className = `p-3 rounded border ${isCollected ? 'bg-black/60 border-neutral-700' : 'bg-neutral-900/40 border-neutral-900 opacity-50'}`;
+
+        card.innerHTML = `
+          <div class="flex items-center justify-between">
+            <span class="font-cyber font-bold ${c.type === 'lore' ? 'text-lowlife-cyan' : 'text-lowlife-gold'}">
+              ${isCollected ? '📼 ' + c.title : '🔒 [LOCKED CASSETTE]'}
+            </span>
+            <span class="text-[9px] px-1.5 py-0.5 rounded ${c.dimension === 'underground' ? 'bg-cyan-950 text-cyan-400' : 'bg-pink-950 text-pink-400'}">
+              ${c.dimension.toUpperCase()}
+            </span>
+          </div>
+          <p class="text-neutral-400 text-[11px] mt-1">${isCollected ? (c.desc || c.stemNote) : 'Explore both dimensions to locate this cassette.'}</p>
+        `;
+
+        if (c.type === 'lore') loreCont.appendChild(card);
+        else goldCont.appendChild(card);
       });
     }
-    function toggleDawPlayback() {
-      isDawPlaying = !isDawPlaying;
-      document.getElementById('dawPlayBtn').innerText = isDawPlaying ? '❚❚ PAUSE' : '▶ PLAY';
-      if (isDawPlaying) {
-        dawTimer = setInterval(() => {
-          if (!audioCtx) initAudioEngine();
-          const t = audioCtx.currentTime;
-          if (dawPattern.kick[dawStep]) { const osc = audioCtx.createOscillator(); osc.frequency.setValueAtTime(120, t); osc.frequency.exponentialRampToValueAtTime(35, t + 0.1); osc.connect(masterGain); osc.start(t); osc.stop(t + 0.1); }
-          dawStep = (dawStep + 1) % 16;
-        }, 115);
-      } else { clearInterval(dawTimer); }
-    }
-    function stopDawPlayback() { isDawPlaying = false; clearInterval(dawTimer); dawStep = 0; document.getElementById('dawPlayBtn').innerText = '▶ PLAY'; }
 
-    // CASINO
-    function openCasinoHub() { document.getElementById('casinoModal').style.display = 'flex'; }
-    function spinSlot(cost) {
-      if (currentProfile.tokens < cost) { alert("NOT ENOUGH TOKENS. DANCE ON THE AFTERHOURS FLOOR TO EARN MORE."); return; }
-      currentProfile.tokens -= cost;
-      const s = ['7', '📼', '💎', '💀', '⚡'];
-      const r1 = s[Math.floor(Math.random() * s.length)], r2 = s[Math.floor(Math.random() * s.length)], r3 = s[Math.floor(Math.random() * s.length)];
-      document.getElementById('reel1').innerText = r1; document.getElementById('reel2').innerText = r2; document.getElementById('reel3').innerText = r3;
-      if (r1 === '7' && r2 === '7' && r3 === '7') { currentProfile.tokens += 100; document.getElementById('casinoPayoutText').innerText = "JACKPOT! +100 TOKENS!"; }
-      else if (r1 === r2 && r2 === r3) { currentProfile.tokens += 20; document.getElementById('casinoPayoutText').innerText = "MATCH 3! +20 TOKENS!"; }
-      else { document.getElementById('casinoPayoutText').innerText = "NO MATCH // SPIN AGAIN"; }
-      saveState();
+    const SKINS_DATA = [
+      { id: 'enforcer', name: 'THE NEW ERA ENFORCER', desc: 'Default. Blade trench coat, combat boots & reflective full-face visor.', unlocked: true },
+      { id: 'captive', name: 'THE CAPTIVE (RETROCADE OG)', desc: 'Neon magenta graphic tee, light-wash denim. Unlocked by finding 3 Lore Cassettes.', req: 'Find 3 Lore Tapes' },
+      { id: 'handler', name: 'SYNDICATE HANDLER', desc: 'Tactical techwear vest, combat straps & cargo skirt. Unlocked by winning 777 Casino tokens.', req: 'Play Lucky 777 Slots' },
+      { id: 'unmasked', name: 'UNMASKED ENFORCER', desc: 'True identity revealed. Unlocked by solving the Restroom Mirror Keypad (777).', req: 'Solve Keypad' },
+      { id: 'dimensional_master', name: 'DIMENSIONAL MASTER', desc: 'Iridescent gold-trimmed trench coat. Unlocked by collecting all 12 Cassettes across both realms.', req: 'Find All 12 Tapes' }
+    ];
+
+    function openSkinsLocker() {
+      const list = document.getElementById('skinsList');
+      list.innerHTML = '';
+
+      SKINS_DATA.forEach(s => {
+        const isUnlocked = userProfile.unlockedSkins.includes(s.id);
+        const isEquipped = userProfile.activeSkin === s.id;
+
+        const card = document.createElement('div');
+        card.className = `p-3 rounded border flex items-center justify-between ${isEquipped ? 'border-lowlife-cyan bg-lowlife-cyan/10' : (isUnlocked ? 'border-neutral-700 bg-black/60' : 'border-neutral-900 bg-neutral-950 opacity-60')}`;
+
+        card.innerHTML = `
+          <div>
+            <div class="font-cyber font-bold ${isUnlocked ? 'text-white' : 'text-neutral-500'} flex items-center gap-2">
+              <span>${s.name}</span>
+              ${isEquipped ? '<span class="text-[9px] bg-lowlife-cyan text-black px-1.5 py-0.5 rounded font-mono">EQUIPPED</span>' : ''}
+            </div>
+            <div class="text-[11px] text-neutral-400 mt-0.5">${s.desc}</div>
+          </div>
+          <div>
+            ${isUnlocked 
+              ? (isEquipped ? '' : `<button onclick="equipSkin('${s.id}')" class="px-3 py-1 bg-neutral-800 hover:bg-neutral-700 text-white font-cyber text-xs rounded">EQUIP</button>`)
+              : `<span class="text-[10px] text-red-400 font-mono">[LOCKED: ${s.req}]</span>`}
+          </div>
+        `;
+        list.appendChild(card);
+      });
+
+      document.getElementById('skinsModal').classList.remove('hidden');
     }
 
-    // BOOTSTRAP ENGINE
-    saveState();
-    render();
+    function equipSkin(id) {
+      userProfile.activeSkin = id;
+      saveProfile();
+      openSkinsLocker();
+      showToast(`EQUIPPED SKIN: ${id.toUpperCase()}`);
+    }
+
+    function closeModals() {
+      document.querySelectorAll('.fixed').forEach(m => m.classList.add('hidden'));
+      if (miniGameLoopId) cancelAnimationFrame(miniGameLoopId);
+      stopDawPlayback();
+    }
+
+    function openDiscoHub() {
+      document.getElementById('discoModal').classList.remove('hidden');
+    }
+
+    let currentKeypadEntry = "";
+    function openMirrorPuzzle() {
+      currentKeypadEntry = "";
+      document.getElementById('keypadDisplay').innerText = "---";
+      document.getElementById('mirrorPuzzleModal').classList.remove('hidden');
+    }
+
+    function pressKeypad(num) {
+      if (currentKeypadEntry.length < 3) {
+        currentKeypadEntry += num;
+        document.getElementById('keypadDisplay').innerText = currentKeypadEntry.padEnd(3, '-');
+        playSfx('hit');
+      }
+    }
+
+    function clearKeypad() {
+      currentKeypadEntry = "";
+      document.getElementById('keypadDisplay').innerText = "---";
+      playSfx('hit');
+    }
+
+    function submitKeypad() {
+      if (currentKeypadEntry === "777") {
+        playSfx('powerup');
+        userProfile.solvedMirror = true;
+        if (!userProfile.unlockedSkins.includes('unmasked')) {
+          userProfile.unlockedSkins.push('unmasked');
+        }
+        saveProfile();
+        showToast("KEYPAD SOLVED! UNLOCKED: UNMASKED ENFORCER SKIN!");
+        closeModals();
+      } else {
+        playSfx('hit');
+        showToast("INCORRECT CODE. CLUE: 'LIVING ON THE HIGHS'...");
+        clearKeypad();
+      }
+    }
+
+    function openMerchHub() {
+      showToast("OPENING VEHICLE TRUNK // ARCHIVE CLEARANCE...");
+      window.open('https://instagram.com', '_blank');
+    }
+
+    function openHoldingLore() {
+      document.getElementById('holdingModal').classList.remove('hidden');
+    }
+
+    function openProfileHub() {
+      document.getElementById('profileHandleInput').value = userProfile.handle;
+      document.getElementById('profilePinInput').value = userProfile.pin;
+      document.getElementById('profileModal').classList.remove('hidden');
+    }
+
+    function saveUserProfile() {
+      const handle = document.getElementById('profileHandleInput').value.trim();
+      const pin = document.getElementById('profilePinInput').value.trim();
+      if (handle) userProfile.handle = handle;
+      if (pin) userProfile.pin = pin;
+      saveProfile();
+      showToast("SYNDICATE ID SAVED SECURELY.");
+      closeModals();
+    }
+
+    function logoutUserProfile() {
+      userProfile = { ...DEFAULT_PROFILE };
+      saveProfile();
+      showToast("LOGGED OUT. PROGRESS RESET TO GUEST.");
+      closeModals();
+    }
+
+    function copySaveString() {
+      const str = btoa(JSON.stringify(userProfile));
+      const el = document.createElement('textarea');
+      el.value = str;
+      document.body.appendChild(el);
+      el.select();
+      document.execCommand('copy');
+      document.body.removeChild(el);
+      showToast("SAVE STRING COPIED TO CLIPBOARD!");
+    }
+
+    function importSaveString() {
+      try {
+        const input = document.getElementById('saveStringInput').value.trim();
+        if (!input) return;
+        const parsed = JSON.parse(atob(input));
+        userProfile = { ...DEFAULT_PROFILE, ...parsed };
+        saveProfile();
+        showToast("PROFILE IMPORTED SUCCESSFULLY!");
+        closeModals();
+      } catch (err) {
+        showToast("INVALID SAVE STRING ERROR.");
+      }
+    }
+
+    function toggleCrtScanlines() {
+      const crt = document.getElementById('crtOverlay');
+      const text = document.getElementById('crtStatusText');
+      if (crt.style.display === 'none') {
+        crt.style.display = 'block';
+        text.innerText = "CRT: ON";
+        showToast("CRT SCANLINES: ACTIVATED");
+      } else {
+        crt.style.display = 'none';
+        text.innerText = "CRT: OFF";
+        showToast("CRT SCANLINES: DEACTIVATED");
+      }
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toastMessage');
+      if (!t) return;
+      t.innerText = msg;
+      t.style.opacity = '1';
+      t.style.transform = 'translateY(0)';
+      setTimeout(() => {
+        t.style.opacity = '0';
+        t.style.transform = 'translateY(12px)';
+      }, 2500);
+    }
+
+    // Top Navigation Listeners
+    document.getElementById('toggleCrtBtn').addEventListener('click', toggleCrtScanlines);
+    document.getElementById('bgmToggleBtn').addEventListener('click', toggleBgm);
+    document.getElementById('trackVersionSelect').addEventListener('change', (e) => setTrackBgm(e.target.value));
+    document.getElementById('bgmVolumeSlider').addEventListener('input', (e) => {
+      initAudio();
+      if (bgmMasterGain) bgmMasterGain.gain.setValueAtTime(parseFloat(e.target.value), audioCtx.currentTime);
+    });
+    document.getElementById('openTapesBtn').addEventListener('click', openTapesModal);
+    document.getElementById('openSkinsBtn').addEventListener('click', openSkinsLocker);
+    document.getElementById('openProfileBtn').addEventListener('click', openProfileHub);
+    document.getElementById('openLinksModalBtn').addEventListener('click', () => {
+      document.getElementById('linksModal').classList.remove('hidden');
+    });
+
+    // ==============================================================
+    // 12. STARTUP SEQUENCE
+    // ==============================================================
+    window.onload = function () {
+      resizeCanvas();
+      loadProfile();
+      gameLoop();
+    };
   </script>
 </body>
 </html>
